@@ -21,13 +21,18 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
-    install_requires=['docopt', 'toml'],
+    install_requires=[
+        'docopt',
+        'toml',
+        'autobahn==18.9.2',
+    ],
     extras_require={'mongo': ['pymongo==3.7.1']},
     entry_points={
         'console_scripts': [
             'task = task_forge.cli:main',
         ],
         'task_forge.lists': [
+            'task_server = task_forge.lists.task_server_client',
             'mongodb = task_forge.lists.mongo',
             'sqlite = task_forge.lists.sqlite',
         ],

@@ -1,7 +1,12 @@
 """
-Usage: task [--help] [--version] <command> [<args>...]
+Usage: task [options] <command> [<args>...]
 
 A task management CLI that integrates with external services.
+
+Options:
+  -h, --help      Print this help message
+  --version       Print version and license information
+  -v, --verbose   Print debug information, useful when submitting bug reports!
 
 Commands:
    help                Print usage information about task commands
@@ -16,6 +21,7 @@ Commands:
 See 'task help <command>' for more information on a specific command.
 """
 
+import logging
 import sys
 from importlib import import_module
 
@@ -54,14 +60,14 @@ def print_lists():
 
 def main():
     """CLI entrypoint, handles subcommand parsing"""
-    args = docopt(__doc__, version='task version 0.1.0', options_first=True)
+    args = docopt(__doc__, version='task version 0.3.0', options_first=True)
     if not args['<command>']:
         print(__doc__)
         sys.exit(1)
 
     command = args['<command>']
     try:
-        if command == 'help':
+        if command == 'help' or args['--help']:
             if args['<args>'] and args['<args>'][0] == 'lists':
                 print_lists()
             elif args['<args>']:
@@ -71,6 +77,9 @@ def main():
             else:
                 print(__doc__)
             sys.exit(0)
+
+        if args['--verbose']:
+            logging.basicConfig(level=logging.DEBUG)
 
         command = ALIASES.get(command, command)
         command_mod = import_module('task_forge.cli.{}_cmd'.format(command))

@@ -3,6 +3,8 @@ Taskforge Server
 
 This design describes the behavior and API of the Taskforge Server
 
+.. contents::
+
 Goals
 -----
 

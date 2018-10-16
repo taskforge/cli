@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from .tokens import Type
+from task_forge.ql.tokens import Token, Type
 
 
 class AST:
@@ -11,6 +11,15 @@ class AST:
     def __init__(self, expression):
         """Build an AST from expression."""
         self.expression = expression
+
+    def to_dict(self):
+        """Return a JSON serializable Dictionary representation of this AST."""
+        return {'expression': self.expression.to_dict()}
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        """Deserialize an AST from a Dictionary representation."""
+        return cls(expression=Expression.from_dict(dictionary['expression']))
 
     def __eq__(self, other):
         """Return True if other has the same expression."""
@@ -41,7 +50,7 @@ class Expression:
         "%Y-%m-%d",
     ]
 
-    def __init__(self, token, left=None, right=None):
+    def __init__(self, token, left=None, right=None, value=None):
         """
         Build an Expression from token.
 
@@ -58,7 +67,9 @@ class Expression:
         self.left = None
         self.right = None
 
-        if token.token_type == Type.STRING:
+        if value is not None:
+            self.value = value
+        elif token.token_type == Type.STRING:
             self.value = token.literal
         elif token.token_type == Type.NUMBER:
             self.value = float(token.literal)
@@ -70,6 +81,29 @@ class Expression:
             self.operator = token
             self.left = left
             self.right = right
+
+    def to_dict(self):
+        """Return a JSON serializable Dictionary representation of this AST."""
+        if self.is_infix():
+            return {
+                'left': self.left.to_dict(),
+                'right': self.right.to_dict(),
+                'operator': self.operator.to_dict()
+            }
+        return {'token': self.token.to_dict(), 'value': self.value}
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        """Deserialize from a dictionary."""
+        if 'operator' in dictionary:
+            return Expression(
+                Token.from_dict(dictionary['operator']),
+                left=cls.from_dict(dictionary['left']),
+                right=cls.from_dict(dictionary['right']),
+            )
+
+        return Expression(
+            Token.from_dict(dictionary['token']), value=dictionary['value'])
 
     def __repr__(self):
         """Return a string representation of this expression."""

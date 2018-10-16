@@ -83,6 +83,15 @@ class Token:
         else:
             self.token_type = Type.STRING
 
+    def to_dict(self):
+        """Return a JSON serializable Dictionary represenation of this AST."""
+        return {'token_type': self.token_type.value, 'literal': self.literal}
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        """Deserialize from a Dictionary."""
+        return Token(literal=dictionary['literal'])
+
     def __repr__(self):
         """Return a string representation of this token."""
         return 'Token({}, {})'.format(self.token_type, self.literal)
