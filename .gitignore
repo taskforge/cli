@@ -11,3 +11,6 @@ docs/*
 .venv/*
 .mypy_cache/*
 .pytest_cache/*
+
+
+public/*

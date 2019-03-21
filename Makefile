@@ -52,7 +52,12 @@ livehtml:
 	sphinx-autobuild --watch ./src -b html $(SPHINXOPTS) "$(SOURCEDIR)" $(BUILDDIR)/html
 
 # Build the web site container
-website: clean html
+website: install-dev clean html
+	mkdir -p public
+	cp -R docs/html/* public/
+	cp src/docs/index.html public/index.html
+
+docker-website: website
 	docker build --no-cache --tag "chasinglogic/taskforge.io:latest" --file Dockerfile.website .
 
 publish-website: website
