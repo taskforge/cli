@@ -1,10 +1,5 @@
 """Provides the Taskforge Server implementation."""
 
-# We have to match the API that Twisted protocol expects. This means we will
-# have classes which have methods that do not use self. So, we disable these
-# errors in pylint.
-# pylint: disable=no-self-use
-
 import asyncio
 import json
 import logging
@@ -18,9 +13,6 @@ from autobahn.websocket.types import ConnectionDeny
 from task_forge.ql.ast import AST
 from task_forge.ql.parser import Parser
 from task_forge.task import Note, Task
-
-# from twisted.internet import reactor
-# from twisted.python import log
 
 STATUS_SUCCESS = 'success'
 STATUS_FAILURE = 'failure'
@@ -41,9 +33,6 @@ def invalid_message(message='Payload is required for this method.'):
 
 def dispatch(task_list, message):
     """Dispatch a server message to the appropriate task_list method."""
-    if 'method' not in message:
-        return invalid_message()
-
     if message['method'] == 'ping':
         return {'status': STATUS_SUCCESS, 'payload': {'message': 'pong'}}
 
@@ -56,16 +45,12 @@ def dispatch(task_list, message):
         result = task_list.search(ast)
     elif message['method'] == 'add_note':
         payload = message.get('payload', None)
-        if payload is None:
+        if (payload is None or 'note' not in payload
+                or 'task_id' not in payload):
             return invalid_message()
 
         note = payload.get('note')
-        if note is None:
-            return invalid_message()
-
         task_id = payload.get('task_id')
-        if task_id is None:
-            return invalid_message()
 
         task_list.add_note(task_id, Note(**note))
     else:
@@ -83,13 +68,9 @@ def dispatch(task_list, message):
             result = method(**payload)
 
     response = {'status': STATUS_SUCCESS, 'payload': None}
-
-    if result is None:
-        return response
-
     if isinstance(result, list):
         response['payload'] = [x.to_json() for x in result]
-    else:
+    elif isinstance(result, Task):
         response['payload'] = result.to_json()
 
     return response
@@ -119,12 +100,16 @@ class ServerProtocol(WebSocketServerProtocol):
 
         message = json.loads(payload)
         logging.debug('recieved payload: %s', payload)
-        response = dispatch(self.factory.task_list, message)
+        if 'method' not in message:
+            response = invalid_message()
+        else:
+            response = dispatch(self.factory.task_list, message)
+        logging.debug('sending response.')
         self.sendMessage(json.dumps(response).encode('utf-8'), False)
 
     def onClose(self, wasClean, code, reason):  # pylint: disable=invalid-name
         """Log disconnect."""
-        pass
+        logging.info('client disconnected')
 
 
 class ServerFactory(WebSocketServerFactory):
@@ -134,6 +119,7 @@ class ServerFactory(WebSocketServerFactory):
 
     def __init__(self, *args, **kwargs):
         self.task_list = kwargs.pop('task_list')
+        logging.debug('starting server with task_list: %s', self.task_list)
         self.secret = kwargs.pop('secret')
         super().__init__(*args, **kwargs)
 
@@ -159,10 +145,7 @@ class Server:
         self.factory = ServerFactory(task_list=task_list, secret=self.secret)
         self.loop = asyncio.get_event_loop()
 
-        self.host = host
-        self.port = port
-        self.addr = '{}:{}'.format(self.host, self.port)
-
+        self.addr = '{}:{}'.format(host, port)
         if unix_socket is not None:
             self.addr = unix_socket
 
@@ -170,9 +153,7 @@ class Server:
             self.coro = self.loop.create_unix_server(
                 self.factory, path=self.addr)
         else:
-            self.coro = self.loop.create_server(self.factory, self.host,
-                                                self.port)
-
+            self.coro = self.loop.create_server(self.factory, host, port)
         self.server = self.loop.run_until_complete(self.coro)
 
     def run(self):
