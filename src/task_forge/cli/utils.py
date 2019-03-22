@@ -5,7 +5,6 @@ import os
 import socket
 import subprocess
 import sys
-from contextlib import closing
 
 import toml
 
@@ -148,12 +147,11 @@ def inject_list(func):  # noqa: D202
             kwargs['task_list'] = load_list(cfg)
         else:
             start_server(cfg)
-            kwargs['task_list'] = load_list({
-                'list': {
+            kwargs['task_list'] = load_list(
+                {'list': {
                     'name': 'task_server',
                     'config': cfg['server']
-                }
-            })
+                }})
 
         return func(*args, **kwargs)
 

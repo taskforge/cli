@@ -44,10 +44,8 @@ def run(cfg=None):
     srv_cfg = cfg.get('server')
     server = Server(
         task_list,
-        unix_socket=args.get('unix',
-                             srv_cfg.get('unix_socket')),
-        host=args.get('host',
-                      srv_cfg.get('host')),
+        unix_socket=args.get('unix', srv_cfg.get('unix_socket')),
+        host=args.get('host', srv_cfg.get('host')),
         port=args.get('port', srv_cfg.get('port')),
         secret=args.get('secret', srv_cfg.get('secret')),
         secret_file=args.get('secret_file', srv_cfg.get('secret_file')))

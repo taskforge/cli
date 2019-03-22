@@ -15,22 +15,23 @@ class ExpressionTests(unittest.TestCase):
         }, {
             'literal': 'hello world',
             'value': 'hello world',
-        }, {
-            'literal': '2018-01-01',
-            'value': datetime(year=2018, month=1, day=1)
-        }, {
-            'literal': 'True',
-            'value': True,
-        }, {
-            'literal': 'true',
-            'value': True,
-        }, {
-            'literal': 'False',
-            'value': False,
-        }, {
-            'literal': 'false',
-            'value': False,
-        }]
+        },
+                    {
+                        'literal': '2018-01-01',
+                        'value': datetime(year=2018, month=1, day=1)
+                    }, {
+                        'literal': 'True',
+                        'value': True,
+                    }, {
+                        'literal': 'true',
+                        'value': True,
+                    }, {
+                        'literal': 'False',
+                        'value': False,
+                    }, {
+                        'literal': 'false',
+                        'value': False,
+                    }]
 
         for literal in literals:
             with self.subTest(**literal):

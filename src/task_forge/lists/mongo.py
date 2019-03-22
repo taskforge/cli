@@ -57,9 +57,7 @@ class List(AList):
     def find_by_id(self, task_id):
         """Find a task by task_id."""
         return Task.from_dict(
-            self._collection.find_one({
-                "id": task_id
-            },
+            self._collection.find_one({"id": task_id},
                                       projection={"_id": False}))
 
     def current(self):
@@ -77,11 +75,10 @@ class List(AList):
 
     def complete(self, task_id):
         """Complete a task by task_id."""
-        self._collection.find_one_and_update({
-            "id": task_id
-        }, {"$set": {
-            "completed_date": datetime.now()
-        }})
+        self._collection.find_one_and_update(
+            {"id": task_id}, {"$set": {
+                "completed_date": datetime.now()
+            }})
 
     def update(self, task):
         """
@@ -97,11 +94,10 @@ class List(AList):
 
     def add_note(self, task_id, note):
         """Add note to a task by task_id."""
-        self._collection.find_one_and_update({
-            "id": task_id
-        }, {"$push": {
-            "notes": note.to_dict()
-        }})
+        self._collection.find_one_and_update(
+            {"id": task_id}, {"$push": {
+                "notes": note.to_dict()
+            }})
 
     def search(self, ast):
         """Evaluate the AST and return a List of matching results."""

@@ -6,67 +6,73 @@ from task_forge.ql.lexer import Lexer
 from task_forge.ql.tokens import Token, Type
 
 
-@pytest.mark.parametrize("query,expected", [(
-    "milk and cookies",
-    [
-        Token('milk'),
-        Token('and'),
-        Token('cookies'),
-    ],
-), (
-    "completed = false",
-    [
-        Token('completed'),
-        Token('='),
-        Token('false'),
-    ],
-), (
-    "(priority > 0)",
-    [
-        Token('('),
-        Token('priority'),
-        Token('>'),
-        Token('0'),
-        Token(')'),
-    ],
-), (
-    "milk -and cookies",
-    [
-        Token('milk'),
-        Token('and', token_type=Type.STRING),
-        Token('cookies'),
-    ],
-), (
-    "(priority > 5 and title ^ \"take out the trash\") or "
-    "(context = \"work\" and (priority >= 2 or (\"my little pony\")))",
-    [
-        Token('('),
-        Token('priority'),
-        Token('>'),
-        Token('5'),
-        Token('and'),
-        Token('title'),
-        Token('~'),
-        Token('take out the trash'),
-        Token(')'),
-        Token('or'),
-        Token('('),
-        Token('context'),
-        Token('='),
-        Token('work'),
-        Token('and'),
-        Token('('),
-        Token('priority'),
-        Token('>='),
-        Token('2'),
-        Token('or'),
-        Token('('),
-        Token('my little pony'),
-        Token(')'),
-        Token(')'),
-        Token(')'),
-    ],
-)])
+@pytest.mark.parametrize(
+    "query,expected",
+    [(
+        "milk and cookies",
+        [
+            Token('milk'),
+            Token('and'),
+            Token('cookies'),
+        ],
+    ),
+     (
+         "completed = false",
+         [
+             Token('completed'),
+             Token('='),
+             Token('false'),
+         ],
+     ),
+     (
+         "(priority > 0)",
+         [
+             Token('('),
+             Token('priority'),
+             Token('>'),
+             Token('0'),
+             Token(')'),
+         ],
+     ),
+     (
+         "milk -and cookies",
+         [
+             Token('milk'),
+             Token('and', token_type=Type.STRING),
+             Token('cookies'),
+         ],
+     ),
+     (
+         "(priority > 5 and title ^ \"take out the trash\") or "
+         "(context = \"work\" and (priority >= 2 or (\"my little pony\")))",
+         [
+             Token('('),
+             Token('priority'),
+             Token('>'),
+             Token('5'),
+             Token('and'),
+             Token('title'),
+             Token('~'),
+             Token('take out the trash'),
+             Token(')'),
+             Token('or'),
+             Token('('),
+             Token('context'),
+             Token('='),
+             Token('work'),
+             Token('and'),
+             Token('('),
+             Token('priority'),
+             Token('>='),
+             Token('2'),
+             Token('or'),
+             Token('('),
+             Token('my little pony'),
+             Token(')'),
+             Token(')'),
+             Token(')'),
+         ],
+     )])
 def test_lexer(query, expected):
     lex = Lexer(query)
     tokens = list(lex)

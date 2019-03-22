@@ -37,10 +37,11 @@ def editor(filename):
     """Open filename in $EDITOR"""
     program = get_editor_program()
     args = '{} {}'.format(program, filename)
-    call(shlex.split(args),
-         stdin=sys.stdin,
-         stdout=sys.stdout,
-         stderr=sys.stderr)
+    call(
+        shlex.split(args),
+        stdin=sys.stdin,
+        stdout=sys.stdout,
+        stderr=sys.stderr)
 
 
 @inject_list

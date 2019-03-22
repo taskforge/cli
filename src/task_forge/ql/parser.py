@@ -34,8 +34,6 @@ PRECEDENCES = {
 class ParseError(Exception):
     """Raised by the Parser when invalid syntax occurs."""
 
-    pass
-
 
 class Parser:
     """Parser for the task_forge query language."""

@@ -7,61 +7,66 @@ from task_forge.ql.parser import Parser
 from task_forge.ql.tokens import Token
 
 
-@pytest.mark.parametrize("query,ast", [(
-    'milk and cookies',
-    AST(
-        Expression(
-            Token('and'),
-            left=Expression(Token('milk')),
-            right=Expression(Token('cookies'))), ),
-), (
-    'completed = false',
-    AST(
-        Expression(
-            Token('='),
-            left=Expression(Token('completed')),
-            right=Expression(Token('false'))), ),
-), (
-    'milk -and cookies',
-    AST(Expression(Token('milk and cookies'))),
-), (
-    '(priority > 5 and title ^ \'take out the trash\') or '
-    '(context = "work" and (priority >= 2 or ("my little pony")))',
-    AST(
-        Expression(
-            Token('or'),
-            right=Expression(
+@pytest.mark.parametrize(
+    "query,ast",
+    [(
+        'milk and cookies',
+        AST(
+            Expression(
                 Token('and'),
-                left=Expression(
-                    Token('='),
-                    left=Expression(Token('context')),
-                    right=Expression(Token('work'))),
-                right=Expression(
-                    Token('or'),
-                    left=Expression(
-                        Token('>='),
-                        left=Expression(Token('priority')),
-                        right=Expression(Token('2'))),
-                    right=Expression(Token('my little pony'))),
-            ),
-            left=Expression(
-                Token('and'),
-                right=Expression(
-                    Token('~'),
-                    right=Expression(Token('take out the trash')),
-                    left=Expression(Token('title'))),
-                left=Expression(
-                    Token('>'),
-                    left=Expression(Token('priority')),
-                    right=Expression(Token('5'))),
-            ),
-        ), ),
-), ('completed = false',
-    AST(
-        Expression(
-            Token('='),
-            left=Expression(Token('completed')),
-            right=Expression(Token('false')))))])
+                left=Expression(Token('milk')),
+                right=Expression(Token('cookies'))), ),
+    ),
+     (
+         'completed = false',
+         AST(
+             Expression(
+                 Token('='),
+                 left=Expression(Token('completed')),
+                 right=Expression(Token('false'))), ),
+     ), (
+         'milk -and cookies',
+         AST(Expression(Token('milk and cookies'))),
+     ),
+     (
+         '(priority > 5 and title ^ \'take out the trash\') or '
+         '(context = "work" and (priority >= 2 or ("my little pony")))',
+         AST(
+             Expression(
+                 Token('or'),
+                 right=Expression(
+                     Token('and'),
+                     left=Expression(
+                         Token('='),
+                         left=Expression(Token('context')),
+                         right=Expression(Token('work'))),
+                     right=Expression(
+                         Token('or'),
+                         left=Expression(
+                             Token('>='),
+                             left=Expression(Token('priority')),
+                             right=Expression(Token('2'))),
+                         right=Expression(Token('my little pony'))),
+                 ),
+                 left=Expression(
+                     Token('and'),
+                     right=Expression(
+                         Token('~'),
+                         right=Expression(Token('take out the trash')),
+                         left=Expression(Token('title'))),
+                     left=Expression(
+                         Token('>'),
+                         left=Expression(Token('priority')),
+                         right=Expression(Token('5'))),
+                 ),
+             ), ),
+     ),
+     ('completed = false',
+      AST(
+          Expression(
+              Token('='),
+              left=Expression(Token('completed')),
+              right=Expression(Token('false')))))])
 def test_parser(query, ast):
     parser = Parser(query)
     assert parser.parse() == ast
