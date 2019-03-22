@@ -3,13 +3,12 @@
 import unittest
 from multiprocessing import Process
 from tempfile import NamedTemporaryFile
-from unittest.mock import Mock
 
 from task_forge.lists.sqlite import List as SQLiteList
 from task_forge.lists.task_server_client import List
-from task_forge.server.server import Server, get_unix_socket
+from task_forge.server.server import Server
 
-from ..list_utils import ListBenchmarks, ListTests
+from ..list_utils import ListTests
 
 
 class TaskforgeServerListTests(unittest.TestCase, ListTests):
