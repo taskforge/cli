@@ -10,6 +10,7 @@ start this server if not running. You can override this behavior by adding:
 To your Taskforge config file.
 
 Options:
+   --verbose             Turn on verbose logging
    --unix=<socket_path>  Provide a unix socket address to run the server on.
    --host=<ip_addr>      Provide a listen interface to listen on. [default: 127.0.0.1]
    --port=<port>         Provide the port to listen on for TCP connections. [default: 8000]
@@ -21,14 +22,18 @@ Options:
    --secret=<secret>     Provide the shared secret clients must provide
                          when connecting.
 
-   --secret_file=<secret_file_path>  Path to a file containing the
+   --secret-file=<secret_file_path>  Path to a file containing the
                                      shared secret clients must
                                      provide when connecting.
+
+   --config-file=<config_file_path>  Path to a config file to use. [default: ~/]
 """
+
+import logging
 
 from docopt import docopt
 
-from task_forge.cli.utils import config, load_list
+from task_forge.cli.config import Config
 from task_forge.server.server import Server
 
 
@@ -36,17 +41,18 @@ from task_forge.server.server import Server
 # command. inject_list tries to start the server if it's not running.
 #
 # Additionally we need the server config to set up the server anyway.
-@config
-def run(cfg=None):
+def main():
     """Add the server command to the parser."""
     args = docopt(__doc__, version='taskforged version 0.3.0')
-    task_list = load_list(cfg)
-    srv_cfg = cfg.get('server')
+    if args['--verbose']:
+        logging.basicConfig(level=logging.DEBUG)
+    cfg = Config.load(path=args.get('config-file', None))
+    task_list = cfg.load_list()
     server = Server(
         task_list,
-        unix_socket=args.get('unix', srv_cfg.get('unix_socket')),
-        host=args.get('host', srv_cfg.get('host')),
-        port=args.get('port', srv_cfg.get('port')),
-        secret=args.get('secret', srv_cfg.get('secret')),
-        secret_file=args.get('secret_file', srv_cfg.get('secret_file')))
+        unix_socket=args.get('unix', cfg.server.get('unix_socket')),
+        host=args.get('host', cfg.server.get('host')),
+        port=args.get('port', cfg.server.get('port')),
+        secret=args.get('secret', cfg.server.get('secret')),
+        secret_file=args.get('secret_file', cfg.server.get('secret_file')))
     server.run()
