@@ -6,8 +6,6 @@ from abc import ABC, abstractmethod
 class InvalidConfigError(Exception):
     """Indicate an invalid configuration was provided to the List."""
 
-    pass
-
 
 class NotFoundError(Exception):
     """Indicate a task with the given id does not exist."""

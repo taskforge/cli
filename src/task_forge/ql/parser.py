@@ -140,9 +140,10 @@ class Parser:
                 'left side of a logical expression must be an infix'
                 ' expression or string literal got: {}'\
                 .format(expression.left.token.token_type))
-        elif ((expression.operator.token_type != Type.AND
-               and expression.operator.token_type != Type.OR)
-              and expression.left.token.token_type != Type.STRING):
+
+        if ((expression.operator.token_type != Type.AND
+             and expression.operator.token_type != Type.OR)
+                and expression.left.token.token_type != Type.STRING):
             raise ParseError(
                 'left side of an infix expression must be a string literal got: {}'\
                 .format(expression.left.token.token_type))

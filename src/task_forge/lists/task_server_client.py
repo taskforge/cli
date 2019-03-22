@@ -38,8 +38,10 @@ class List(IList):
         payload = response.get('payload')
         if isinstance(payload, dict):
             return Task.from_dict(payload)
-        elif isinstance(payload, list):
+
+        if isinstance(payload, list):
             return [Task.from_dict(task) for task in payload]
+
         return None
 
     def add(self, task):

@@ -24,7 +24,8 @@ class Lexer:
 
         if self.char == '':
             raise StopIteration
-        elif self.char == '^':
+
+        if self.char == '^':
             if self._peek_char() == '=':
                 self._read_char()
                 token = Token('!=')
