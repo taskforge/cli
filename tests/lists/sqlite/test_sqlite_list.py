@@ -24,4 +24,4 @@ class TestSQLiteListPerformance(ListBenchmarks):
     @pytest.fixture
     def task_list(self, tmpdir):  # pylint: disable=arguments-differ
         tmpfile = tmpdir.join("tasks.sqlite3")
-        return List(file_name=tmpfile, create_tables=True)
+        return List(file_name=str(tmpfile), create_tables=True)
