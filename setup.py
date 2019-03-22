@@ -24,7 +24,7 @@ setup(
     install_requires=[
         'docopt',
         'toml',
-        'autobahn==18.9.2',
+        'autobahn==19.3.2',
     ],
     extras_require={'mongo': ['pymongo==3.7.1']},
     entry_points={
