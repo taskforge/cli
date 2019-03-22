@@ -92,9 +92,9 @@ class Config:
 
     def toml(self):
         """Return a toml string of this config."""
-        return toml.dumps({
-            key: val for key, val in self.__dict__.items() if key[0] != '_'
-        })
+        return toml.dumps(
+            {key: val
+             for key, val in self.__dict__.items() if key[0] != '_'})
 
     def __getitem__(self, key):
         return self.__dict__[key]

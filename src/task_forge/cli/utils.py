@@ -32,7 +32,8 @@ def server_is_reachable(srv_cfg):
 
     try:
         if 'unix_socket' in srv_cfg:
-            logging.debug('checking for unix socket: %s', srv_cfg['unix_socket'])
+            logging.debug('checking for unix socket: %s',
+                          srv_cfg['unix_socket'])
             # if not os.path.isfile(srv_cfg['unix_socket']):
             #     logging.debug('unix socket not found: %s', srv_cfg['unix_socket'])
             #     return False
