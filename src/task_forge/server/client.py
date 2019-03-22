@@ -1,6 +1,8 @@
 """Provides a Python implementation of a Taskforge Server client."""
 
+import logging
 import json
+import atexit
 from multiprocessing import Pipe, Process
 
 from autobahn.asyncio.websocket import (WebSocketClientFactory,
@@ -12,14 +14,21 @@ class ClientProtocol(WebSocketClientProtocol):
 
     def onOpen(self):  # pylint: disable=invalid-name
         """Send the message to the server on open."""
+        logging.debug('waiting for message on pipe')
         message = self.factory.pipe.recv()
+        logging.debug('message received: %s', message)
         serialized = json.dumps(message)
+        logging.debug('message sent to server')
         self.sendMessage(serialized.encode('utf-8'))
 
     def onMessage(self, payload, _isBinary):  # pylint: disable=invalid-name
         """Get the server response."""
         response = json.loads(payload.decode('utf-8'))
         self.factory.pipe.send(response)
+        self.sendClose()
+
+    def onClose(self, wasClean=None, code=None, reason=None):
+        """Ignore onClose from server."""
 
 
 class ClientFactory(WebSocketClientFactory):
@@ -51,6 +60,7 @@ class Client:
         self.factory = ClientFactory(pipe=child_pipe)
         self.loop = None
         self.proc = None
+        atexit.register(self.stop)
 
     def __run_client_connection(self):
         import asyncio
@@ -76,6 +86,9 @@ class Client:
 
     def stop(self):
         """Stop the client connection."""
+        # self.send_message('close')
+        # self.recv_message()
+
         if self.loop is not None:
             self.loop.close()
 
