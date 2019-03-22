@@ -97,7 +97,9 @@ class Config:
              for key, val in self.__dict__.items() if key[0] != '_'})
 
     def __getitem__(self, key):
+        """Allow retrieval of config values as if Config was a dict."""
         return self.__dict__[key]
 
     def __setitem__(self, key, value):
+        """Allow setting of config values as if Config was a dict."""
         self.__dict__[key] = value
