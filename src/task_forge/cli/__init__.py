@@ -35,6 +35,7 @@ ALIASES = {
     'done': 'complete',
     'q': 'query',
     's': 'query',
+    'l': 'query',
     'list': 'query',
     'e': 'edit',
 }
