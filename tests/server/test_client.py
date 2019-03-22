@@ -1,4 +1,4 @@
-"""Test the server client."""
+# pylint: disable=missing-docstring
 
 from multiprocessing import Process
 from unittest.mock import Mock
@@ -20,7 +20,7 @@ def server():
     proc.terminate()
 
 
-def test_ping(server):
+def test_ping(server): #pylint: disable=redefined-outer-name
     client = Client(server)
     client.send_message({'method': 'ping'})
     response = client.recv_message()
