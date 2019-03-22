@@ -34,8 +34,11 @@ class ClientFactory(WebSocketClientFactory):
 
 
 class Client:
-    """Manages the a persistent connection to a server. For sending a single
-    message use send_message instead."""
+    """
+    Manages the a persistent connection to a server.
+
+    For sending a single message use send_message instead.
+    """
 
     def __init__(self, addr):
         parent_pipe, child_pipe = Pipe()

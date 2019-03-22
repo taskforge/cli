@@ -34,6 +34,7 @@ def default_config():
 
 
 def default_server_config():
+    """Return the default configuration for a server."""
     if sys.platform == 'win32':
         return {
             'host': 'localhost',
@@ -92,7 +93,7 @@ def load_list(cfg):
 
 
 def server_is_reachable(srv_cfg):
-    """Returns a boolean indicating if the server is reachable or not."""
+    """Return a boolean indicating if the server is reachable or not."""
     if 'unix_socket' in srv_cfg:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     else:

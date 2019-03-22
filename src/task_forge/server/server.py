@@ -82,7 +82,7 @@ def dispatch(task_list, message):
         else:
             result = method(**payload)
 
-    response = {'status': STATUS_SUCCESS}
+    response = {'status': STATUS_SUCCESS, 'payload': None}
 
     if result is None:
         return response
@@ -139,13 +139,13 @@ class ServerFactory(WebSocketServerFactory):
 
 
 class Server:
-    """Provides a pythonic API for running a server."""
+    """Provides a Pythonic API for running a server."""
 
     def __init__(self,
                  task_list,
                  unix_socket=None,
-                 host=None,
-                 port=None,
+                 host='localhost',
+                 port=8080,
                  secret=None,
                  secret_file=None):
 
@@ -159,25 +159,14 @@ class Server:
         self.factory = ServerFactory(task_list=task_list, secret=self.secret)
         self.loop = asyncio.get_event_loop()
 
-        self.addr = get_unix_socket()
-        self.host = 'localhost'
-        self.port = 8080
+        self.host = host
+        self.port = port
+        self.addr = '{}:{}'.format(self.host, self.port)
 
         if unix_socket is not None:
             self.addr = unix_socket
-            self.coro = self.loop.create_unix_server(
-                self.factory, path=unix_socket)
 
-        if host is not None:
-            self.host = host
-
-        if port is not None:
-            self.port = port
-
-        if unix_socket is None:
-            self.addr = '{}:{}'.format(self.host, self.port)
-
-        if self.addr.endswith('.sock'):
+        if self.addr.endswith('.sock') or unix_socket is not None:
             self.coro = self.loop.create_unix_server(
                 self.factory, path=self.addr)
         else:

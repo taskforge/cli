@@ -30,6 +30,7 @@ setup(
     entry_points={
         'console_scripts': [
             'task = task_forge.cli:main',
+            'taskforged = task_forge.taskforged.cli:main'
         ],
         'task_forge.lists': [
             'task_server = task_forge.lists.task_server_client',
