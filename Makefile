@@ -1,9 +1,13 @@
 PYTHON := python3
 PIP := $(PYTHON) -m pip
 
-lint:
-	$(PYTHON) -m pydocstyle src
+pylint:
 	$(PYTHON) -m pylint src tests
+
+pydocstyle:
+	$(PYTHON) -m pydocstyle src
+
+lint: pylint pydocstyle
 
 fmt:
 	$(PYTHON) -m yapf --recursive -i src tests
