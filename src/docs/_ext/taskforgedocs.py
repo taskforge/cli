@@ -96,8 +96,8 @@ def visit_console_html(self, node):
         self.body.append('</section>\n')
         self.body.append('</div>\n')
         raise nodes.SkipNode
-    else:
-        self.visit_literal_block(node)
+
+    self.visit_literal_block(node)
 
 
 class ConsoleDirective(CodeBlock):  # pylint: disable=too-few-public-methods
