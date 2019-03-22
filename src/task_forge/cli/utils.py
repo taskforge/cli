@@ -3,7 +3,6 @@
 import logging
 import socket
 import subprocess
-import os
 import sys
 import time
 
