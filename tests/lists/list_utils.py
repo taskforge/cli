@@ -212,6 +212,7 @@ class ListTests:
 
 
 @pytest.mark.slow
+@pytest.mark.benchmark
 class ListBenchmarks:
     @pytest.fixture
     def task_list(self):

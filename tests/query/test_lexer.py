@@ -81,6 +81,7 @@ def test_lexer(query, expected):
 
 
 @pytest.mark.slow
+@pytest.mark.benchmark
 @pytest.mark.parametrize("query", [
     ('milk and cookies', ),
     ('milk -and cookies', ),

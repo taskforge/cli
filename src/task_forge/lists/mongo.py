@@ -5,14 +5,15 @@ from datetime import datetime
 try:
     import pymongo
 except ImportError:
-    import sys
     print('you must install pymongo to use the MongoDB list')
+    import sys
     sys.exit(1)
 
 from task_forge.ql.tokens import Type
 from task_forge.task import Task
 
 from . import List as AList
+from . import InvalidConfigError
 
 
 class List(AList):
@@ -33,9 +34,10 @@ class List(AList):
         if username and password:
             conn_url += '{}:{}@'.format(username, password)
         elif username:
-            conn_url += '{}@'.format(username)
+            raise InvalidConfigError('if a username is provided, a password must also be provided')
         conn_url += '{}:{}'.format(host, port)
-        self._client = pymongo.MongoClient(conn_url, ssl=ssl)
+        self.conn_url = conn_url
+        self._client = pymongo.MongoClient(self.conn_url, ssl=ssl)
         self._db = self._client[db]
         self._collection = self._db[collection]
 

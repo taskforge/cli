@@ -113,7 +113,7 @@ from task_forge.task import Task
                               }
                           }, 'search', Parser('completed = false').parse())])
 def test_dispatch(message, called, called_with):
-    """Evaluate the AST and return a List of matching results."""
+    """Test various dispatch methods."""
     mock = Mock()
     result = dispatch(mock, message)
     assert result['status'] == 'success'
@@ -125,3 +125,8 @@ def test_dispatch(message, called, called_with):
         attr.assert_called_with(**called_with)
     elif called_with is not None:
         attr.assert_called_with(called_with)
+
+
+def test_dispatch_ping():
+    res = dispatch(None, {'method': 'ping'})
+    {'status': 'success', 'payload': {'message': 'pong'}} == res

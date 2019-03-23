@@ -73,6 +73,7 @@ def test_parser(query, ast):
 
 
 @pytest.mark.slow
+@pytest.mark.benchmark
 @pytest.mark.parametrize("query", [
     ('milk and cookies', ),
     ('milk -and cookies', ),

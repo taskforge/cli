@@ -31,6 +31,12 @@ test:
 test-all:
 	PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest --disable-pytest-warnings
 
+test-coverage:
+	PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest -m 'not benchmark' --cov-report term-missing --cov=task_forge --disable-pytest-warnings
+
+test-benchmarks:
+	PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest -m 'benchmark' --disable-pytest-warnings
+
 publish: clean
 	python setup.py sdist bdist_wheel
 	twine upload dist/*
