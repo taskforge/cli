@@ -35,6 +35,7 @@ install-dev: $(DEV_INSTALL_LINK)
 $(DEV_INSTALL_LINK):
 	$(PIP) install --editable .
 	$(PIP) install --editable ".[mongo]"
+	$(PIP) install --editable ".[github]"
 	$(PIP) install -r requirements.dev.txt
 
 install:

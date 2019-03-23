@@ -10,7 +10,7 @@ from task_forge.lists.mongo import List
 
 from ..list_utils import ListBenchmarks, ListTests
 
-
+@pytest.mark.slow
 class MongoDBListConstructorTests(unittest.TestCase):
     def test_conn_url_with_username_and_password(self):
         try:

@@ -25,7 +25,10 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=requirements,
-    extras_require={'mongo': ['pymongo==3.7.1']},
+    extras_require={
+        'mongo': ['pymongo==3.7.1'],
+        'github': ['pygithub==1.43.5'],
+    },
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
