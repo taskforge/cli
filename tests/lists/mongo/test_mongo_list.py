@@ -8,13 +8,10 @@ import pytest
 from task_forge.lists.mongo import List
 from task_forge.lists import InvalidConfigError
 
-from ..list_utils import ListTests, ListBenchmarks
+from ..list_utils import ListBenchmarks, ListTests
 
-# This is slow because it the list will still try and connect on
-# object creation.
-@pytest.mark.slow
+
 class MongoDBListConstructorTests(unittest.TestCase):
-
     def test_conn_url_with_username_and_password(self):
         try:
             mongo_list = List(username='test')
@@ -23,7 +20,8 @@ class MongoDBListConstructorTests(unittest.TestCase):
             pass
 
         mongo_list = List(username='test', password='pass123')
-        self.assertEqual(mongo_list.conn_url, 'mongodb://test:pass123@localhost:27017')
+        self.assertEqual(mongo_list.conn_url,
+                         'mongodb://test:pass123@localhost:27017')
 
 
 @pytest.mark.slow

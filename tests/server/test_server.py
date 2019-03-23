@@ -1,5 +1,7 @@
 """Test server functions."""
 
+# pylint: disable=missing-docstring
+
 from unittest.mock import Mock
 
 import pytest

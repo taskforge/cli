@@ -1,12 +1,13 @@
 """Test global list constructs like errors."""
 
+# pylint: disable=missing-docstring
+
 import unittest
-import inspect
 
 from task_forge.lists import NotFoundError
 
-class TestNotFoundError(unittest.TestCase):
 
+class TestNotFoundError(unittest.TestCase):
     def test_no_id(self):
         exc = NotFoundError()
         self.assertEqual(repr(exc), 'no task that matched query found')

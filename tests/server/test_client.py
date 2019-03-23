@@ -20,7 +20,7 @@ def server():
     proc.terminate()
 
 
-def test_ping(server): #pylint: disable=redefined-outer-name
+def test_ping(server):  #pylint: disable=redefined-outer-name
     client = Client(server)
     client.send_message({'method': 'ping'})
     response = client.recv_message()

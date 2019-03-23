@@ -8,6 +8,7 @@ pydocstyle:
 	$(PYTHON) -m pydocstyle src
 
 lint: pylint pydocstyle
+	@echo "Ready to commit!"
 
 fmt:
 	$(PYTHON) -m yapf --recursive -i src tests

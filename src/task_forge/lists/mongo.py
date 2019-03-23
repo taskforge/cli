@@ -34,7 +34,8 @@ class List(AList):
         if username and password:
             conn_url += '{}:{}@'.format(username, password)
         elif username:
-            raise InvalidConfigError('if a username is provided, a password must also be provided')
+            raise InvalidConfigError(
+                'if a username is provided, a password must also be provided')
         conn_url += '{}:{}'.format(host, port)
         self.conn_url = conn_url
         self._client = pymongo.MongoClient(self.conn_url, ssl=ssl)
