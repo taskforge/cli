@@ -129,4 +129,4 @@ def test_dispatch(message, called, called_with):
 
 def test_dispatch_ping():
     res = dispatch(None, {'method': 'ping'})
-    {'status': 'success', 'payload': {'message': 'pong'}} == res
+    assert {'status': 'success', 'payload': {'message': 'pong'}} == res
