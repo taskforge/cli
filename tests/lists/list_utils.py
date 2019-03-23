@@ -2,8 +2,8 @@
 # will be there when this class is subclassed
 # pylint: skip-file
 
-from datetime import datetime
 import unittest
+from datetime import datetime
 
 import pytest
 

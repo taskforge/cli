@@ -108,18 +108,16 @@ class Expression:
     def __repr__(self):
         """Return a string representation of this expression."""
         if self.is_infix() and self.token.token_type in [Type.AND, Type.OR]:
-            return '({} {} {})'.format(self.left, self.operator.literal,
-                                       self.right)
+            return f'({self.left} {self.operator.literal} {self.right})'
 
         if self.is_infix():
-            return '({} {} {})'.format(
-                self.left.value if self.left is not None else self.left,
-                self.operator.literal, self.right)
+            left_repr = self.left.value if self.left is not None else self.left
+            return f'({left_repr} {self.operator.literal} {self.right})'
 
         if isinstance(self.value, str):
-            return "'{}'".format(self.value)
+            return f"'{self.value}'"
 
-        return '{}'.format(self.value)
+        return f'{self.value}'
 
     def __eq__(self, other):
         """Return True if other is the same kind of expression with the same values."""

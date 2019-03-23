@@ -23,7 +23,7 @@ def get_unix_socket(unix='taskforge.sock'):
     if sys.platform == 'win32':
         return None
 
-    return '/var/run/user/{}/{}'.format(os.getuid(), unix)
+    return f'/var/run/user/{os.getuid()}/{unix}'
 
 
 def invalid_message(message='Payload is required for this method.'):
@@ -145,7 +145,7 @@ class Server:
         self.factory = ServerFactory(task_list=task_list, secret=self.secret)
         self.loop = asyncio.get_event_loop()
 
-        self.addr = '{}:{}'.format(host, port)
+        self.addr = f'{host}:{port}'
         if unix_socket is not None:
             self.addr = unix_socket
 

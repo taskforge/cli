@@ -2,18 +2,18 @@
 
 from datetime import datetime
 
+from task_forge.ql.tokens import Type
+from task_forge.task import Task
+
+from . import InvalidConfigError
+from . import List as AList
+
 try:
     import pymongo
 except ImportError:
     print('you must install pymongo to use the MongoDB list')
     import sys
     sys.exit(1)
-
-from task_forge.ql.tokens import Type
-from task_forge.task import Task
-
-from . import List as AList
-from . import InvalidConfigError
 
 
 class List(AList):
@@ -32,11 +32,11 @@ class List(AList):
         """Create a List from the given configuration."""
         conn_url = 'mongodb://'
         if username and password:
-            conn_url += '{}:{}@'.format(username, password)
+            conn_url += f'{username}:{password}@'
         elif username:
             raise InvalidConfigError(
                 'if a username is provided, a password must also be provided')
-        conn_url += '{}:{}'.format(host, port)
+        conn_url += f'{host}:{port}'
         self.conn_url = conn_url
         self._client = pymongo.MongoClient(self.conn_url, ssl=ssl)
         self._db = self._client[db]
@@ -148,7 +148,7 @@ class List(AList):
         """Evaluate an infix expression."""
         if expression.is_logical_infix():
             return {
-                "${}".format(expression.operator.literal.lower()): [
+                f"${expression.operator.literal.lower()}": [
                     List.__eval(expression.left),
                     List.__eval(expression.right),
                 ]
@@ -166,7 +166,7 @@ class List(AList):
 
         return {
             expression.left.value: {
-                "${}".format(expression.operator.token_type.name.lower()):
+                f"${expression.operator.token_type.name.lower()}":
                 expression.right.value
             }
         }

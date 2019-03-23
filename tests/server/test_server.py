@@ -5,6 +5,7 @@
 from unittest.mock import Mock
 
 import pytest
+
 from task_forge.ql.ast import AST
 from task_forge.ql.parser import Parser
 from task_forge.server.server import dispatch

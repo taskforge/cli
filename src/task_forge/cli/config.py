@@ -2,6 +2,8 @@
 
 import os
 import sys
+
+import appdirs
 import toml
 
 from task_forge.lists import InvalidConfigError
@@ -9,14 +11,19 @@ from task_forge.lists.load import get_list
 
 CONFIG_FILES = [
     'taskforge.toml',
-    os.path.join(os.getenv('HOME', ''), '.taskforge.d', 'config.toml'),
+    os.path.join(appdirs.user_config_dir(), 'taskforge', 'config.toml'),
     '/etc/taskforge/config.toml'
 ]
 
 
 def default_list_config():
     """Return the default list configuration."""
-    return {'name': 'sqlite', 'config': {'directory': '~/.taskforge.d'}}
+    return {
+        'name': 'sqlite',
+        'config': {
+            'directory': os.path.join(appdirs.user_data_dir(), 'taskforge')
+        }
+    }
 
 
 def default_server_config():
@@ -30,7 +37,7 @@ def default_server_config():
 
     return {
         # By default use a unix socket not a network socket
-        'unix_socket': '/var/run/user/{}/taskforge.sock'.format(os.getuid()),
+        'unix_socket': f'/var/run/user/{os.getuid()}/taskforge.sock',
         # Only used with network communication
         # 'secret_file': '~/.taskforge.d/server_secret'
     }
@@ -61,7 +68,6 @@ class Config:
                     user_cfg = toml.load(config_file)
                     cfg.__dict__.update(user_cfg)
                     cfg.path = config_file
-                    break
 
         return cfg
 
@@ -74,7 +80,7 @@ class Config:
         try:
             impl = get_list(list_cfg['name'])
             if impl is None:
-                print('unknown list: {}'.format(self.list['name']))
+                print(f'unknown list: {self.list["name"]}')
                 sys.exit(1)
         except KeyError:
             print('no list name provided by config: {}',
@@ -84,10 +90,10 @@ class Config:
         try:
             return impl(**list_cfg['config'])
         except InvalidConfigError as invalid_config:
-            print('Invalid config: {}'.format(invalid_config))
+            print(f'Invalid config: {invalid_config}')
             sys.exit(1)
         except TypeError as unknown_key:
-            print('Invalid config unknown config key: {}'.format(unknown_key))
+            print(f'Invalid config unknown config key: {unknown_key}')
             sys.exit(1)
 
     def toml(self):

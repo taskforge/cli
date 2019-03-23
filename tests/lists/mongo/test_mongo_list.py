@@ -5,8 +5,8 @@ from uuid import uuid1
 
 import pytest
 
-from task_forge.lists.mongo import List
 from task_forge.lists import InvalidConfigError
+from task_forge.lists.mongo import List
 
 from ..list_utils import ListBenchmarks, ListTests
 

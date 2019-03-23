@@ -7,10 +7,11 @@ pylint:
 pydocstyle:
 	$(PYTHON) -m pydocstyle src
 
-lint: pylint pydocstyle
+lint: fmt pylint pydocstyle
 	@echo "Ready to commit!"
 
 fmt:
+	$(PYTHON) -m isort --recursive src tests
 	$(PYTHON) -m yapf --recursive -i src tests
 
 clean:

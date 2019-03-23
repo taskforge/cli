@@ -48,7 +48,7 @@ def print_lists():
     try:
         lists = get_all_lists()
     except ImportError as import_err:
-        print('unable to load lists: {}'.format(import_err))
+        print(f'unable to load lists: {import_err}')
         sys.exit(1)
 
     if not lists:
@@ -69,11 +69,13 @@ def main():
     command = args['<command>']
     try:
         if command == 'help' or args['--help']:
-            if args['<args>'] and args['<args>'][0] == 'lists':
+            if args['<args>']:
+                topic = args['<args>'][0]
+
+            if topic == 'lists':
                 print_lists()
             elif args['<args>']:
-                command_mod = import_module('task_forge.cli.{}_cmd'.format(
-                    args['<args>'][0]))
+                command_mod = import_module(f'task_forge.cli.{topic}_cmd')
                 print(command_mod.__doc__)
             else:
                 print(__doc__)
@@ -83,12 +85,12 @@ def main():
             logging.basicConfig(level=logging.DEBUG)
 
         command = ALIASES.get(command, command)
-        command_mod = import_module('task_forge.cli.{}_cmd'.format(command))
+        command_mod = import_module(f'task_forge.cli.{command}_cmd')
         argv = [command] + args['<args>']
         command_mod.run(docopt(command_mod.__doc__, argv=argv))
         sys.exit(0)
     except ImportError:
-        print('{} is not a known task command.'.format(command))
+        print(f'{command} is not a known task command.')
         sys.exit(1)
 
 

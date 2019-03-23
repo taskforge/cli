@@ -8,18 +8,17 @@ Will use $EDITOR if set and if not will attempt to find an editor based on
 platform.
 """
 
-import sys
 import os
 import shlex
-
-from tempfile import NamedTemporaryFile
+import sys
 from subprocess import call
+from tempfile import NamedTemporaryFile
 
 import toml
 
-from task_forge.task import Task
-from task_forge.lists import NotFoundError
 from task_forge.cli.utils import inject_list
+from task_forge.lists import NotFoundError
+from task_forge.task import Task
 
 
 def get_editor_program():
@@ -36,7 +35,7 @@ def get_editor_program():
 def editor(filename):
     """Open filename in $EDITOR"""
     program = get_editor_program()
-    args = '{} {}'.format(program, filename)
+    args = f'{program} {filename}'
     call(
         shlex.split(args),
         stdin=sys.stdin,

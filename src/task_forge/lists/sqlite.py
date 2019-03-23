@@ -8,7 +8,9 @@ from uuid import uuid1
 from task_forge.ql.tokens import Type
 from task_forge.task import Note, Task
 
-from . import InvalidConfigError, List as AList, NotFoundError
+from . import InvalidConfigError
+from . import List as AList
+from . import NotFoundError
 
 
 class List(AList):
@@ -20,7 +22,7 @@ CREATE TABLE IF NOT EXISTS tasks(
     title text,
     body text,
     context text,
-    priority real,
+    priority integer,
     created_date integer,
     completed_date integer
 )"""
@@ -252,10 +254,9 @@ WHERE id = ?
     def __eval_str_literal(expression):
         """Evaluate a string literal query."""
         ident = uuid1().hex
-        return ("(title LIKE :{ident} OR body LIKE :{ident})".format(
-            ident=ident), {
-                ident: '%{}%'.format(expression.value)
-            })
+        return (f"(title LIKE :{ident} OR body LIKE :{ident})", {
+            ident: f'%{expression.value}%'
+        })
 
     @staticmethod
     def __eval_infix(expression):
@@ -263,11 +264,7 @@ WHERE id = ?
         if expression.is_logical_infix():
             left, left_values = List.__eval(expression.left)
             right, right_values = List.__eval(expression.right)
-            return ('({}) {} ({})'.format(
-                left,
-                expression.operator.literal,
-                right,
-            ), {
+            return (f'({left}) {expression.operator.literal} ({right})', {
                 **left_values,
                 **right_values
             })
@@ -279,11 +276,12 @@ WHERE id = ?
                     if expression.right.value else 'completed_date = 0', {})
 
         if expression.operator.token_type == Type.LIKE:
-            return ('({} LIKE :{})'.format(expression.left.value, ident), {
-                ident: '%{}%'.format(expression.right.value)
+            return (f'({expression.left.value} LIKE :{ident})', {
+                ident: f'%{expression.right.value}%'
             })
 
-        return ('({} {} :{})'.format(expression.left.value,
-                                     expression.operator.literal, ident), {
-                                         ident: expression.right.value
-                                     })
+        return (
+            f'({expression.left.value} {expression.operator.literal} :{ident})',
+            {
+                ident: expression.right.value
+            })

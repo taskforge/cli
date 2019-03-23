@@ -1,8 +1,8 @@
 """Provides a Python implementation of a Taskforge Server client."""
 
-import logging
-import json
 import atexit
+import json
+import logging
 from multiprocessing import Pipe, Process
 
 from autobahn.asyncio.websocket import (WebSocketClientFactory,

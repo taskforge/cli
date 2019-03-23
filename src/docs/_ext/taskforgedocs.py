@@ -1,7 +1,7 @@
 """Sphinx plugins for Taskforge documentation."""
 
-import re
 import logging
+import re
 
 from docutils import nodes
 from docutils.statemachine import ViewList

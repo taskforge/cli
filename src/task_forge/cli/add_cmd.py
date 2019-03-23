@@ -19,8 +19,8 @@ If an import option is provided all other options are ignored.
 
 import sys
 
-from task_forge.cli.workon_cmd import top_priority
 from task_forge.cli.utils import inject_list
+from task_forge.cli.workon_cmd import top_priority
 from task_forge.task import Task
 
 

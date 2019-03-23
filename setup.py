@@ -5,6 +5,9 @@ from setuptools import find_packages, setup
 with open('README.md') as f:
     LONG_DESCRIPTION = f.read()
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='taskforge-cli',
     version='0.2.4',
@@ -21,12 +24,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
-    install_requires=[
-        'docopt',
-        'toml',
-        'autobahn==19.3.2',
-    ],
+    install_requires=requirements,
     extras_require={'mongo': ['pymongo==3.7.1']},
+    python_requires='>=3.6',
     entry_points={
         'console_scripts': [
             'task = task_forge.cli:main',

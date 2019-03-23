@@ -109,9 +109,9 @@ class Task:  # pylint: disable=too-many-instance-attributes
     :param context: **Default** ("default") - The 'list' this task belongs to.
                     Common values are work, personal etc.
     :type context: str
-    :param priority: **Default** (1.0) - The priority of this task, this is the
+    :param priority: **Default** (1) - The priority of this task, this is the
                      primary sorting criteria for tasks.
-    :type priority: float
+    :type priority: int
     :param notes: **Default** (None) - A list of Note objects to for this task.
     :type notes: List[Note]
     :param completed_date: **Default** (None) - A datetime object representing
@@ -124,7 +124,7 @@ class Task:  # pylint: disable=too-many-instance-attributes
             title,
             id=None,
             context='default',
-            priority=1.0,
+            priority=1,
             notes=None,
             created_date=None,
             completed_date=None,

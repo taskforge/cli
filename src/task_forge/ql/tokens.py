@@ -94,7 +94,7 @@ class Token:
 
     def __repr__(self):
         """Return a string representation of this token."""
-        return 'Token({}, {})'.format(self.token_type, self.literal)
+        return f'Token({self.token_type}, {self.literal})'
 
     def __eq__(self, other):
         """Return equal if other's literal and token_type are the same."""

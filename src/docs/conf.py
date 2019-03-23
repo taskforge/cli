@@ -10,8 +10,8 @@
 
 # -- Path setup --------------------------------------------------------------
 
-import sys
 import os
+import sys
 
 # dirname dirname gives the src dir which has task_forge
 sys.path.insert(0, os.path.abspath('./src'))

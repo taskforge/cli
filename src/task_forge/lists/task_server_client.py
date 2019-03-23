@@ -18,7 +18,7 @@ class List(IList):
         if unix_socket is not None:
             self.addr = unix_socket
         elif host is not None and port is not None:
-            self.addr = '{}:{}'.format(host, port)
+            self.addr = f'{host}:{port}'
         else:
             raise InvalidConfigError(
                 'must provide a unix_socket or host port combination')

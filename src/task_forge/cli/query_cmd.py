@@ -91,7 +91,7 @@ def print_table(tasks):
         # which has a length of 6 (i.e. len("a task")) and the widest data for
         # that column is 10 we will end up with "a task    ".
         cols = [data.ljust(width) for width, data in zip(column_widths, row)]
-        print("| {} |".format(" | ".join(cols)))
+        print(f"| {' | '.join(cols)} |")
 
 
 def print_text(tasks):
@@ -139,8 +139,7 @@ def print_tasks(tasks, output='table'):
     elif output == 'csv':
         print_csv(tasks)
     else:
-        print('{} is not a valid output format. Defaulting to table.'.format(
-            output))
+        print(f'{output} is not a valid output format. Defaulting to table.')
         print_table(tasks)
 
 
@@ -163,5 +162,5 @@ def run(args):
     except NotFoundError:
         print('no tasks matched query')
     except ParseError as parse_error:
-        print('unable to parse query: {}'.format(parse_error))
+        print(f'unable to parse query: {parse_error}')
         sys.exit(1)

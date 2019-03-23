@@ -7,7 +7,7 @@ import pytest
 
 from task_forge.lists.sqlite import List
 
-from ..list_utils import ListTests, ListBenchmarks
+from ..list_utils import ListBenchmarks, ListTests
 
 
 class SQLiteListTests(unittest.TestCase, ListTests):
