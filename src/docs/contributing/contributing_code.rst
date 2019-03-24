@@ -44,12 +44,16 @@ Replacing ``$YOUR_CLONE_URL`` with the URL you just copied from GitHub.
 Setting Up A Development Environment
 ++++++++++++++++++++++++++++++++++++
 
+.. vale off
+
 .. note::
 
    It's recommended that you set up a Python virtualenv before doing any of the
    steps below. A great explanation of how and why to use a virtualenv can be
    found in `Python's venv module documentation
    <https://docs.python.org/3/library/venv.html>`_
+
+.. vale on
 
 First lets cd into the repository we created earlier if you haven't already:
 

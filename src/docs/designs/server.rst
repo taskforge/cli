@@ -16,7 +16,7 @@ Goals
   designing, maintaining, and implementing a custom protocol.
 - Configurable socket name, listen address / port, log file.
 - Config file can disable use of server since not every list will need it and
-  some users would prefer to not have the overhead.
+  some users would prefer to skip the overhead.
 - A List implementation that speaks the server protocol
 - Docker container which can be used to run the Taskforge server
  
@@ -80,7 +80,7 @@ take an AST as JSON. The ``query`` method will take the string query as the
 payload which it will then lex and parse before sending to the List
 implementation.
 
-The specification for each metohd is described in detail below.
+The specification for each method is described in detail below.
 
 All methods which return something return a message with the form:
 
@@ -111,7 +111,7 @@ will have a key ``"message"`` which contains an error message:
        "message": "Why this method failed"
    }
 
-This message is not guaranteed to be human readable but will usually be.
+This message is not guaranteed to be human readable but will often be.
 
 ``add``
 ^^^^^^^
@@ -125,8 +125,8 @@ Add is used for adding tasks. A minimal add message looks like the following:
        "payload": {"title": "write server design document"}
    }
 
-All other task metadata can be provided as usual with the exception of "id". A
-more complete example looks like:
+All other task metadata can be provided as usual with the exception of
+the "id" field. A more complete example looks like:
 
 .. code::
 
