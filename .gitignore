@@ -1,8 +1,7 @@
 *.pyc
 
-dist/
-build/
-docs/*
+dist/*
+build/*
 *.egg-info/
 
 .tox/
