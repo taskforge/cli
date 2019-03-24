@@ -21,3 +21,8 @@ transphobic
 doxing
 unwelcomed
 sqlite
+websocket
+websockets
+deserialize
+deserialized
+deserializing
