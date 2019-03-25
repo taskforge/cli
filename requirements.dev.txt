@@ -4,6 +4,7 @@ isort
 pylint
 pytest
 pytest-benchmark
+pytest-coverage
 sphinx
 sphinx-autobuild
 pylinkvalidator
