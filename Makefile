@@ -8,6 +8,7 @@ SPHINXOPTS			=
 SPHINXBUILD			= sphinx-build
 DOC_SOURCEDIR		= docs
 DOC_BUILDDIR		= build/docs
+WEBSITEDIR          = public
 PYTHON				= python3
 PIP					= $(PYTHON) -m pip
 PYTEST				= PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest
@@ -54,14 +55,12 @@ publish: docs wheel
 ########
 
 docs: docs-html
-	rm -rf docs/*
-	mv build/docs/html/* docs/
 
 # Build the website directory
-website: install-dev clean html
-	mkdir -p public
-	cp -R docs/html/* public/
-	cp src/docs/index.html public/index.html
+website: install-dev clean docs-html
+	mkdir -p $(WEBSITEDIR)
+	cp -R $(DOC_BUILDDIR)/html/* $(WEBSITEDIR)/
+	cp $(DOC_SOURCEDIR)/index.html $(WEBSITEDIR)/index.html
 
 # Build the web site container
 docker-website: website
@@ -72,8 +71,8 @@ docker-website: website
 publish-website: website
 	docker push "chasinglogic/taskforge.io:latest"
 
-livehtml:
-	sphinx-autobuild --watch ./src -b html $(SPHINXOPTS) "$(DOC_SOURCEDIR)" $(DOC_BUILDDIR)/html
+docs-live-%:
+	sphinx-autobuild --watch ./src -b $* $(SPHINXOPTS) "$(DOC_SOURCEDIR)" $(DOC_BUILDDIR)/html
 
 docs-%:
 	mkdir -p $(DOC_BUILDDIR)
