@@ -13,6 +13,7 @@ from autobahn.websocket.types import ConnectionDeny
 from task_forge.ql.ast import AST
 from task_forge.ql.parser import Parser
 from task_forge.task import Note, Task
+from task_forge.lists import NotFoundError
 
 STATUS_SUCCESS = 'success'
 STATUS_FAILURE = 'failure'
@@ -102,8 +103,13 @@ class ServerProtocol(WebSocketServerProtocol):
         logging.debug('recieved payload: %s', payload)
         if 'method' not in message:
             response = invalid_message()
-        else:
+            self.sendMessage(json.dumps(response).encode('utf-8'), False)
+
+        try:
             response = dispatch(self.factory.task_list, message)
+        except Exception as e:
+            response = {'status': STATUS_FAILURE, 'message': repr(e)}
+
         logging.debug('sending response.')
         self.sendMessage(json.dumps(response).encode('utf-8'), False)
 
