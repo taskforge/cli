@@ -58,6 +58,7 @@ def print_lists():
         print(f'  {name}')
 
 
+# pylint: disable=too-many-branches
 def main():
     """CLI entrypoint, handles subcommand parsing"""
     args = docopt(__doc__, version='task version 0.3.0', options_first=True)
@@ -67,10 +68,9 @@ def main():
 
     command = args['<command>']
     if command == 'help' or args['--help']:
+        topic = None
         if args['<args>']:
             topic = args['<args>'][0]
-        else:
-            topic = None
 
         if topic == 'lists':
             print_lists()
@@ -84,6 +84,7 @@ def main():
                 sys.exit(1)
         else:
             print(__doc__)
+
         sys.exit(0)
 
     if args['--verbose']:

@@ -1,7 +1,8 @@
 """Provides a List implementation for talking to a Taskforge server."""
 
-from task_forge.lists import InvalidConfigError, NotFoundError
+from task_forge.lists import InvalidConfigError
 from task_forge.lists import List as IList
+from task_forge.lists import NotFoundError
 from task_forge.server.client import Client
 from task_forge.server.server import STATUS_FAILURE
 from task_forge.task import Task
@@ -32,9 +33,11 @@ class List(IList):
         self.client.send_message(msg)
 
         response = self.client.recv_message()
-        if response['status'] == STATUS_FAILURE and 'no task' in response['message']:
+        if response['status'] == STATUS_FAILURE and 'no task' in response[
+                'message']:
             raise NotFoundError(response['message'])
-        elif response['status'] == STATUS_FAILURE:
+
+        if response['status'] == STATUS_FAILURE:
             raise Exception(response['message'])
 
         payload = response.get('payload')

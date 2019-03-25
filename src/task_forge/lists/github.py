@@ -8,7 +8,7 @@ from github import Github, GithubObject
 
 from task_forge.lists import List as IList
 from task_forge.lists.sqlite import List as SQLiteList
-from task_forge.task import Task, Note
+from task_forge.task import Note, Task
 
 PRIORITY_LABEL = re.compile('^P[0-9]{1,}$')
 
@@ -46,18 +46,19 @@ INSERT INTO github_note_id_mapping
 VALUES (?, ?)
 """
 
-    def __init__(self,
-                 base_url='https://api.github.com',
-                 sqlite_cache_file=os.path.join(
-                     user_data_dir(), 'taskforge', 'github_cache.sqlite'),
-                 sqlite_create_tables=False,
-                 create_repo=None,
-                 query_repo=None,
-                 self_assign_on_create=False,
-                 use_metadata_labels=False,
-                 username=None,
-                 password=None,
-                 access_token=None):
+    def __init__(  # pylint: disable=too-many-arguments
+            self,
+            base_url='https://api.github.com',
+            sqlite_cache_file=os.path.join(user_data_dir(), 'taskforge',
+                                           'github_cache.sqlite'),
+            sqlite_create_tables=False,
+            create_repo=None,
+            query_repo=None,
+            self_assign_on_create=False,
+            use_metadata_labels=False,
+            username=None,
+            password=None,
+            access_token=None):
         self._cache_invalid = False
         self.create_repo = create_repo
         self.query_repo = query_repo
@@ -68,7 +69,8 @@ VALUES (?, ?)
             if access_token is not None else username,
             password=password,
             base_url=base_url)
-        self.sqlite_cache = SQLiteList(file_name=sqlite_cache_file, create_tables=sqlite_create_tables)
+        self.sqlite_cache = SQLiteList(
+            file_name=sqlite_cache_file, create_tables=sqlite_create_tables)
         if sqlite_create_tables:
             self.sqlite_cache.conn.execute(self.__create_task_id_mapping_table)
             self.sqlite_cache.conn.execute(self.__create_note_id_mapping_table)
@@ -89,8 +91,7 @@ VALUES (?, ?)
                 Note(
                     comment.body,
                     id=self._get_note_id(comment.id),
-                )
-                for comment in issue.get_comments()
+                ) for comment in issue.get_comments()
             ],
             created_date=issue.created_at,
             completed_date=issue.closed_at,
@@ -115,26 +116,26 @@ VALUES (?, ?)
 
     def _get_note_id(self, note_id):
         taskforge_id = self.sqlite_cache.conn.execute(
-            "SELECT id FROM github_note_id_mapping WHERE github_id = ?", (note_id, )).fetchone()
+            "SELECT id FROM github_note_id_mapping WHERE github_id = ?",
+            (note_id, )).fetchone()
         if taskforge_id is None:
             return None
         return taskforge_id[0]
 
-
     def _get_task_id(self, task_id):
         github_id = self.sqlite_cache.conn.execute(
-            "SELECT github_id FROM github_task_id_mapping WHERE id = ?", (task_id, )).fetchone()
+            "SELECT github_id FROM github_task_id_mapping WHERE id = ?",
+            (task_id, )).fetchone()
         if github_id is None:
             return task_id
         return github_id[0]
 
     def _cache(self):
-       """Cache issues from github into SQLite."""
-       # TODO: cache intelligently instead of always refreshing
-       if not self._cache_invalid and self.sqlite_cache.list():
-           return
-       self.sqlite_cache.add_multiple(self._get_issues())
-       self._cache_invalid = False
+        """Cache issues from github into SQLite."""
+        if not self._cache_invalid and self.sqlite_cache.list():
+            return
+        self.sqlite_cache.add_multiple(self._get_issues())
+        self._cache_invalid = False
 
     def search(self, ast):
         """Evaluate the AST and return a List of matching results."""
@@ -145,7 +146,8 @@ VALUES (?, ?)
         """Add a task to the List."""
         kwargs = {'title': task.title}
         if self.self_assign_on_create:
-            kwargs['assignee'] = self.client.get_user(self.client.get_user().login)
+            kwargs['assignee'] = self.client.get_user(
+                self.client.get_user().login)
 
         if task.body:
             kwargs['body'] = task.body
@@ -173,7 +175,6 @@ VALUES (?, ?)
 
         Ideally should be more efficient resource utilization.
         """
-        # TODO: can we bulk this to github?
         for task in tasks:
             self.add(task)
 
@@ -184,8 +185,7 @@ VALUES (?, ?)
     def find_by_id(self, task_id):
         """Find a task by id."""
         return self._github_issue_to_task(
-            self._get_issue_by_task_id(
-                self._get_task_id(task_id)))
+            self._get_issue_by_task_id(self._get_task_id(task_id)))
 
     def current(self):
         """Return the current task.
@@ -215,8 +215,7 @@ VALUES (?, ?)
         issue = self._get_issue_by_task_id(task_id)
         if self.use_metadata_labels:
             new_labels = [
-                label
-                for label in issue.labels
+                label for label in issue.labels
                 if not PRIORITY_LABEL.match(label.name)
             ]
             new_labels.append(f'P{task.priority}')
@@ -234,5 +233,6 @@ VALUES (?, ?)
         task_id = self._get_task_id(task_id)
         issue = self._get_issue_by_task_id(task_id)
         comment = issue.create_comment(note.body)
-        self.sqlite_cache.conn.execute(self.__create_note_id_mapping, (note.id, comment.id))
+        self.sqlite_cache.conn.execute(self.__create_note_id_mapping,
+                                       (note.id, comment.id))
         self._invalidate_cache()
