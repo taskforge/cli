@@ -71,10 +71,12 @@ def main():
         if command == 'help' or args['--help']:
             if args['<args>']:
                 topic = args['<args>'][0]
+            else:
+                topic = None
 
             if topic == 'lists':
                 print_lists()
-            elif args['<args>']:
+            elif topic is not None:
                 command_mod = import_module(f'task_forge.cli.{topic}_cmd')
                 print(command_mod.__doc__)
             else:
