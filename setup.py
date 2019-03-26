@@ -1,5 +1,6 @@
 """A task management tool that integrates with 3rd party services."""
 
+from os import getenv
 from setuptools import find_packages, setup
 
 with open('README.md') as f:
@@ -10,7 +11,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='taskforge-cli',
-    version='0.2.4',
+    version=getenv('VERSION', '0.0.0'),
     url='https://github.com/chasinglogic/taskforge',
     license='AGPL-3.0',
     author='Mathew Robinson',

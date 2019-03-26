@@ -4,6 +4,9 @@
 
 # You can set these variables from the command line
 
+VERSION = 0.0.0
+PROJECT = taskforge
+
 SPHINXOPTS			= 
 SPHINXBUILD			= sphinx-build
 DOC_SOURCEDIR		= docs
@@ -29,7 +32,7 @@ VALE				= $(DOCKER) run		\
 ############
 
 .PHONY: clean pydocstyle pylint lint lint-docs-validate-links \
-	lint-docs-vale help livehtml docs
+	lint-docs-vale help livehtml docs dist
 
 install-dev: $(DEV_INSTALL_LINK)
 $(DEV_INSTALL_LINK):
@@ -47,10 +50,17 @@ clean:
 	rm -rf {} **/*.egg-info
 	rm -f **/*.pyc
 
-publish: docs wheel
-	python setup.py sdist bdist_wheel
+#############
+# PACKAGING #
+#############
+
+dist:
+	VERSION=$(VERSION) python setup.py sdist bdist_wheel
+
+publish-pypi: docs wheel dist
 	twine upload dist/*
 
+deb-make: dist
 
 ########
 # DOCS #
