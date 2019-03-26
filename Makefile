@@ -42,6 +42,7 @@ install:
 	$(PYTHON) setup.py install
 
 clean:
+	rm $(DEV_INSTALL_LINK)
 	rm -rf build dist
 	rm -rf {} **/*.egg-info
 	rm -f **/*.pyc
