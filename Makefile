@@ -9,9 +9,11 @@ PROJECT = taskforge
 
 SPHINXOPTS			= 
 SPHINXBUILD			= sphinx-build
+BUILDDIR            = build
+
 DOC_SOURCEDIR		= docs
-DOC_BUILDDIR		= build/docs
-WEBSITEDIR          = public
+DOC_BUILDDIR		= $(BUILDDIR)/docs
+WEBSITEDIR          = $(BUILDDIR)/website/public
 PYTHON				= python3
 PIP					= $(PYTHON) -m pip
 PYTEST				= PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest
@@ -45,10 +47,12 @@ install:
 	$(PYTHON) setup.py install
 
 clean:
-	rm $(DEV_INSTALL_LINK)
-	rm -rf build dist
+	rm -rf $(BUILDDIR) dist $(WEBSITEDIR)
 	rm -rf {} **/*.egg-info
 	rm -f **/*.pyc
+	rm -f ../$(PROJECT)_$(VERSION).tar.gz
+	rm -rf .pytest_cache
+	rm -f $(DEV_INSTALL_LINK)
 
 #############
 # PACKAGING #
@@ -60,7 +64,9 @@ dist:
 publish-pypi: docs wheel dist
 	twine upload dist/*
 
-deb-make: dist
+deb-make: clean dist
+	cp dist/$(PROJECT)-cli-$(VERSION).tar.gz ../$(PROJECT)_$(VERSION).orig.tar.gz
+	debuild
 
 ########
 # DOCS #
