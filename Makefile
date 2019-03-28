@@ -22,6 +22,31 @@ VALE				= $(DOCKER) run		\
 	jdkato/vale
 
 
+SPHINXOPTS			= 
+SPHINXBUILD			= sphinx-build
+BUILDDIR            = build
+DIST_TARBALL        = dist/$(PROJECT)-cli-$(VERSION).tar.gz     
+
+DEB_ORIG_TARBALL    = ../$(PROJECT)_$(VERSION).orig.tar.gz
+DEB_MAN_PAGES_DIR   = debian/taskforge/usr/share/man/man1
+
+DOC_SOURCEDIR		= docs
+DOC_BUILDDIR		= $(BUILDDIR)/docs
+
+MAN_PAGES = $(DOC_BUILDDIR)/man/task.1 \
+			$(DOC_BUILDDIR)/man/task-add.1 \
+			$(DOC_BUILDDIR)/man/task-complete.1 \
+			$(DOC_BUILDDIR)/man/task-edit.1 \
+			$(DOC_BUILDDIR)/man/taskforged.1 \
+			$(DOC_BUILDDIR)/man/task-next.1 \
+			$(DOC_BUILDDIR)/man/task-query.1 \
+			$(DOC_BUILDDIR)/man/task-todo.1 \
+			$(DOC_BUILDDIR)/man/task-workon.1
+MAN_PAGES_GZ = $(addsuffix .gz,$(MAN_PAGES))
+
+WEBSITEDIR          = $(BUILDDIR)/website/public
+
+
 ############
 # BUILDING #
 ############
@@ -120,6 +145,10 @@ docs-live-%:
 $(DOC_BUILDDIR):
 	mkdir -p $(DOC_BUILDDIR)
 
+$(MAN_PAGES): docs-man
+$(MAN_PAGES_GZ): $(MAN_PAGES)
+%.1.gz:
+	gzip --force --keep $*.1
 docs-%: $(DOC_BUILDIR)
 	$(SPHINXBUILD) -M $* "$(DOC_SOURCEDIR)" "$(DOC_BUILDDIR)" $(SPHINXOPTS) $(O)
 
