@@ -34,5 +34,5 @@ our CI system. As it stands you can view your documentation changes with
 `make livehtml` which will run a local html server that live reloads changes to
 the docs.
 
-All docs are kept in `src/docs` and written in restructured text. They are build
-using Sphinx.
+All docs are kept in `docs` and written in restructured text. They are
+built using Sphinx.
