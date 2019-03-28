@@ -10,9 +10,9 @@ from task_forge.lists import InvalidConfigError
 from task_forge.lists.load import get_list
 
 CONFIG_FILES = [
-    'taskforge.toml',
-    os.path.join(appdirs.user_config_dir(), 'taskforge', 'config.toml'),
     '/etc/taskforge/config.toml'
+    os.path.join(appdirs.user_config_dir(), 'taskforge', 'config.toml'),
+    'taskforge.toml',
 ]
 
 
