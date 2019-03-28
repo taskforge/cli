@@ -15,3 +15,9 @@ public/*
 
 debian/substvars
 debian/files
+debian/.debhelper/*
+debian/debhelper-build-stamp
+debian/taskforge.postinst.debhelper
+debian/taskforge.prerm.debhelper
+debian/taskforge/*
+.pybuild/*
