@@ -4,18 +4,9 @@
 
 # You can set these variables from the command line
 
-VERSION = $(shell git tag --list | tail -n1)
+VERSION = $(shell git tag --list | tail -n1 | sed s/v//)
 PROJECT = taskforge
 
-SPHINXOPTS			= 
-SPHINXBUILD			= sphinx-build
-BUILDDIR            = build
-DIST_TARBALL        = dist/$(PROJECT)-cli-$(VERSION).tar.gz     
-DEB_ORIG_TARBALL    = ../$(PROJECT)_$(VERSION).orig.tar.gz
-
-DOC_SOURCEDIR		= docs
-DOC_BUILDDIR		= $(BUILDDIR)/docs
-WEBSITEDIR          = $(BUILDDIR)/website/public
 PYTHON				= python3
 PIP					= $(PYTHON) -m pip
 PYTEST				= PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest
