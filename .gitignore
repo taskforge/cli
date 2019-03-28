@@ -11,5 +11,7 @@ build/*
 .mypy_cache/*
 .pytest_cache/*
 
-
 public/*
+
+debian/substvars
+debian/files
