@@ -11,8 +11,8 @@ Vcs-Git: https://github.com/chasinglogic/taskforge.git
 
 Package: taskforge
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, ${taskforge:Depends} 
-Suggests: ${taskforge:Suggests}
+Depends: python3:any, ${misc:Depends}, python3-appdirs, python3-autobahn, python3-docopt, python3-toml
+Suggests: python3-github, python3-pymongo
 Description:task management CLI that integrates with existing tools
  .
  taskforge is similar to taskwarrior but with a focus on
