@@ -15,7 +15,7 @@ services.
    how_tos/configuring_taskforge
    lists/index
 
-   cli/index
+   man/index
    advanced_usage/index
 
    contributing/index

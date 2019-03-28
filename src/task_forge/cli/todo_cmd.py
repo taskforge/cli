@@ -10,6 +10,7 @@ Options:
                                     more information on how each format is
                                     displayed. [default: table]
 
+For more information on available output formats see 'man task-query'
 """
 
 from ..lists import NotFoundError

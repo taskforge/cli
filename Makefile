@@ -75,8 +75,10 @@ publish-website: website
 docs-live-%:
 	sphinx-autobuild --watch ./src -b $* $(SPHINXOPTS) "$(DOC_SOURCEDIR)" $(DOC_BUILDDIR)/html
 
-docs-%:
+$(DOC_BUILDDIR):
 	mkdir -p $(DOC_BUILDDIR)
+
+docs-%: $(DOC_BUILDIR)
 	$(SPHINXBUILD) -M $* "$(DOC_SOURCEDIR)" "$(DOC_BUILDDIR)" $(SPHINXOPTS) $(O)
 
 ###########

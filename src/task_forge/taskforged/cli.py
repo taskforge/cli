@@ -26,7 +26,7 @@ Options:
                                      shared secret clients must
                                      provide when connecting.
 
-   --config-file=<config_file_path>  Path to a config file to use. [default: ~/]
+   --config-file=<config_file_path>  Path to a config file to use.
 """
 
 import logging

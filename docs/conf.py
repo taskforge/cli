@@ -25,19 +25,15 @@ sys.path.append(
 # -- Project information -----------------------------------------------------
 
 project = 'Taskforge'
-copyright = '2018, Mathew Robinson'
+copyright = '2019, Mathew Robinson'
 author = 'Mathew Robinson'
 
 # The short X.Y version
-version = '0.1.0'
+version = '0.3.0'
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '0.3.0'
 
 # -- General configuration ---------------------------------------------------
-
-# If your documentation needs a minimal Sphinx version, state it here.
-#
-# needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -74,7 +70,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['index.html']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -145,8 +141,17 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, 'task_forge', 'Taskforge Documentation', [author],
-              1)]
+man_pages = [
+    ('man/task', 'task', 'Task management CLI that integrates with existing tools', [author], 1),
+    ('man/task-add', 'task add', 'Add tasks to taskforge', [author], 1),
+    ('man/task-next', 'task next', 'Find the next task', [author], 1),
+    ('man/task-todo', 'task todo', 'List incomplete tasks', [author], 1),
+    ('man/task-edit', 'task edit', 'Edit a task as TOML', [author], 1),
+    ('man/task-complete', 'task complete', 'Complete tasks', [author], 1),
+    ('man/task-query', 'task query', 'Search for tasks', [author], 1),
+    ('man/task-workon', 'task workon', 'Move a task to the top of the list', [author], 1),
+    ('man/taskforged', 'taskforged', 'Task management server', [author], 1),
+]
 
 # -- Options for Texinfo output ----------------------------------------------
 
