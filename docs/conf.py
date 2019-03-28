@@ -143,13 +143,13 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('man/task', 'task', 'Task management CLI that integrates with existing tools', [author], 1),
-    ('man/task-add', 'task add', 'Add tasks to taskforge', [author], 1),
-    ('man/task-next', 'task next', 'Find the next task', [author], 1),
-    ('man/task-todo', 'task todo', 'List incomplete tasks', [author], 1),
-    ('man/task-edit', 'task edit', 'Edit a task as TOML', [author], 1),
-    ('man/task-complete', 'task complete', 'Complete tasks', [author], 1),
-    ('man/task-query', 'task query', 'Search for tasks', [author], 1),
-    ('man/task-workon', 'task workon', 'Move a task to the top of the list', [author], 1),
+    ('man/task-add', 'task-add', 'Add tasks to taskforge', [author], 1),
+    ('man/task-next', 'task-next', 'Find the next task', [author], 1),
+    ('man/task-todo', 'task-todo', 'List incomplete tasks', [author], 1),
+    ('man/task-edit', 'task-edit', 'Edit a task as TOML', [author], 1),
+    ('man/task-complete', 'task-complete', 'Complete tasks', [author], 1),
+    ('man/task-query', 'task-query', 'Search for tasks', [author], 1),
+    ('man/task-workon', 'task-workon', 'Move a task to the top of the list', [author], 1),
     ('man/taskforged', 'taskforged', 'Task management server', [author], 1),
 ]
 
