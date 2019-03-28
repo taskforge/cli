@@ -1,4 +1,4 @@
-taskforge (0.3.0-1) unstable; urgency=medium
+taskforge (0.3.0-1) stable; urgency=medium
 
   * Initial release (Closes: #11)
 

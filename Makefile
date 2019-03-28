@@ -4,12 +4,14 @@
 
 # You can set these variables from the command line
 
-VERSION = 0.0.0
+VERSION = $(shell git tag --list | tail -n1)
 PROJECT = taskforge
 
 SPHINXOPTS			= 
 SPHINXBUILD			= sphinx-build
 BUILDDIR            = build
+DIST_TARBALL        = dist/$(PROJECT)-cli-$(VERSION).tar.gz     
+DEB_ORIG_TARBALL    = ../$(PROJECT)_$(VERSION).orig.tar.gz
 
 DOC_SOURCEDIR		= docs
 DOC_BUILDDIR		= $(BUILDDIR)/docs
@@ -47,6 +49,7 @@ install:
 	$(PYTHON) setup.py install
 
 clean:
+# Clean up python dist and test directories
 	rm -rf $(BUILDDIR) dist $(WEBSITEDIR)
 	rm -rf {} **/*.egg-info
 	rm -f **/*.pyc
@@ -54,19 +57,50 @@ clean:
 	rm -rf .pytest_cache
 	rm -f $(DEV_INSTALL_LINK)
 
+# Cleanup debian packaging output
+	rm -rf debian/.debhelper debian/debhelper-build-stamp .pybuild debian/taskforge
+	rm -f $(DEBIAN_ORIG_TARBALL) \
+		../taskforge_$(VERSION).dsc \
+		../taskforge_$(VERSION)_source* \
+		../taskforge_$(VERSION).tar.xz \
+		../taskforge_$(VERSION).debian.tar.xz \
+		../taskforge_$(VERSION).orig.tar.gz
+
 #############
 # PACKAGING #
 #############
 
-dist:
+$(DIST_TARBALL):
 	VERSION=$(VERSION) python setup.py sdist bdist_wheel
+pkg-pypi: $(DIST_TARBALL)
 
-publish-pypi: docs wheel dist
+pkg-pypi-upload: docs pkg-pypi 
 	twine upload dist/*
 
-deb-make: clean dist
-	cp dist/$(PROJECT)-cli-$(VERSION).tar.gz ../$(PROJECT)_$(VERSION).orig.tar.gz
-	debuild
+$(DEB_ORIG_TARBALL): $(DIST_TARBALL)
+	cp $(DIST_TARBALL) $(DEB_ORIG_TARBALL)
+pkg-deb: $(DEB_ORIG_TARBALL)
+	debuild \
+		-I \
+		-I"tests/*" \
+		-I"docs/*" \
+		-I"build/*" \
+		-I"dist/*" \
+		-I".pytest_cache/*" \
+		-I"requirements.dev.txt" \
+		-I"requirements.txt" \
+		-I"Makefile" \
+		-I"pytest.ini" \
+		-I".gitignore" \
+		-I"Dockerfile.website" \
+		-I".pylintrc" \
+		-I".travis.yml" \
+		-I".vale/*" \
+		-I".vale.ini" \
+		-I"debian/*" \
+		-I".benchmarks/*" \
+		-I".github/*" \
+		-i'(\.benchmarks|debian|.*taskforge_cli\.egg-info|\.git|\.github|tests|\.vale|dist|docs)/.*|\.gitignore|Dockerfile.*|\.pylintrc|\.travis\.yml|\.vale\.ini|requirements.*\.txt|setup\.cfg|Makefile|pytest\.ini'
 
 ########
 # DOCS #
