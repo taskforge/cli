@@ -80,7 +80,8 @@ clean:
 		../taskforge_$(VERSION)_source* \
 		../taskforge_$(VERSION).tar.xz \
 		../taskforge_$(VERSION).debian.tar.xz \
-		../taskforge_$(VERSION).orig.tar.gz
+		../taskforge_$(VERSION).orig.tar.gz \
+		../taskforge_$(VERSION)*.deb
 
 #############
 # PACKAGING #
@@ -95,7 +96,10 @@ pkg-pypi-upload: docs pkg-pypi
 
 $(DEB_ORIG_TARBALL): $(DIST_TARBALL)
 	cp $(DIST_TARBALL) $(DEB_ORIG_TARBALL)
-pkg-deb: $(DEB_ORIG_TARBALL)
+$(DEB_MAN_PAGES): $(MAN_PAGES_GZ)
+pkg-deb: $(MAN_PAGES_GZ) $(DEB_ORIG_TARBALL)
+	mkdir -p $(DEB_MAN_PAGES_DIR)
+	cp $(MAN_PAGES_GZ) $(DEB_MAN_PAGES_DIR)
 	debuild \
 		-I \
 		-I"tests/*" \
@@ -116,13 +120,13 @@ pkg-deb: $(DEB_ORIG_TARBALL)
 		-I"debian/*" \
 		-I".benchmarks/*" \
 		-I".github/*" \
-		-i'(\.benchmarks|debian|.*taskforge_cli\.egg-info|\.git|\.github|tests|\.vale|dist|docs)/.*|\.gitignore|Dockerfile.*|\.pylintrc|\.travis\.yml|\.vale\.ini|requirements.*\.txt|setup\.cfg|Makefile|pytest\.ini'
+		-i'(\.pytest_cache|\.benchmarks|debian|.*taskforge_cli\.egg-info|\.git|\.github|tests|\.vale|dist|docs)/.*|\.gitignore|Dockerfile.*|\.pylintrc|\.travis\.yml|\.vale\.ini|requirements.*\.txt|setup\.cfg|Makefile|pytest\.ini'	
 
 ########
 # DOCS #
 ########
 
-docs: docs-html
+docs: docs-html docs-man
 
 # Build the website directory
 website: install-dev clean docs-html
