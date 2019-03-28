@@ -1,7 +1,0 @@
-tar-ignore = ".git/*"
-tar-ignore = "tests/*"
-tar-ignore = "docs/*"
-tar-ignore = "build/*"
-tar-ignore = "dist/*"
-tar-ignore = ".pytest_cache/*"
-diff-ignore = "(\.git|dist|build|docs|tests)/.*"
