@@ -14,12 +14,12 @@ class AST:
 
     def to_dict(self):
         """Return a JSON serializable Dictionary representation of this AST."""
-        return {'expression': self.expression.to_dict()}
+        return {"expression": self.expression.to_dict()}
 
     @classmethod
     def from_dict(cls, dictionary):
         """Deserialize an AST from a Dictionary representation."""
-        return cls(expression=Expression.from_dict(dictionary['expression']))
+        return cls(expression=Expression.from_dict(dictionary["expression"]))
 
     def __eq__(self, other):
         """Return True if other has the same expression."""
@@ -74,7 +74,7 @@ class Expression:
         elif token.token_type == Type.NUMBER:
             self.value = float(token.literal)
         elif token.token_type == Type.BOOLEAN:
-            self.value = token.literal.lower() == 'true'
+            self.value = token.literal.lower() == "true"
         elif token.token_type == Type.DATE:
             self.value = Expression.parse_date(token.literal)
         else:
@@ -86,45 +86,49 @@ class Expression:
         """Return a JSON serializable Dictionary representation of this AST."""
         if self.is_infix():
             return {
-                'left': self.left.to_dict(),
-                'right': self.right.to_dict(),
-                'operator': self.operator.to_dict()
+                "left": self.left.to_dict(),
+                "right": self.right.to_dict(),
+                "operator": self.operator.to_dict(),
             }
-        return {'token': self.token.to_dict(), 'value': self.value}
+        return {"token": self.token.to_dict(), "value": self.value}
 
     @classmethod
     def from_dict(cls, dictionary):
         """Deserialize from a dictionary."""
-        if 'operator' in dictionary:
+        if "operator" in dictionary:
             return Expression(
-                Token.from_dict(dictionary['operator']),
-                left=cls.from_dict(dictionary['left']),
-                right=cls.from_dict(dictionary['right']),
+                Token.from_dict(dictionary["operator"]),
+                left=cls.from_dict(dictionary["left"]),
+                right=cls.from_dict(dictionary["right"]),
             )
 
         return Expression(
-            Token.from_dict(dictionary['token']), value=dictionary['value'])
+            Token.from_dict(dictionary["token"]), value=dictionary["value"]
+        )
 
     def __repr__(self):
         """Return a string representation of this expression."""
         if self.is_infix() and self.token.token_type in [Type.AND, Type.OR]:
-            return f'({self.left} {self.operator.literal} {self.right})'
+            return f"({self.left} {self.operator.literal} {self.right})"
 
         if self.is_infix():
             left_repr = self.left.value if self.left is not None else self.left
-            return f'({left_repr} {self.operator.literal} {self.right})'
+            return f"({left_repr} {self.operator.literal} {self.right})"
 
         if isinstance(self.value, str):
             return f"'{self.value}'"
 
-        return f'{self.value}'
+        return f"{self.value}"
 
     def __eq__(self, other):
         """Return True if other is the same kind of expression with the same values."""
         if self.is_infix():
-            return (other.is_infix() and self.left == other.left
-                    and self.operator == other.operator
-                    and self.right == other.right)
+            return (
+                other.is_infix()
+                and self.left == other.left
+                and self.operator == other.operator
+                and self.right == other.right
+            )
 
         return self.value == other.value and self.token == other.token
 
@@ -137,7 +141,7 @@ class Expression:
             except ValueError:
                 continue
 
-        raise ValueError('date string did not match any known formats')
+        raise ValueError("date string did not match any known formats")
 
     def is_infix(self):
         """Indicate whether this expression is an infix expression."""

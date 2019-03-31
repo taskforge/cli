@@ -38,7 +38,7 @@ class ParseError(Exception):
 class Parser:
     """Parser for the task_forge query language."""
 
-    def __init__(self, query='', lexer=None):
+    def __init__(self, query="", lexer=None):
         """
         Create a lexer and parser for query.
 
@@ -89,10 +89,9 @@ class Parser:
         try:
             self.peek_token = next(self.lexer)
         except StopIteration:
-            self.peek_token = Token('EOF', token_type=Type.EOF)
+            self.peek_token = Token("EOF", token_type=Type.EOF)
 
-        if (self.current_token is not None
-                and self.current_token.token_type == Type.EOF):
+        if self.current_token is not None and self.current_token.token_type == Type.EOF:
             raise StopIteration
 
         return self.current_token
@@ -114,12 +113,12 @@ class Parser:
         """Parse an expression."""
         prefix_fun = self.prefixes.get(self.current_token.token_type)
         if prefix_fun is None:
-            raise ParseError(
-                f'no prefix function for: {self.current_token.token_type}')
+            raise ParseError(f"no prefix function for: {self.current_token.token_type}")
 
         expression = prefix_fun()
-        while (self.peek_token.token_type != Type.EOF and precedence <
-               PRECEDENCES.get(self.peek_token.token_type, Precedence.LOWEST)):
+        while self.peek_token.token_type != Type.EOF and precedence < PRECEDENCES.get(
+            self.peek_token.token_type, Precedence.LOWEST
+        ):
             infix_fun = self.infixes.get(self.peek_token.token_type)
             if infix_fun is None:
                 return expression
@@ -132,24 +131,28 @@ class Parser:
     def _parse_infix_expression(self, left):
         """Parse a an infix expression."""
         expression = Expression(self.current_token, left=left)
-        if ((expression.operator.token_type == Type.AND
-             or expression.operator.token_type == Type.OR)
-                and not (expression.left.is_infix()
-                         or expression.left.token.token_type == Type.STRING)):
+        if (
+            expression.operator.token_type == Type.AND
+            or expression.operator.token_type == Type.OR
+        ) and not (
+            expression.left.is_infix()
+            or expression.left.token.token_type == Type.STRING
+        ):
             raise ParseError(
-                'left side of a logical expression must be an infix'
-                ' expression or string literal got: {expression.left.token.token_type}'
+                "left side of a logical expression must be an infix"
+                " expression or string literal got: {expression.left.token.token_type}"
             )
 
-        if ((expression.operator.token_type != Type.AND
-             and expression.operator.token_type != Type.OR)
-                and expression.left.token.token_type != Type.STRING):
+        if (
+            expression.operator.token_type != Type.AND
+            and expression.operator.token_type != Type.OR
+        ) and expression.left.token.token_type != Type.STRING:
             raise ParseError(
-                'left side of an infix expression must be a string literal got: '
-                f'{expression.left.token.token_type}')
+                "left side of an infix expression must be a string literal got: "
+                f"{expression.left.token.token_type}"
+            )
 
-        precedence = PRECEDENCES.get(self.current_token.token_type,
-                                     Precedence.LOWEST)
+        precedence = PRECEDENCES.get(self.current_token.token_type, Precedence.LOWEST)
         next(self)
         expression.right = self._parse_expression(precedence)
         return expression
@@ -157,10 +160,10 @@ class Parser:
     def _concat(self, left):
         """Concatenate multiple unquoted strings into one value."""
         if not (left.is_literal() and isinstance(left.value, str)):
-            raise ParseError(f'can only concat string literals got: {left}')
+            raise ParseError(f"can only concat string literals got: {left}")
 
-        left.token.literal += ' ' + self.current_token.literal
-        left.value += ' ' + self.current_token.literal
+        left.token.literal += " " + self.current_token.literal
+        left.value += " " + self.current_token.literal
         return left
 
     def _parse_literal(self):
@@ -174,7 +177,7 @@ class Parser:
 
         expression = self._parse_expression(Precedence.LOWEST)
         if self.peek_token.token_type != Type.RPAREN:
-            raise ParseError(f'unclosed grouped expression @ {self.lexer.pos}')
+            raise ParseError(f"unclosed grouped expression @ {self.lexer.pos}")
 
         # Skip the )
         next(self)

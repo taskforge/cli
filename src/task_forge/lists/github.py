@@ -10,7 +10,8 @@ from task_forge.lists import List as IList
 from task_forge.lists.sqlite import List as SQLiteList
 from task_forge.task import Note, Task
 
-PRIORITY_LABEL = re.compile('^P[0-9]{1,}$')
+PRIORITY_LABEL = re.compile("^P[0-9]{1,}$")
+DEFAULT_CACHE_FILE = os.path.join(user_data_dir(), "taskforge", "github_cache.sqlite")
 
 
 class List(IList):
@@ -46,31 +47,32 @@ INSERT INTO github_note_id_mapping
 VALUES (?, ?)
 """
 
-    def __init__(  # pylint: disable=too-many-arguments
-            self,
-            base_url='https://api.github.com',
-            sqlite_cache_file=os.path.join(user_data_dir(), 'taskforge',
-                                           'github_cache.sqlite'),
-            sqlite_create_tables=False,
-            create_repo=None,
-            query_repo=None,
-            self_assign_on_create=False,
-            use_metadata_labels=False,
-            username=None,
-            password=None,
-            access_token=None):
+    def __init__(
+        self,
+        base_url="https://api.github.com",
+        sqlite_cache_file=DEFAULT_CACHE_FILE,
+        sqlite_create_tables=False,
+        create_repo=None,
+        query_repo=None,
+        self_assign_on_create=False,
+        use_metadata_labels=False,
+        username=None,
+        password=None,
+        access_token=None,
+    ):
         self._cache_invalid = False
         self.create_repo = create_repo
         self.query_repo = query_repo
         self.self_assign_on_create = self_assign_on_create
         self.use_metadata_labels = use_metadata_labels
         self.client = Github(
-            login_or_token=access_token
-            if access_token is not None else username,
+            login_or_token=access_token if access_token is not None else username,
             password=password,
-            base_url=base_url)
+            base_url=base_url,
+        )
         self.sqlite_cache = SQLiteList(
-            file_name=sqlite_cache_file, create_tables=sqlite_create_tables)
+            file_name=sqlite_cache_file, create_tables=sqlite_create_tables
+        )
         if sqlite_create_tables:
             self.sqlite_cache.conn.execute(self.__create_task_id_mapping_table)
             self.sqlite_cache.conn.execute(self.__create_note_id_mapping_table)
@@ -84,14 +86,12 @@ VALUES (?, ?)
 
         return Task(
             title=issue.title,
-            id=f'{issue.repository.full_name}/{issue.number}',
+            id=f"{issue.repository.full_name}/{issue.number}",
             context=issue.repository.full_name,
             priority=priority,
             notes=[
-                Note(
-                    comment.body,
-                    id=self._get_note_id(comment.id),
-                ) for comment in issue.get_comments()
+                Note(comment.body, id=self._get_note_id(comment.id))
+                for comment in issue.get_comments()
             ],
             created_date=issue.created_at,
             completed_date=issue.closed_at,
@@ -109,23 +109,23 @@ VALUES (?, ?)
         return [self._github_issue_to_task(issue) for issue in issues]
 
     def _get_issue_by_task_id(self, task_id):
-        split = task_id.split('/')
-        repo = '/'.join(split[:-1])
+        split = task_id.split("/")
+        repo = "/".join(split[:-1])
         number = int(split[-1])
         return self.client.get_repo(repo).get_issue(number)
 
     def _get_note_id(self, note_id):
         taskforge_id = self.sqlite_cache.conn.execute(
-            "SELECT id FROM github_note_id_mapping WHERE github_id = ?",
-            (note_id, )).fetchone()
+            "SELECT id FROM github_note_id_mapping WHERE github_id = ?", (note_id,)
+        ).fetchone()
         if taskforge_id is None:
             return None
         return taskforge_id[0]
 
     def _get_task_id(self, task_id):
         github_id = self.sqlite_cache.conn.execute(
-            "SELECT github_id FROM github_task_id_mapping WHERE id = ?",
-            (task_id, )).fetchone()
+            "SELECT github_id FROM github_task_id_mapping WHERE id = ?", (task_id,)
+        ).fetchone()
         if github_id is None:
             return task_id
         return github_id[0]
@@ -144,29 +144,25 @@ VALUES (?, ?)
 
     def add(self, task):
         """Add a task to the List."""
-        kwargs = {'title': task.title}
+        kwargs = {"title": task.title}
         if self.self_assign_on_create:
-            kwargs['assignee'] = self.client.get_user(
-                self.client.get_user().login)
+            kwargs["assignee"] = self.client.get_user(self.client.get_user().login)
 
         if task.body:
-            kwargs['body'] = task.body
+            kwargs["body"] = task.body
 
         if self.use_metadata_labels:
-            kwargs['labels'] = [f'P{task.priority}']
+            kwargs["labels"] = [f"P{task.priority}"]
 
         issue = self.client.get_repo(self.create_repo).create_issue(**kwargs)
-        new_id = f'{issue.repository.full_name}/{issue.number}'
+        new_id = f"{issue.repository.full_name}/{issue.number}"
         # Create an id mapping, this is only used if a task object is
         # used in a subsequent list call without being a task
         # retrieved from this list.
         #
         # No need to commit changes since the add call to the SQLite
         # list will do that for us.
-        self.sqlite_cache.conn.execute(self.__create_task_id_mapping, (
-            task.id,
-            new_id,
-        ))
+        self.sqlite_cache.conn.execute(self.__create_task_id_mapping, (task.id, new_id))
         task.id = new_id
         self.sqlite_cache.add(task)
 
@@ -185,7 +181,8 @@ VALUES (?, ?)
     def find_by_id(self, task_id):
         """Find a task by id."""
         return self._github_issue_to_task(
-            self._get_issue_by_task_id(self._get_task_id(task_id)))
+            self._get_issue_by_task_id(self._get_task_id(task_id))
+        )
 
     def current(self):
         """Return the current task.
@@ -202,7 +199,7 @@ VALUES (?, ?)
         task_id = self._get_task_id(task_id)
         self.sqlite_cache.complete(task_id)
         issue = self._get_issue_by_task_id(task_id)
-        issue.edit(state='closed')
+        issue.edit(state="closed")
 
     def update(self, task):
         """Update a task in the list.
@@ -215,10 +212,9 @@ VALUES (?, ?)
         issue = self._get_issue_by_task_id(task_id)
         if self.use_metadata_labels:
             new_labels = [
-                label for label in issue.labels
-                if not PRIORITY_LABEL.match(label.name)
+                label for label in issue.labels if not PRIORITY_LABEL.match(label.name)
             ]
-            new_labels.append(f'P{task.priority}')
+            new_labels.append(f"P{task.priority}")
         else:
             new_labels = issue.labels
 
@@ -233,6 +229,7 @@ VALUES (?, ?)
         task_id = self._get_task_id(task_id)
         issue = self._get_issue_by_task_id(task_id)
         comment = issue.create_comment(note.body)
-        self.sqlite_cache.conn.execute(self.__create_note_id_mapping,
-                                       (note.id, comment.id))
+        self.sqlite_cache.conn.execute(
+            self.__create_note_id_mapping, (note.id, comment.id)
+        )
         self._invalidate_cache()

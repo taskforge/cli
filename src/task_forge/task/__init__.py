@@ -3,7 +3,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 class Note:
@@ -20,9 +20,10 @@ class Note:
                :func:`uuid.uuid4`. Should only be provided if deserializing an
                existing :class:`Note`.
     :type id: Optional[str].
-    :param created_date: The created_date for this note. If None this will be generated using
-               :meth:`datetime.datetime.now`. Should only be provided if deserializing an
-               existing :class:`Note`.
+    :param created_date: The created_date for this note. If None this
+                will be generated using :meth:`datetime.datetime.now`.
+                Should only be provided if deserializing an existing
+               :class:`Note`.
     :type created_date: Optional[datetime.datetime].
     """
 
@@ -46,7 +47,7 @@ class Note:
 
     def __repr__(self):
         """Return a simple string of note id and body."""
-        return f'Note({self.id})'
+        return f"Note({self.id})"
 
     @classmethod
     def from_dict(cls, dictionary):
@@ -65,19 +66,15 @@ class Note:
         .. note:: For richer data types use :meth:`Note.to_dict` instead.
         """
         dictionary = self.to_dict()
-        dictionary['created_date'] = self.created_date.strftime(DATE_FORMAT)
+        dictionary["created_date"] = self.created_date.strftime(DATE_FORMAT)
         return dictionary
 
     def to_dict(self):
         """Convert this note object into a dictionary."""
-        return {
-            'id': self.id,
-            'created_date': self.created_date,
-            'body': self.body,
-        }
+        return {"id": self.id, "created_date": self.created_date, "body": self.body}
 
 
-class Task:  # pylint: disable=too-many-instance-attributes
+class Task:
     """
     Represents a task in a Task List.
 
@@ -119,16 +116,16 @@ class Task:  # pylint: disable=too-many-instance-attributes
     :type completed_date: datetime.datetime
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
-            self,
-            title,
-            id=None,
-            context='default',
-            priority=1,
-            notes=None,
-            created_date=None,
-            completed_date=None,
-            body='',
+    def __init__(
+        self,
+        title,
+        id=None,
+        context="default",
+        priority=1,
+        notes=None,
+        created_date=None,
+        completed_date=None,
+        body="",
     ):
         """
         Create a Task with the given fields, defaulting appropriate metadata.
@@ -173,7 +170,7 @@ class Task:  # pylint: disable=too-many-instance-attributes
 
     def __repr__(self):
         """Return a simple string of the task id and title."""
-        return f'Task({self.id})'
+        return f"Task({self.id})"
 
     @classmethod
     def from_dict(cls, dictionary):
@@ -183,12 +180,10 @@ class Task:  # pylint: disable=too-many-instance-attributes
         Handles JSON-deserialized types appropriately. i.e. datetime fields will
         be properly parsed if in string form.
         """
-        if dictionary.get('notes'):
-            dictionary['notes'] = [
-                Note.from_dict(note) for note in dictionary['notes']
-            ]
+        if dictionary.get("notes"):
+            dictionary["notes"] = [Note.from_dict(note) for note in dictionary["notes"]]
         else:
-            dictionary['notes'] = []
+            dictionary["notes"] = []
 
         return cls(**dictionary)
 
@@ -199,24 +194,23 @@ class Task:  # pylint: disable=too-many-instance-attributes
         .. note:: For richer data types use :meth:`Task.to_dict` instead.
         """
         dictionary = self.to_dict()
-        dictionary['notes'] = [n.to_json() for n in self.notes]
-        dictionary['created_date'] = self.created_date.strftime(DATE_FORMAT)
+        dictionary["notes"] = [n.to_json() for n in self.notes]
+        dictionary["created_date"] = self.created_date.strftime(DATE_FORMAT)
         if self.completed_date:
-            dictionary['completed_date'] = self.completed_date.strftime(
-                DATE_FORMAT)
+            dictionary["completed_date"] = self.completed_date.strftime(DATE_FORMAT)
         return dictionary
 
     def to_dict(self):
         """Convert this task object into a dictionary."""
         return {
-            'id': self.id,
-            'title': self.title,
-            'body': self.body,
-            'context': self.context,
-            'priority': self.priority,
-            'created_date': self.created_date,
-            'completed_date': self.completed_date,
-            'notes': [n.to_dict() for n in self.notes],
+            "id": self.id,
+            "title": self.title,
+            "body": self.body,
+            "context": self.context,
+            "priority": self.priority,
+            "created_date": self.created_date,
+            "completed_date": self.completed_date,
+            "notes": [n.to_dict() for n in self.notes],
         }
 
     def complete(self):

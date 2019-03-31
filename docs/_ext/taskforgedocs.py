@@ -5,11 +5,11 @@ import re
 
 from docutils import nodes
 from docutils.statemachine import ViewList
-from sphinx.directives import CodeBlock  # pylint: disable=import-error
+from sphinx.directives import CodeBlock  
 
-logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+logger = logging.getLogger(__name__)  
 # RE for option descriptions without a '--' prefix
-simple_option_desc_re = re.compile(  # pylint: disable=invalid-name
+simple_option_desc_re = re.compile(  
     r'([-_a-zA-Z0-9]+)(\s*.*?)(?=,\s+(?:/|-|--)|$)')
 
 
@@ -28,7 +28,7 @@ def setup(app):
     return {'parallel_read_safe': True}
 
 
-class ConsoleNode(nodes.literal_block):  # pylint: disable=too-many-ancestors
+class ConsoleNode(nodes.literal_block):  
     """
     Custom node to override the visit/depart event handlers at registration
     time. Wrap a literal_block object and defer to it.
@@ -62,7 +62,7 @@ def visit_console_html(self, node):
                              'json') and node['win_console_text']:
         # Put a mark on the document object signaling the fact the directive
         # has been used on it.
-        self.document._console_directive_used_flag = True  # pylint: disable=protected-access
+        self.document._console_directive_used_flag = True  
         uid = node['uid']
         self.body.append('''\
 <div class="console-block" id="console-block-%(id)s">
@@ -100,7 +100,7 @@ def visit_console_html(self, node):
     self.visit_literal_block(node)
 
 
-class ConsoleDirective(CodeBlock):  # pylint: disable=too-few-public-methods
+class ConsoleDirective(CodeBlock):  
     """
     A reStructuredText directive which renders a two-tab code block in which
     the second tab shows a Windows command line equivalent of the usual
@@ -138,7 +138,7 @@ class ConsoleDirective(CodeBlock):  # pylint: disable=too-few-public-methods
                 return ' '.join(out)
             return cmdline
 
-        def cmdline_to_win(line):  # pylint: disable=too-many-return-statements
+        def cmdline_to_win(line):  
             if line.startswith('# '):
                 return 'REM ' + args_to_win(line[2:])
             if line.startswith('$ # '):
@@ -174,7 +174,7 @@ class ConsoleDirective(CodeBlock):  # pylint: disable=too-few-public-methods
             return None
 
         env = self.state.document.settings.env
-        self.arguments = ['console']  # pylint: disable=attribute-defined-outside-init
+        self.arguments = ['console']  
         lit_blk_obj = super().run()[0]
 
         # Only do work when the taskforgehtml HTML Sphinx builder is being used,
@@ -185,11 +185,11 @@ class ConsoleDirective(CodeBlock):  # pylint: disable=too-few-public-methods
         lit_blk_obj['uid'] = '%s' % env.new_serialno('console')
         # Only add the tabbed UI if there is actually a Windows-specific
         # version of the CLI example.
-        win_content = code_block_to_win(self.content)  # pylint: disable=access-member-before-definition
+        win_content = code_block_to_win(self.content)  
         if win_content is None:
             lit_blk_obj['win_console_text'] = None
         else:
-            self.content = win_content  # pylint: disable=attribute-defined-outside-init
+            self.content = win_content  
             lit_blk_obj['win_console_text'] = super().run()[0].rawsource
 
         # Replace the literal_node object returned by Sphinx's CodeBlock with

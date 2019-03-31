@@ -23,36 +23,32 @@ from task_forge.task import Task
 
 def get_editor_program():
     """Return editor based on operating system"""
-    if sys.platform == 'win32':
-        if 'EDITOR' in os.environ:
-            return os.getenv('EDITOR')
+    if sys.platform == "win32":
+        if "EDITOR" in os.environ:
+            return os.getenv("EDITOR")
 
-        return 'notepad.exe'
+        return "notepad.exe"
 
-    return os.getenv('EDITOR', 'vi')
+    return os.getenv("EDITOR", "vi")
 
 
 def editor(filename):
     """Open filename in $EDITOR"""
     program = get_editor_program()
-    args = f'{program} {filename}'
-    call(
-        shlex.split(args),
-        stdin=sys.stdin,
-        stdout=sys.stdout,
-        stderr=sys.stderr)
+    args = f"{program} {filename}"
+    call(shlex.split(args), stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 
 
 @inject_list
 def run(args, task_list=None):
     """Open task by ID in $EDITOR. Update task based on result."""
     try:
-        if args['<ID>']:
-            task = task_list.find_by_id(args['<ID>'])
+        if args["<ID>"]:
+            task = task_list.find_by_id(args["<ID>"])
         else:
             task = task_list.current()
 
-        tmp = NamedTemporaryFile(mode='w+', suffix='.toml', delete=False)
+        tmp = NamedTemporaryFile(mode="w+", suffix=".toml", delete=False)
         toml.dump(task.to_dict(), tmp)
         tmp.close()
 
@@ -64,5 +60,5 @@ def run(args, task_list=None):
         task_list.update(new_task)
         os.remove(tmp.name)
     except NotFoundError:
-        print('no task with that ID exists')
+        print("no task with that ID exists")
         sys.exit(1)

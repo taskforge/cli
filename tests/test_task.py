@@ -1,5 +1,3 @@
-# pylint: disable=missing-docstring
-
 import unittest
 
 from task_forge.task import Task
@@ -7,18 +5,18 @@ from task_forge.task import Task
 
 class TaskTests(unittest.TestCase):
     def test_unique_ids(self):
-        task1 = Task('task 1')
-        task2 = Task('task 2')
-        task3 = Task('task 3')
+        task1 = Task("task 1")
+        task2 = Task("task 2")
+        task3 = Task("task 3")
         self.assertNotEqual(task1, task2)
         self.assertNotEqual(task1, task3)
         self.assertNotEqual(task2, task3)
         self.assertNotEqual(task1.created_date, task3.created_date)
 
     def test_sort_order(self):
-        task1 = Task('task 1')
-        task2 = Task('task 2')
-        task3 = Task('task 3')
+        task1 = Task("task 1")
+        task2 = Task("task 2")
+        task3 = Task("task 3")
 
         listask1 = sorted([task3, task2, task1])
 

@@ -170,18 +170,18 @@ lint-docs-validate-links:
 
 lint-docs: lint-docs-vale lint-docs-validate-links
 
-pylint:
-	$(PYTHON) -m pylint src tests
+flake8:
+	$(PYTHON) -m flake8 src tests
 
 pydocstyle:
 	$(PYTHON) -m pydocstyle src
 
-lint: fmt pylint pydocstyle
+lint: fmt flake8 pydocstyle
 	@echo "Ready to commit!"
 
 fmt:
 	$(PYTHON) -m isort --recursive src tests
-	$(PYTHON) -m yapf --recursive -i src tests
+	$(PYTHON) -m black src tests
 
 ###########
 # TESTING #

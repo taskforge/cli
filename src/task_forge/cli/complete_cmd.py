@@ -22,7 +22,7 @@ def complete_tasks(tasks, task_list=None):
         current = task_list.current()
         tasks = [current.id]
     except NotFoundError:
-        print('no ID given and no current task found')
+        print("no ID given and no current task found")
         sys.exit(0)
 
     for task in tasks:
@@ -31,5 +31,5 @@ def complete_tasks(tasks, task_list=None):
 
 def run(args):
     """Add the next command to parser."""
-    tasks = args['<ID>']
+    tasks = args["<ID>"]
     complete_tasks(tasks)

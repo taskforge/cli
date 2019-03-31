@@ -4,35 +4,36 @@ import re
 from enum import Enum
 
 DATE_REGEX = re.compile(
-    '^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2})? ?(AM|PM|pm|am)?')
-NUMBER_REGEX = re.compile('^[0-9]{1,}')
+    "^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2})? ?(AM|PM|pm|am)?"
+)
+NUMBER_REGEX = re.compile("^[0-9]{1,}")
 
 
 class Type(Enum):
     """Represents the various token types."""
 
-    GT = 'GT'
-    LT = 'LT'
-    GTE = 'GTE'
-    LTE = 'LTE'
-    EQ = 'EQ'
-    NE = 'NE'
-    LIKE = 'LIKE'
-    NLIKE = 'NLIKE'
+    GT = "GT"
+    LT = "LT"
+    GTE = "GTE"
+    LTE = "LTE"
+    EQ = "EQ"
+    NE = "NE"
+    LIKE = "LIKE"
+    NLIKE = "NLIKE"
 
-    AND = 'AND'
-    OR = 'OR'
+    AND = "AND"
+    OR = "OR"
 
-    LPAREN = 'LPAREN'
-    RPAREN = 'RPAREN'
+    LPAREN = "LPAREN"
+    RPAREN = "RPAREN"
 
-    EOF = 'EOF'
-    STRING = 'STRING'
-    NUMBER = 'NUMBER'
-    DATE = 'DATE'
-    BOOLEAN = 'BOOLEAN'
+    EOF = "EOF"
+    STRING = "STRING"
+    NUMBER = "NUMBER"
+    DATE = "DATE"
+    BOOLEAN = "BOOLEAN"
 
-    UNEXPECTED = 'UNEXPECTED'
+    UNEXPECTED = "UNEXPECTED"
 
 
 LITERAL_TYPES = {
@@ -85,18 +86,17 @@ class Token:
 
     def to_dict(self):
         """Return a JSON serializable Dictionary represenation of this AST."""
-        return {'token_type': self.token_type.value, 'literal': self.literal}
+        return {"token_type": self.token_type.value, "literal": self.literal}
 
     @classmethod
     def from_dict(cls, dictionary):
         """Deserialize from a Dictionary."""
-        return Token(literal=dictionary['literal'])
+        return Token(literal=dictionary["literal"])
 
     def __repr__(self):
         """Return a string representation of this token."""
-        return f'Token({self.token_type}, {self.literal})'
+        return f"Token({self.token_type}, {self.literal})"
 
     def __eq__(self, other):
         """Return equal if other's literal and token_type are the same."""
-        return (self.literal == other.literal
-                and self.token_type == other.token_type)
+        return self.literal == other.literal and self.token_type == other.token_type

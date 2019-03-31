@@ -27,93 +27,94 @@ import sys
 from docopt import docopt
 
 ALIASES = {
-    'n': 'next',
-    'new': 'add',
-    'a': 'add',
-    'd': 'complete',
-    'done': 'complete',
-    'q': 'query',
-    's': 'query',
-    'l': 'query',
-    'list': 'query',
-    'e': 'edit',
+    "n": "next",
+    "new": "add",
+    "a": "add",
+    "d": "complete",
+    "done": "complete",
+    "q": "query",
+    "s": "query",
+    "l": "query",
+    "list": "query",
+    "e": "edit",
 }
 
 
 def print_lists():
     """Print installed list implementations"""
     from ..lists.load import get_all_lists
-    print('Available lists are:')
+
+    print("Available lists are:")
     try:
         lists = get_all_lists()
     except ImportError as import_err:
-        print(f'unable to load lists: {import_err}')
+        print(f"unable to load lists: {import_err}")
         sys.exit(1)
 
     if not lists:
-        print('no lists are installed')
+        print("no lists are installed")
         sys.exit(0)
 
     for name, _ in lists:
-        print(f'  {name}')
+        print(f"  {name}")
 
 
-# pylint: disable=too-many-branches
 def main():
     """CLI entrypoint, handles subcommand parsing"""
-    args = docopt(__doc__, version='task version 0.3.0', options_first=True)
-    if not args['<command>']:
+    args = docopt(__doc__, version="task version 0.3.0", options_first=True)
+    if not args["<command>"]:
         print(__doc__)
         sys.exit(1)
 
-    command = args['<command>']
-    if command == 'help' or args['--help']:
+    command = args["<command>"]
+    if command == "help" or args["--help"]:
         topic = None
-        if args['<args>']:
-            topic = args['<args>'][0]
+        if args["<args>"]:
+            topic = args["<args>"][0]
 
-        if topic == 'lists':
+        if topic == "lists":
             print_lists()
         elif topic is not None:
             try:
                 from importlib import import_module
-                command_mod = import_module(f'task_forge.cli.{topic}_cmd')
+
+                command_mod = import_module(f"task_forge.cli.{topic}_cmd")
                 print(command_mod.__doc__)
             except ImportError:
-                print(f'{topic} is not a known task command')
+                print(f"{topic} is not a known task command")
                 sys.exit(1)
         else:
             print(__doc__)
 
         sys.exit(0)
 
-    if args['--verbose']:
+    if args["--verbose"]:
         logging.basicConfig(level=logging.DEBUG)
 
     command = ALIASES.get(command, command)
-    if command == 'add':
+    if command == "add":
         import task_forge.cli.add_cmd as command_mod
-    elif command == 'next':
+    elif command == "next":
         import task_forge.cli.next_cmd as command_mod
-    elif command == 'todo':
+    elif command == "todo":
         import task_forge.cli.todo_cmd as command_mod
-    elif command == 'edit':
+    elif command == "edit":
         import task_forge.cli.edit_cmd as command_mod
-    elif command == 'complete':
+    elif command == "complete":
         import task_forge.cli.complete_cmd as command_mod
-    elif command == 'query':
+    elif command == "query":
         import task_forge.cli.query_cmd as command_mod
-    elif command == 'workon':
+    elif command == "workon":
         import task_forge.cli.workon_cmd as command_mod
     else:
-        print(f'{command} is not a known task command')
+        print(f"{command} is not a known task command")
         print(__doc__)
         sys.exit(1)
 
-    argv = [command] + args['<args>']
+    argv = [command] + args["<args>"]
     command_mod.run(docopt(command_mod.__doc__, argv=argv))
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

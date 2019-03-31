@@ -1,5 +1,3 @@
-# pylint: disable=missing-docstring
-
 import unittest
 from multiprocessing import Process
 from tempfile import NamedTemporaryFile
@@ -14,12 +12,13 @@ from ..list_utils import ListTests
 class TaskforgeServerListTests(unittest.TestCase, ListTests):
     def setUp(self):
         self.tmpfile = NamedTemporaryFile()
-        tmp = NamedTemporaryFile(suffix='.sock')
+        tmp = NamedTemporaryFile(suffix=".sock")
         self.addr = tmp.name
         tmp.close()
         self.server = Server(
             SQLiteList(file_name=self.tmpfile.name, create_tables=True),
-            unix_socket=self.addr)
+            unix_socket=self.addr,
+        )
         self.proc = Process(target=self.server.run)
         self.proc.start()
         self.list = List(unix_socket=self.addr)

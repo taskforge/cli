@@ -25,12 +25,14 @@ def run(args, task_list=None):
     """Print the current task in task_list."""
     ast = AST(
         Expression(
-            Token('='),
-            left=Expression(Token('completed')),
-            right=Expression(Token('false'))))
+            Token("="),
+            left=Expression(Token("completed")),
+            right=Expression(Token("false")),
+        )
+    )
 
     try:
         tasks = task_list.search(ast)
-        print_tasks(tasks, output=args['--output'])
+        print_tasks(tasks, output=args["--output"])
     except NotFoundError:
-        print('No incomplete tasks!')
+        print("No incomplete tasks!")

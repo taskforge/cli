@@ -33,15 +33,18 @@ from .utils import inject_list
 
 def print_table(tasks):
     """Print an ASCII table of the tasks."""
-    rows = [[
-        'ID', 'Created Date', 'Completed Date', 'Priority', 'Title', 'Context'
-    ]]
-    rows += [[
-        task.id,
-        str(task.created_date),
-        str(task.completed_date),
-        str(task.priority), task.title, task.context
-    ] for task in tasks]
+    rows = [["ID", "Created Date", "Completed Date", "Priority", "Title", "Context"]]
+    rows += [
+        [
+            task.id,
+            str(task.created_date),
+            str(task.completed_date),
+            str(task.priority),
+            task.title,
+            task.context,
+        ]
+        for task in tasks
+    ]
 
     # Create a list of the lengths of the longest item in each column.
     # Something like [10, 4, 3, 8]
@@ -60,7 +63,7 @@ def print_table(tasks):
             ]
 
     # Insert the "separator" row
-    rows.insert(1, ['-' * x for x in column_widths])
+    rows.insert(1, ["-" * x for x in column_widths])
     for row in rows:
         # ljust will add a number of spaces to the right of data to make it
         # match the width of that column. So if we have the string "a task"
@@ -88,34 +91,35 @@ def print_csv(tasks):
     """Print a list of tasks as csv to stdout."""
     writer = csv.DictWriter(
         sys.stdout,
-        extrasaction='ignore',
+        extrasaction="ignore",
         fieldnames=[
-            'id',
-            'created_date',
-            'completed_date',
-            'priority',
-            'title',
-            'context',
-            'body',
-        ])
+            "id",
+            "created_date",
+            "completed_date",
+            "priority",
+            "title",
+            "context",
+            "body",
+        ],
+    )
 
     writer.writeheader()
     for task in tasks:
         writer.writerow(task.to_dict())
 
 
-def print_tasks(tasks, output='table'):
+def print_tasks(tasks, output="table"):
     """Print tasks using the print function which corresponds to output."""
-    if output == 'table':
+    if output == "table":
         print_table(tasks)
-    elif output == 'text':
+    elif output == "text":
         print_text(tasks)
-    elif output == 'json':
+    elif output == "json":
         print_json(tasks)
-    elif output == 'csv':
+    elif output == "csv":
         print_csv(tasks)
     else:
-        print(f'{output} is not a valid output format. Defaulting to table.')
+        print(f"{output} is not a valid output format. Defaulting to table.")
         print_table(tasks)
 
 
@@ -131,12 +135,12 @@ def query_tasks(query, task_list=None):
 
 def run(args):
     """Add the query command to parser."""
-    query = ' '.join(args['<query>']) if args['<query>'] else ''
+    query = " ".join(args["<query>"]) if args["<query>"] else ""
     try:
         tasks = query_tasks(query)
-        print_tasks(tasks, output=args['--output'])
+        print_tasks(tasks, output=args["--output"])
     except NotFoundError:
-        print('no tasks matched query')
+        print("no tasks matched query")
     except ParseError as parse_error:
-        print(f'unable to parse query: {parse_error}')
+        print(f"unable to parse query: {parse_error}")
         sys.exit(1)

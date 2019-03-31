@@ -18,8 +18,8 @@ class NotFoundError(Exception):
     def __repr__(self):
         """Return a human friendly error message."""
         if self.task_id:
-            return f'no task with id {self.task_id} exists'
-        return 'no task that matched query found'
+            return f"no task with id {self.task_id} exists"
+        return "no task that matched query found"
 
 
 class List(ABC):

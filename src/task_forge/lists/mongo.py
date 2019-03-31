@@ -11,8 +11,9 @@ from . import List as AList
 try:
     import pymongo
 except ImportError:
-    print('you must install pymongo to use the MongoDB list')
+    print("you must install pymongo to use the MongoDB list")
     import sys
+
     sys.exit(1)
 
 
@@ -20,23 +21,24 @@ class List(AList):
     """A MongoDB backed list implementation."""
 
     def __init__(
-            self,
-            host='localhost',
-            port=27017,
-            db='task_forge',
-            collection='tasks',
-            username=None,
-            password=None,
-            ssl=False,
+        self,
+        host="localhost",
+        port=27017,
+        db="task_forge",
+        collection="tasks",
+        username=None,
+        password=None,
+        ssl=False,
     ):
         """Create a List from the given configuration."""
-        conn_url = 'mongodb://'
+        conn_url = "mongodb://"
         if username and password:
-            conn_url += f'{username}:{password}@'
+            conn_url += f"{username}:{password}@"
         elif username:
             raise InvalidConfigError(
-                'if a username is provided, a password must also be provided')
-        conn_url += f'{host}:{port}'
+                "if a username is provided, a password must also be provided"
+            )
+        conn_url += f"{host}:{port}"
         self.conn_url = conn_url
         self._client = pymongo.MongoClient(self.conn_url, ssl=ssl)
         self._db = self._client[db]
@@ -60,28 +62,26 @@ class List(AList):
     def find_by_id(self, task_id):
         """Find a task by task_id."""
         return Task.from_dict(
-            self._collection.find_one({"id": task_id},
-                                      projection={"_id": False}))
+            self._collection.find_one({"id": task_id}, projection={"_id": False})
+        )
 
     def current(self):
         """Return the current task."""
-        doc = self._collection.find_one({
-            "completed_date": None,
-        },
-                                        projection={"_id": False},
-                                        sort=[
-                                            ("priority", pymongo.DESCENDING),
-                                            ("created_date",
-                                             pymongo.ASCENDING),
-                                        ])
+        doc = self._collection.find_one(
+            {"completed_date": None},
+            projection={"_id": False},
+            sort=[
+                ("priority", pymongo.DESCENDING),
+                ("created_date", pymongo.ASCENDING),
+            ],
+        )
         return Task.from_dict(doc)
 
     def complete(self, task_id):
         """Complete a task by task_id."""
         self._collection.find_one_and_update(
-            {"id": task_id}, {"$set": {
-                "completed_date": datetime.now()
-            }})
+            {"id": task_id}, {"$set": {"completed_date": datetime.now()}}
+        )
 
     def update(self, task):
         """
@@ -98,15 +98,16 @@ class List(AList):
     def add_note(self, task_id, note):
         """Add note to a task by task_id."""
         self._collection.find_one_and_update(
-            {"id": task_id}, {"$push": {
-                "notes": note.to_dict()
-            }})
+            {"id": task_id}, {"$push": {"notes": note.to_dict()}}
+        )
 
     def search(self, ast):
         """Evaluate the AST and return a List of matching results."""
         return [
-            Task.from_dict(doc) for doc in self._collection.find(
-                self.__eval(ast.expression), projection={"_id": False})
+            Task.from_dict(doc)
+            for doc in self._collection.find(
+                self.__eval(ast.expression), projection={"_id": False}
+            )
         ]
 
     @staticmethod
@@ -125,21 +126,9 @@ class List(AList):
         """Evaluate a string literal query."""
         return {
             "$or": [
-                {
-                    "title": {
-                        "$regex": expression.value
-                    }
-                },
-                {
-                    "body": {
-                        "$regex": expression.value
-                    }
-                },
-                {
-                    "notes": {
-                        "$regex": expression.value
-                    }
-                },
+                {"title": {"$regex": expression.value}},
+                {"body": {"$regex": expression.value}},
+                {"notes": {"$regex": expression.value}},
             ]
         }
 
@@ -154,8 +143,10 @@ class List(AList):
                 ]
             }
 
-        if (expression.left.value == 'completed'
-                and expression.right.is_boolean_literal()):
+        if (
+            expression.left.value == "completed"
+            and expression.right.is_boolean_literal()
+        ):
             if expression.right.value:
                 return {"completed_date": {"$ne": None}}
 
@@ -166,7 +157,6 @@ class List(AList):
 
         return {
             expression.left.value: {
-                f"${expression.operator.token_type.name.lower()}":
-                expression.right.value
+                f"${expression.operator.token_type.name.lower()}": expression.right.value
             }
         }

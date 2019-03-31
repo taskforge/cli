@@ -1,5 +1,3 @@
-# pylint: disable=missing-docstring
-
 from multiprocessing import Process
 from unittest.mock import Mock
 
@@ -11,7 +9,7 @@ from task_forge.server.server import Server, get_unix_socket
 
 @pytest.fixture
 def server():
-    addr = get_unix_socket(unix='taskforge_client_test.sock')
+    addr = get_unix_socket(unix="taskforge_client_test.sock")
     srv = Server(Mock(return_value={}), unix_socket=addr)
     proc = Process(target=srv.run)
     proc.start()
@@ -20,12 +18,12 @@ def server():
     proc.terminate()
 
 
-def test_ping(server):  #pylint: disable=redefined-outer-name
+def test_ping(server):
     client = Client(server)
-    client.send_message({'method': 'ping'})
+    client.send_message({"method": "ping"})
     response = client.recv_message()
-    assert response == {'status': 'success', 'payload': {'message': 'pong'}}
+    assert response == {"status": "success", "payload": {"message": "pong"}}
 
-    client.send_message({'method': 'ping'})
+    client.send_message({"method": "ping"})
     response = client.recv_message()
-    assert response == {'status': 'success', 'payload': {'message': 'pong'}}
+    assert response == {"status": "success", "payload": {"message": "pong"}}

@@ -11,7 +11,7 @@ import pkg_resources
 
 
 def __entry_points():
-    return pkg_resources.iter_entry_points('task_forge.lists')
+    return pkg_resources.iter_entry_points("task_forge.lists")
 
 
 def get_all_lists():

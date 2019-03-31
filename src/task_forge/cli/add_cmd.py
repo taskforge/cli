@@ -40,20 +40,20 @@ def import_file(filename, task_list):
 @inject_list
 def run(args, task_list=None):
     """Parse the docopt args and call add_task."""
-    if args['--from-file']:
-        import_file(args['--from-file'], task_list)
+    if args["--from-file"]:
+        import_file(args["--from-file"], task_list)
         return
 
-    if not args['<title>']:
-        print('when not importing tasks title is required')
+    if not args["<title>"]:
+        print("when not importing tasks title is required")
         sys.exit(1)
 
-    title = ' '.join(args['<title>'])
-    priority = float(args['--priority']) if args['--priority'] else 1.0
-    context = args['--context'] if args['--context'] else 'default'
-    body = args['--body'] if args['--body'] else ''
+    title = " ".join(args["<title>"])
+    priority = float(args["--priority"]) if args["--priority"] else 1.0
+    context = args["--context"] if args["--context"] else "default"
+    body = args["--body"] if args["--body"] else ""
 
-    if args['--top']:
+    if args["--top"]:
         priority = top_priority(task_list)
 
     task_list.add(Task(title, body=body, context=context, priority=priority))

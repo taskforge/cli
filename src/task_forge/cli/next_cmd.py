@@ -25,12 +25,12 @@ def run(args, task_list=None):
     try:
         task = task_list.current()
     except NotFoundError:
-        print('No current task!')
+        print("No current task!")
         return
 
-    if args['--title-only']:
+    if args["--title-only"]:
         print(task.title)
-    elif args['--id-only']:
+    elif args["--id-only"]:
         print(task.id)
     else:
-        print(f'{task.id}: {task.title}')
+        print(f"{task.id}: {task.title}")

@@ -1,5 +1,3 @@
-# pylint: disable=missing-docstring
-
 import unittest
 from tempfile import NamedTemporaryFile
 
@@ -19,9 +17,9 @@ class SQLiteListTests(unittest.TestCase, ListTests):
         self.tmpfile.close()
 
 
-@pytest.mark.benchmark(group='SQLite')
+@pytest.mark.benchmark(group="SQLite")
 class TestSQLiteListPerformance(ListBenchmarks):
     @pytest.fixture
-    def task_list(self, tmpdir):  # pylint: disable=arguments-differ
+    def task_list(self, tmpdir):
         tmpfile = tmpdir.join("tasks.sqlite3")
         return List(file_name=str(tmpfile), create_tables=True)

@@ -11,37 +11,37 @@ class Lexer:
         self.data = query
         self.pos = 0
         self.read_pos = 0
-        self.char = ''
+        self.char = ""
         self._read_char()
 
     def __iter__(self):
         """Return self, for use with for loops."""
         return self
 
-    def __next__(self):  # pylint: disable=too-many-branches
+    def __next__(self):
         """Return the next token from input."""
         self._skip_whitespace()
 
-        if self.char == '':
+        if self.char == "":
             raise StopIteration
 
-        if self.char == '^':
-            if self._peek_char() == '=':
+        if self.char == "^":
+            if self._peek_char() == "=":
                 self._read_char()
-                token = Token('!=')
-            elif self._peek_char() == '^':
+                token = Token("!=")
+            elif self._peek_char() == "^":
                 self._read_char()
-                token = Token('!~')
+                token = Token("!~")
             else:
-                token = Token('~')
-        elif self.char == '!':
+                token = Token("~")
+        elif self.char == "!":
             literal = self.char
             self._read_char()
             literal += self.char
             token = Token(literal)
-        elif self.char == '>' or self.char == '<':
+        elif self.char == ">" or self.char == "<":
             literal = self.char
-            if self._peek_char() == '=':
+            if self._peek_char() == "=":
                 self._read_char()
                 literal += self.char
             token = Token(literal)
@@ -52,9 +52,9 @@ class Lexer:
             token = Token(self._quoted_string())
             if self.char != '"' and self.char != "'":
                 token = Token(
-                    'unexpected eof: no closing quote',
-                    token_type=Type.UNEXPECTED)
-        elif self.char == '-':
+                    "unexpected eof: no closing quote", token_type=Type.UNEXPECTED
+                )
+        elif self.char == "-":
             # skip the -
             self._read_char()
             token = Token(self._unquoted_string(), token_type=Type.STRING)
@@ -81,7 +81,7 @@ class Lexer:
     def _read_char(self):
         """Read a character from input advancing the cursor."""
         if self.read_pos >= len(self.data):
-            self.char = ''
+            self.char = ""
         else:
             self.char = self.data[self.read_pos]
 
@@ -91,7 +91,7 @@ class Lexer:
     def _peek_char(self):
         """Return the next character."""
         if self.read_pos > len(self.data):
-            return ''
+            return ""
 
         return self.data[self.read_pos]
 
@@ -105,7 +105,7 @@ class Lexer:
         while valid(self.char):
             self._read_char()
 
-        return self.data[start:self.pos]
+        return self.data[start : self.pos]
 
     def _skip_whitespace(self):
         while self.char.isspace():
@@ -115,7 +115,7 @@ class Lexer:
         return self._read(lambda c: c.isalpha())
 
     def _number(self):
-        return self._read(lambda c: c.isdigit() or c == '.')
+        return self._read(lambda c: c.isdigit() or c == ".")
 
     def _quoted_string(self):
         return self._read(lambda c: c not in ('"', "'"))

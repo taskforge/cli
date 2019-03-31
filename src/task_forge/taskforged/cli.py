@@ -43,16 +43,17 @@ from task_forge.server.server import Server
 # Additionally we need the server config to set up the server anyway.
 def main():
     """Add the server command to the parser."""
-    args = docopt(__doc__, version='taskforged version 0.3.0')
-    if args['--verbose']:
+    args = docopt(__doc__, version="taskforged version 0.3.0")
+    if args["--verbose"]:
         logging.basicConfig(level=logging.DEBUG)
-    cfg = Config.load(path=args.get('config-file', None))
+    cfg = Config.load(path=args.get("config-file", None))
     task_list = cfg.load_list()
     server = Server(
         task_list,
-        unix_socket=args.get('unix', cfg.server.get('unix_socket')),
-        host=args.get('host', cfg.server.get('host')),
-        port=args.get('port', cfg.server.get('port')),
-        secret=args.get('secret', cfg.server.get('secret')),
-        secret_file=args.get('secret_file', cfg.server.get('secret_file')))
+        unix_socket=args.get("unix", cfg.server.get("unix_socket")),
+        host=args.get("host", cfg.server.get("host")),
+        port=args.get("port", cfg.server.get("port")),
+        secret=args.get("secret", cfg.server.get("secret")),
+        secret_file=args.get("secret_file", cfg.server.get("secret_file")),
+    )
     server.run()

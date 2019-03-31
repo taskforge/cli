@@ -10,34 +10,32 @@ from task_forge.lists import InvalidConfigError
 from task_forge.lists.load import get_list
 
 CONFIG_FILES = [
-    '/etc/taskforge/config.toml'
-    os.path.join(appdirs.user_config_dir(), 'taskforge', 'config.toml'),
-    'taskforge.toml',
+    "/etc/taskforge/config.toml",
+    os.path.join(appdirs.user_config_dir(), "taskforge", "config.toml"),
+    "taskforge.toml",
 ]
 
 
 def default_list_config():
     """Return the default list configuration."""
     return {
-        'name': 'sqlite',
-        'config': {
-            'directory': os.path.join(appdirs.user_data_dir(), 'taskforge')
-        }
+        "name": "sqlite",
+        "config": {"directory": os.path.join(appdirs.user_data_dir(), "taskforge")},
     }
 
 
 def default_server_config():
     """Return the default configuration for a server."""
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         return {
-            'host': 'localhost',
-            'port': 8080,
+            "host": "localhost",
+            "port": 8080,
             # 'secret_file': '~/.taskforge.d/server_secret'
         }
 
     return {
         # By default use a unix socket not a network socket
-        'unix_socket': f'/var/run/user/{os.getuid()}/taskforge.sock',
+        "unix_socket": f"/var/run/user/{os.getuid()}/taskforge.sock",
         # Only used with network communication
         # 'secret_file': '~/.taskforge.d/server_secret'
     }
@@ -78,29 +76,28 @@ class Config:
 
         list_cfg = self.list if override_config is None else override_config
         try:
-            impl = get_list(list_cfg['name'])
+            impl = get_list(list_cfg["name"])
             if impl is None:
                 print(f'unknown list: {self.list["name"]}')
                 sys.exit(1)
         except KeyError:
-            print('no list name provided by config: {}',
-                  toml.dumps(self.__dict__))
+            print("no list name provided by config: {}", toml.dumps(self.__dict__))
             sys.exit(1)
 
         try:
-            return impl(**list_cfg['config'])
+            return impl(**list_cfg["config"])
         except InvalidConfigError as invalid_config:
-            print(f'Invalid config: {invalid_config}')
+            print(f"Invalid config: {invalid_config}")
             sys.exit(1)
         except TypeError as unknown_key:
-            print(f'Invalid config unknown config key: {unknown_key}')
+            print(f"Invalid config unknown config key: {unknown_key}")
             sys.exit(1)
 
     def toml(self):
         """Return a toml string of this config."""
         return toml.dumps(
-            {key: val
-             for key, val in self.__dict__.items() if key[0] != '_'})
+            {key: val for key, val in self.__dict__.items() if key[0] != "_"}
+        )
 
     def __getitem__(self, key):
         """Allow retrieval of config values as if Config was a dict."""

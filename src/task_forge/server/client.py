@@ -5,25 +5,24 @@ import json
 import logging
 from multiprocessing import Pipe, Process
 
-from autobahn.asyncio.websocket import (WebSocketClientFactory,
-                                        WebSocketClientProtocol)
+from autobahn.asyncio.websocket import WebSocketClientFactory, WebSocketClientProtocol
 
 
 class ClientProtocol(WebSocketClientProtocol):
     """Sends a single message to a server"""
 
-    def onOpen(self):  # pylint: disable=invalid-name
+    def onOpen(self):
         """Send the message to the server on open."""
-        logging.debug('waiting for message on pipe')
+        logging.debug("waiting for message on pipe")
         message = self.factory.pipe.recv()
-        logging.debug('message received: %s', message)
+        logging.debug("message received: %s", message)
         serialized = json.dumps(message)
-        logging.debug('message sent to server')
-        self.sendMessage(serialized.encode('utf-8'))
+        logging.debug("message sent to server")
+        self.sendMessage(serialized.encode("utf-8"))
 
-    def onMessage(self, payload, _isBinary):  # pylint: disable=invalid-name
+    def onMessage(self, payload, _isBinary):
         """Get the server response."""
-        response = json.loads(payload.decode('utf-8'))
+        response = json.loads(payload.decode("utf-8"))
         self.factory.pipe.send(response)
         self.sendClose()
 
@@ -37,8 +36,8 @@ class ClientFactory(WebSocketClientFactory):
     protocol = ClientProtocol
 
     def __init__(self, *args, **kwargs):
-        self.pipe = kwargs.pop('pipe')
-        self.secret = kwargs.pop('secret', None)
+        self.pipe = kwargs.pop("pipe")
+        self.secret = kwargs.pop("secret", None)
         super().__init__(*args, **kwargs)
 
 
@@ -52,8 +51,8 @@ class Client:
     def __init__(self, addr):
         parent_pipe, child_pipe = Pipe()
         self.addr = addr
-        if not self.addr.endswith('.sock'):
-            split = self.addr.split(':')
+        if not self.addr.endswith(".sock"):
+            split = self.addr.split(":")
             self.host = split[0]
             self.port = split[1]
         self.pipe = parent_pipe
@@ -66,10 +65,10 @@ class Client:
         import asyncio
 
         loop = asyncio.get_event_loop()
-        if self.addr.endswith('.sock'):
+        if self.addr.endswith(".sock"):
             coro = loop.create_unix_connection(self.factory, path=self.addr)
         else:
-            coro = loop.create_connection(self.factory, '127.0.0.1', 9000)
+            coro = loop.create_connection(self.factory, "127.0.0.1", 9000)
 
         try:
             loop.run_until_complete(coro)
