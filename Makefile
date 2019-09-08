@@ -59,7 +59,7 @@ $(DEV_INSTALL_LINK):
 	$(PIP) install --editable .
 	$(PIP) install --editable ".[mongo]"
 	$(PIP) install --editable ".[github]"
-	$(PIP) install -r requirements.dev.txt
+	$(PIP) install -r requirements/dev.txt
 
 install:
 	$(PYTHON) setup.py install
@@ -107,7 +107,7 @@ pkg-deb: $(MAN_PAGES_GZ) $(DEB_ORIG_TARBALL)
 		-I"build/*" \
 		-I"dist/*" \
 		-I".pytest_cache/*" \
-		-I"requirements.dev.txt" \
+		-I"requirements/dev.txt" \
 		-I"requirements.txt" \
 		-I"Makefile" \
 		-I"pytest.ini" \

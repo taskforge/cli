@@ -1,13 +1,19 @@
 """A task management tool that integrates with 3rd party services."""
 
-from os import getenv
+from os import getenv, walk
 from setuptools import find_packages, setup
 
 with open('README.md') as f:
     LONG_DESCRIPTION = f.read()
 
-with open('requirements.txt') as f:
+with open('requirements/runtime.txt') as f:
     requirements = f.read().splitlines()
+
+extras = {}
+for root, filenames, _ in walk('requirements/extras'):
+    for filename in filenames:
+        with open(os.path.join(root, filename)) as f:
+            extras[filename[:len('.txt')]] = f.read().splitlines()
 
 setup(
     name='taskforge-cli',
@@ -26,10 +32,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=requirements,
-    extras_require={
-        'mongo': ['pymongo==3.7.1'],
-        'github': ['pygithub==1.43.5'],
-    },
+    extras_require=extras,
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
