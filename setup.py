@@ -17,7 +17,7 @@ for root, filenames, _ in walk("requirements/extras"):
 
 setup(
     name="task_forge",
-    version=getenv("VERSION", "0.0.0"),
+    version=os.getenv("VERSION", "0.0.0"),
     url="https://github.com/chasinglogic/taskforge",
     license="AGPL-3.0",
     author="Mathew Robinson",
@@ -41,6 +41,7 @@ setup(
             "sqlite = task_forge.lists.sqlite",
         ],
     },
+    extras_require=extras,
     classifiers=[
         # As from https://pypi.org/classifiers/
         "Development Status :: 4 - Beta",

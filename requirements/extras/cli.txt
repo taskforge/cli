@@ -1,0 +1,4 @@
+docopt==0.6.2
+toml==0.10.0
+autobahn==19.3.2
+appdirs==1.4.3
