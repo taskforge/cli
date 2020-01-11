@@ -48,9 +48,11 @@ class ModelTests(unittest.TestCase):
         j = m.to_json()
         s = json.dumps(j)
         self.assertEqual(j, json.loads(s))
+        self.assertEqual(m, Task.from_dict(json.loads(s)))
 
     def test_note_can_serialize_to_json(self):
         m = Note("JSON")
         j = m.to_json()
         s = json.dumps(j)
         self.assertEqual(j, json.loads(s))
+        self.assertEqual(m, Note.from_dict(json.loads(s)))
