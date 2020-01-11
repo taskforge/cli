@@ -76,14 +76,10 @@ class Parser:
         }
 
         # Populate current and peek token
-        next(self)
-        next(self)
+        self.next_token()
+        self.next_token()
 
-    def __iter__(self):
-        """Return self, an iterator over tokens."""
-        return self
-
-    def __next__(self):
+    def next_token(self):
         """Get the next token from input."""
         self.current_token = self.peek_token
         try:
@@ -120,10 +116,7 @@ class Parser:
             self.peek_token.token_type, Precedence.LOWEST
         ):
             infix_fun = self.infixes.get(self.peek_token.token_type)
-            if infix_fun is None:
-                return expression
-
-            next(self)
+            self.next_token()
             expression = infix_fun(expression)
 
         return expression
@@ -153,7 +146,7 @@ class Parser:
             )
 
         precedence = PRECEDENCES.get(self.current_token.token_type, Precedence.LOWEST)
-        next(self)
+        self.next_token()
         expression.right = self._parse_expression(precedence)
         return expression
 
@@ -173,12 +166,12 @@ class Parser:
     def _parse_grouped_expression(self):
         """Return an expression with a the LOWEST precedence."""
         # Skip the (
-        next(self)
+        self.next_token()
 
         expression = self._parse_expression(Precedence.LOWEST)
         if self.peek_token.token_type != Type.RPAREN:
             raise ParseError(f"unclosed group expression @ {self.lexer.pos}")
 
         # Skip the )
-        next(self)
+        self.next_token()
         return expression
