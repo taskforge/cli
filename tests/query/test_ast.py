@@ -75,6 +75,13 @@ class ASTTests(unittest.TestCase):
             # Test that the repr is re-parsable to get the same AST
             self.assertEqual(Parser(query).parse(), obj)
 
+    def test_unparsable_date_raises_valueerror(self):
+        try:
+            Expression.parse_date("foo")
+        except ValueError as e:
+            self.assertEqual(str(e), "date string did not match any known formats")
+
+
 class ExpressionTests(unittest.TestCase):
     def test_expression_values_literals(self):
         literals = [
