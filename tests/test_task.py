@@ -1,6 +1,7 @@
 import unittest
+import json
 
-from task_forge.task import Task
+from task_forge.task import Task, Note
 
 
 class TaskTests(unittest.TestCase):
@@ -33,3 +34,23 @@ class TaskTests(unittest.TestCase):
         self.assertEqual(listask2[0], task1)
         self.assertEqual(listask2[1], task3)
         self.assertEqual(listask2[2], task2)
+
+
+class ModelTests(unittest.TestCase):
+
+    model_classes = [
+        Task,
+        Note,
+    ]
+
+    def test_task_can_serialize_to_json(self):
+        m = Task("JSON")
+        j = m.to_json()
+        s = json.dumps(j)
+        self.assertEqual(j, json.loads(s))
+
+    def test_note_can_serialize_to_json(self):
+        m = Note("JSON")
+        j = m.to_json()
+        s = json.dumps(j)
+        self.assertEqual(j, json.loads(s))
