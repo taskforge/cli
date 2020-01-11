@@ -56,3 +56,11 @@ class ModelTests(unittest.TestCase):
         s = json.dumps(j)
         self.assertEqual(j, json.loads(s))
         self.assertEqual(m, Note.from_dict(json.loads(s)))
+
+    def test_task_repr(self):
+        m = Task("JSON")
+        self.assertEqual(repr(m), "Task({})".format(str(m.id)))
+
+    def test_note_repr(self):
+        m = Note("JSON")
+        self.assertEqual(repr(m), "Note({})".format(str(m.id)))

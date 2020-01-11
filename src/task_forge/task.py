@@ -15,6 +15,7 @@ def date_to_string(dateobj):
 class Model:
     """Common base functionality for all Models in task forge."""
 
+    id = None
     dict_blacklist = []
     transforms = {
         "created_date": date_to_string,
@@ -22,15 +23,9 @@ class Model:
         "id": str,
     }
 
-    def __init__(self, id=None):
-        if id is None:
-            self.id = ObjectId()
-        else:
-            self.id = id
-
     def __repr__(self):
         """Return a simple string of Model subclass name and id."""
-        return f"{self.__class__.name}({self.id})"
+        return f"{self.__class__.__name__}({self.id})"
 
     def __eq__(self, other):
         """Return True if self and other have the same id."""
