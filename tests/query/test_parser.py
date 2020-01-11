@@ -2,6 +2,7 @@ import pytest
 
 from task_forge.ql.ast import AST, Expression
 from task_forge.ql.parser import Parser, ParseError
+from task_forge.ql.lexer import Lexer
 from task_forge.ql.tokens import Token
 
 
@@ -141,6 +142,13 @@ def test_parser_cant_concat_non_string():
         assert False
     except ParseError as e:
         assert str(e) == "can only concat string literals got: 0.0"
+
+
+def test_parser_from_lexer():
+    lexer = Lexer("foo = bar")
+    parser = Parser.from_lexer(lexer)
+    assert lexer == parser.lexer
+
 
 @pytest.mark.slow
 @pytest.mark.benchmark
