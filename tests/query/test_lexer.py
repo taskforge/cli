@@ -68,6 +68,13 @@ def test_lexer(query, expected):
     assert len(tokens) == len(expected)
 
 
+def test_lexer_peek_over_end_is_safe():
+    lex = Lexer("")
+    assert lex._peek_char() == ""
+    lex._read_char()
+    assert lex._peek_char() == ""
+
+
 @pytest.mark.slow
 @pytest.mark.benchmark
 @pytest.mark.parametrize(
