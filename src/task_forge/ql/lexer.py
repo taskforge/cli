@@ -28,12 +28,12 @@ class Lexer:
         if self.char == "^":
             if self._peek_char() == "=":
                 self._read_char()
-                token = Token("!=")
+                token = Token("^=")
             elif self._peek_char() == "^":
                 self._read_char()
-                token = Token("!~")
+                token = Token("^^")
             else:
-                token = Token("~")
+                token = Token("^")
         elif self.char == "!":
             literal = self.char
             self._read_char()
