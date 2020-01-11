@@ -7,7 +7,70 @@ from bson.objectid import ObjectId
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-class Note:
+def date_to_string(dateobj):
+    """Format dateobj using the standard DATE_FORMAT."""
+    return dateobj.strftime(DATE_FORMAT)
+
+
+class Model:
+    """Common base functionality for all Models in task forge."""
+
+    dict_blacklist = []
+    transforms = {
+        "created_date": date_to_string,
+        "completed_date": date_to_string,
+        "id": str,
+    }
+
+    def __init__(self, id=None):
+        if id is None:
+            self.id = ObjectId()
+        else:
+            self.id = id
+
+    def __repr__(self):
+        """Return a simple string of Model subclass name and id."""
+        return f"{self.__class__.name}({self.id})"
+
+    def __eq__(self, other):
+        """Return True if self and other have the same id."""
+        if not isinstance(other, self.__class__):
+            return False
+
+        return self.id == other.id
+
+    def to_json(self):
+        """
+        Convert this Model object into a dictionary with JSON incompatible types serialized.
+
+        .. note:: For richer data types use :meth:`Note.to_dict` instead.
+        """
+        return {
+            key: self.transforms.get(key, lambda x: x)(value)
+            for key, value in self.__dict__.items()
+            if not key.startswith("_") and key not in self.dict_blacklist
+        }
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        """
+        Create a Model instance from a dictionary.
+
+        Handles JSON-deserialized types appropriately. i.e. datetime fields will
+        be properly parsed if in string form.
+        """
+        return cls(**dictionary)
+
+    def to_dict(self):
+        """Transform this model into a dictionary for easy use to/from BSON."""
+        return {
+            key: value
+            for key, value in self.__dict__.items()
+            if not key.startswith("_") and key not in self.dict_blacklist
+        }
+
+
+class Note(Model):
     """
     A note or 'comment' on a task.
 
@@ -40,42 +103,12 @@ class Note:
         self.created_date = created_date
         self.body = body
 
-    def __eq__(self, other):
-        """Return True if self and other have the same id."""
-        if not isinstance(other, Note):
-            return False
-        return self.id == other.id
-
-    def __repr__(self):
-        """Return a simple string of note id and body."""
-        return f"Note({self.id})"
-
-    @classmethod
-    def from_dict(cls, dictionary):
-        """
-        Create a note instance from a dictionary.
-
-        Handles JSON-deserialized types appropriately. i.e. datetime fields will
-        be properly parsed if in string form.
-        """
-        return cls(**dictionary)
-
-    def to_json(self):
-        """
-        Convert this note object into a dictionary with JSON incompatible types serialized.
-
-        .. note:: For richer data types use :meth:`Note.to_dict` instead.
-        """
-        dictionary = self.to_dict()
-        dictionary["created_date"] = self.created_date.strftime(DATE_FORMAT)
-        return dictionary
-
     def to_dict(self):
         """Convert this note object into a dictionary."""
         return {"id": self.id, "created_date": self.created_date, "body": self.body}
 
 
-class Task:
+class Task(Model):
     """
     Represents a task in a Task List.
 
@@ -153,12 +186,6 @@ class Task:
         self.notes = notes
         self.body = body
 
-    def __eq__(self, other):
-        """Return True if self and other have the same id."""
-        if not isinstance(other, Task):
-            return False
-        return self.id == other.id
-
     def __lt__(self, other):
         """Sorts highest priority first then oldest first."""
         if self.priority > other.priority:
@@ -169,10 +196,6 @@ class Task:
 
         return self.created_date < other.created_date
 
-    def __repr__(self):
-        """Return a simple string of the task id and title."""
-        return f"Task({self.id})"
-
     @classmethod
     def from_dict(cls, dictionary):
         """
@@ -181,10 +204,9 @@ class Task:
         Handles JSON-deserialized types appropriately. i.e. datetime fields will
         be properly parsed if in string form.
         """
-        if dictionary.get("notes"):
-            dictionary["notes"] = [Note.from_dict(note) for note in dictionary["notes"]]
-        else:
-            dictionary["notes"] = []
+        dictionary["notes"] = [
+            Note.from_dict(note) for note in dictionary.get("notes", [])
+        ]
 
         return cls(**dictionary)
 
@@ -194,12 +216,20 @@ class Task:
 
         .. note:: For richer data types use :meth:`Task.to_dict` instead.
         """
-        dictionary = self.to_dict()
-        dictionary["notes"] = [n.to_json() for n in self.notes]
-        dictionary["created_date"] = self.created_date.strftime(DATE_FORMAT)
+        j = {
+            "id": str(self.id),
+            "title": self.title,
+            "body": self.body,
+            "context": self.context,
+            "priority": self.priority,
+            "created_date": date_to_string(self.created_date),
+            "notes": [n.to_json() for n in self.notes],
+        }
+
         if self.completed_date:
-            dictionary["completed_date"] = self.completed_date.strftime(DATE_FORMAT)
-        return dictionary
+            j["completed_date"] = (date_to_string(self.completed_date),)
+
+        return j
 
     def to_dict(self):
         """Convert this task object into a dictionary."""
