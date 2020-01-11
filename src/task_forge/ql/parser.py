@@ -133,7 +133,7 @@ class Parser:
         ):
             raise ParseError(
                 "left side of a logical expression must be an infix"
-                " expression or string literal got: {expression.left.token.token_type}"
+                f" expression or string literal got: {expression.left.token.token_type}"
             )
 
         if (
