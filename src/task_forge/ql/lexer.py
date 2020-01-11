@@ -75,10 +75,6 @@ class Lexer:
         self._read_char()
         return token
 
-    def next_token(self):
-        """Return the next token from the input."""
-        return self.__next__()
-
     def _read_char(self):
         """Read a character from input advancing the cursor."""
         if self.read_pos >= len(self.data):
