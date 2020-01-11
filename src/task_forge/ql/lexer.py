@@ -8,6 +8,7 @@ class Lexer:
 
     def __init__(self, query):
         """Create a lexer for the string query."""
+        self.length = len(query)
         self.data = query
         self.pos = 0
         self.read_pos = 0
@@ -90,7 +91,7 @@ class Lexer:
 
     def _peek_char(self):
         """Return the next character."""
-        if self.read_pos > len(self.data):
+        if self.read_pos > self.length:
             return ""
 
         return self.data[self.read_pos]
@@ -102,7 +103,7 @@ class Lexer:
         Returns the full string which matched the valid function.
         """
         start = self.pos
-        while valid(self.char):
+        while valid(self.char) and self.pos < self.length:
             self._read_char()
 
         return self.data[start : self.pos]
