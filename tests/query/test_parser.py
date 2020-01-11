@@ -85,6 +85,63 @@ def test_parser(query, ast):
     assert parser.parse() == ast
 
 
+def test_parser_no_prefix_fun_raises_parse_error():
+    parser = Parser("'unclosed string")
+    try:
+        parser.parse()
+    except ParseError as e:
+        assert str(e) == "no prefix function for: Type.UNEXPECTED"
+
+
+def test_parser_empty_query_raises_stopiteration():
+    try:
+        parser = Parser("")
+        assert False
+    except StopIteration:
+        pass
+
+
+def test_parser_left_side_comparison_not_valid_raises_parse_error():
+    try:
+        parser = Parser("(0) = 1")
+        parser.parse()
+        assert False
+    except ParseError as e:
+        assert (
+            str(e)
+            == "left side of an infix expression must be a string literal got: Type.NUMBER"
+        )
+
+
+def test_parser_left_side_logical_not_valid_raises_parse_error():
+    try:
+        parser = Parser("(0) and 1")
+        parser.parse()
+        assert False
+    except ParseError as e:
+        assert (
+            str(e)
+            == "left side of a logical expression must be an infix expression or string literal got: Type.NUMBER"
+        )
+
+
+def test_parser_throws_on_unclosed_group():
+    try:
+        parser = Parser("(milk and cookies")
+        parser.parse()
+        assert False
+    except ParseError as e:
+        assert str(e) == "unclosed group expression @ 17"
+
+
+def test_parser_cant_concat_non_string():
+    try:
+        parser = Parser("0 mat")
+        parser.parse()
+        assert False
+    except ParseError as e:
+        assert str(e) == "can only concat string literals got: 0.0"
+
 @pytest.mark.slow
 @pytest.mark.benchmark
 @pytest.mark.parametrize(
