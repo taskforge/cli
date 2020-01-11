@@ -1,9 +1,79 @@
 import unittest
 from datetime import datetime
 
-from task_forge.ql.ast import Expression
+from task_forge.ql.ast import AST, Expression
+from task_forge.ql.parser import Parser
 from task_forge.ql.tokens import Token
 
+
+class ASTTests(unittest.TestCase):
+    def test_to_and_from_dict(self):
+        literal = Expression(Token("milk"))
+        a = AST(literal)
+        d = a.to_dict()
+        self.assertEqual(
+            d,
+            {
+                "expression": {
+                    "token": {"token_type": "STRING", "literal": "milk"},
+                    "value": "milk",
+                }
+            },
+        )
+        self.assertEqual(a, AST.from_dict(d))
+        infix = Expression(
+            Token("="), left=Expression(Token("foo")), right=Expression(Token("bar")),
+        )
+        a = AST(infix)
+        d = a.to_dict()
+        self.assertEqual(
+            d,
+            {
+                "expression": {
+                    "operator": {"token_type": "EQ", "literal": "="},
+                    "left": {
+                        "token": {"token_type": "STRING", "literal": "foo"},
+                        "value": "foo",
+                    },
+                    "right": {
+                        "token": {"token_type": "STRING", "literal": "bar"},
+                        "value": "bar",
+                    },
+                }
+            },
+        )
+        self.assertEqual(a, AST.from_dict(d))
+
+    def test_repr(self):
+        test_cases = [
+            # Note the single quotes here
+            ("'milk and cookies'", AST(Expression(Token("milk and cookies")))),
+            (
+                "(milk and cookies)",
+                AST(
+                    Expression(
+                        Token("and"),
+                        left=Expression(Token("milk")),
+                        right=Expression(Token("cookies")),
+                    )
+                ),
+            ),
+            (
+                "(foo = bar)",
+                AST(
+                    Expression(
+                        Token("="),
+                        left=Expression(Token("foo")),
+                        right=Expression(Token("bar")),
+                    )
+                ),
+            ),
+        ]
+
+        for query, obj in test_cases:
+            self.assertEqual(repr(obj), query)
+            # Test that the repr is re-parsable to get the same AST
+            self.assertEqual(Parser(query).parse(), obj)
 
 class ExpressionTests(unittest.TestCase):
     def test_expression_values_literals(self):
