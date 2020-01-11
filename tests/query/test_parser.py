@@ -56,7 +56,7 @@ from task_forge.ql.tokens import Token
                     left=Expression(
                         Token("and"),
                         right=Expression(
-                            Token("~"),
+                            Token("^"),
                             right=Expression(Token("take out the trash")),
                             left=Expression(Token("title")),
                         ),
