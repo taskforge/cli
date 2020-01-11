@@ -124,6 +124,31 @@ class ExpressionTests(unittest.TestCase):
         )
         self.assertEqual(illogical.is_logical_infix(), False)
 
+    def test_is_literal_types(self):
+        literal = Expression(Token("foo"))
+        self.assertEqual(literal.is_str_literal(), True)
+        self.assertEqual(literal.is_date_literal(), False)
+        self.assertEqual(literal.is_number_literal(), False)
+        self.assertEqual(literal.is_boolean_literal(), False)
+
+        literal = Expression(Token("true"))
+        self.assertEqual(literal.is_str_literal(), False)
+        self.assertEqual(literal.is_date_literal(), False)
+        self.assertEqual(literal.is_number_literal(), False)
+        self.assertEqual(literal.is_boolean_literal(), True)
+
+        literal = Expression(Token("0"))
+        self.assertEqual(literal.is_str_literal(), False)
+        self.assertEqual(literal.is_date_literal(), False)
+        self.assertEqual(literal.is_number_literal(), True)
+        self.assertEqual(literal.is_boolean_literal(), False)
+
+        literal = Expression(Token("2019-01-01"))
+        self.assertEqual(literal.is_str_literal(), False)
+        self.assertEqual(literal.is_date_literal(), True)
+        self.assertEqual(literal.is_number_literal(), False)
+        self.assertEqual(literal.is_boolean_literal(), False)
+
     def test_date_formats(self):
         date_strings = [
             {
