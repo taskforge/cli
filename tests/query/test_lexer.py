@@ -9,6 +9,17 @@ from task_forge.ql.tokens import Token, Type
     [
         ("milk and cookies", [Token("milk"), Token("and"), Token("cookies")]),
         ("completed = false", [Token("completed"), Token("="), Token("false")]),
+        ("completed ^= false", [Token("completed"), Token("^="), Token("false")]),
+        ("completed != false", [Token("completed"), Token("!="), Token("false")]),
+        (
+            "foo = 'unclosed string",
+            [
+                Token("foo"),
+                Token("="),
+                Token("unexpected eof: no closing quote", token_type=Type.UNEXPECTED),
+            ],
+        ),
+        ("completed ^^ false", [Token("completed"), Token("^^"), Token("false")]),
         (
             "(priority > 0)",
             [Token("("), Token("priority"), Token(">"), Token("0"), Token(")")],
@@ -27,7 +38,7 @@ from task_forge.ql.tokens import Token, Type
                 Token("5"),
                 Token("and"),
                 Token("title"),
-                Token("~"),
+                Token("^"),
                 Token("take out the trash"),
                 Token(")"),
                 Token("or"),
