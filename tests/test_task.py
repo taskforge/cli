@@ -1,7 +1,8 @@
 import unittest
 import json
+from datetime import datetime
 
-from task_forge.task import Task, Note
+from task_forge.task import Task, Note, Model, date_to_string
 
 
 class TaskTests(unittest.TestCase):
@@ -83,3 +84,47 @@ class ModelTests(unittest.TestCase):
         self.assertNotEqual(Task("JSON"), 0)
         self.assertNotEqual(Note("JSON"), 0)
 
+    def test_generic_model_to_dict(self):
+        now = datetime.now()
+
+        class GenericModel(Model):
+            def __init__(self):
+                self.__really_should_not_appear = 0
+                self._should_not_appear = 0
+                self.should_appear = 0
+                self.second_attr = 1
+                self.created_date = now
+
+            def methods_should_be_ignored(self):
+                pass
+
+        m = GenericModel()
+        self.assertEqual(
+            m.to_dict(), {"should_appear": 0, "second_attr": 1, "created_date": now}
+        )
+        self.assertEqual(
+            m.to_json(),
+            {"should_appear": 0, "second_attr": 1, "created_date": date_to_string(now)},
+        )
+
+    def test_models_to_dict_contains_all_attributes(self):
+        # Attributes that the classes inherit from Model but
+        # shouldn't pass out with to_dict
+        known_bad_attrs = [
+            "dict_blacklist",
+            "transforms",
+        ]
+
+        for model in [Task("task 1"), Note("note 1")]:
+            self.assertEqual(
+                sorted(list(model.to_dict().keys())),
+                sorted(
+                    [
+                        a
+                        for a in dir(model)
+                        if not a.startswith("_")
+                        and not callable(getattr(model, a))
+                        and a not in known_bad_attrs
+                    ]
+                ),
+            )
