@@ -177,7 +177,7 @@ class Parser:
 
         expression = self._parse_expression(Precedence.LOWEST)
         if self.peek_token.token_type != Type.RPAREN:
-            raise ParseError(f"unclosed grouped expression @ {self.lexer.pos}")
+            raise ParseError(f"unclosed group expression @ {self.lexer.pos}")
 
         # Skip the )
         next(self)
