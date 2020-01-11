@@ -1,7 +1,8 @@
 """Provides the Task and Note classes used throughout Taskforge."""
 
 from datetime import datetime
-from uuid import uuid4
+
+from bson.objectid import ObjectId
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -30,7 +31,7 @@ class Note:
     def __init__(self, body, id=None, created_date=None):
         """Create a note with body."""
         if id is None:
-            id = uuid4().hex
+            id = ObjectId()
         self.id = id
         if created_date is None:
             created_date = datetime.now()
@@ -134,7 +135,7 @@ class Task:
         instantiating from an existing task.
         """
         if id is None:
-            id = uuid4().hex
+            id = ObjectId()
         self.id = id
         self.title = title
         if created_date is None:
