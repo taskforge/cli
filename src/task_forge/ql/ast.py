@@ -115,7 +115,8 @@ class Expression:
             left_repr = self.left.value if self.left is not None else self.left
             return f"({left_repr} {self.operator.literal} {self.right})"
 
-        if isinstance(self.value, str):
+        # Quote strings which have spaces in them
+        if isinstance(self.value, str) and " " in self.value:
             return f"'{self.value}'"
 
         return f"{self.value}"
