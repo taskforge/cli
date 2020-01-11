@@ -34,10 +34,10 @@ class Model:
 
     def __eq__(self, other):
         """Return True if self and other have the same id."""
-        if not isinstance(other, self.__class__):
+        if not hasattr(other, "id"):
             return False
 
-        return self.id == other.id
+        return str(self.id) == str(other.id)
 
     def to_json(self):
         """
