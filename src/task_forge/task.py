@@ -222,7 +222,7 @@ class Task(Model):
         }
 
         if self.completed_date:
-            j["completed_date"] = (date_to_string(self.completed_date),)
+            j["completed_date"] = date_to_string(self.completed_date)
 
         return j
 
