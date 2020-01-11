@@ -4,6 +4,15 @@ from task_forge.ql.tokens import Token, Type
 
 
 class TestTokens(unittest.TestCase):
+    def test_token_to_and_from_dict(self):
+        t = Token("0")
+        d = t.to_dict()
+        self.assertEqual(d, {"token_type": t.token_type.value, "literal": t.literal})
+        self.assertEqual(t, Token.from_dict(d))
+
+    def test_token_repr(self):
+        self.assertEqual(repr(Token("0")), "Token(Type.NUMBER, 0)")
+
     def test_token_or(self):
         self.assertEqual(Token("or").token_type, Type.OR)
 
