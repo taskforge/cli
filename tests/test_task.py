@@ -5,6 +5,14 @@ from task_forge.task import Task, Note
 
 
 class TaskTests(unittest.TestCase):
+    def test_is_complete_and_completed(self):
+        task = Task("task 1")
+        self.assertEqual(task.is_complete(), False)
+        self.assertEqual(task.is_complete(), task.is_completed())
+        task.complete()
+        self.assertEqual(task.is_complete(), True)
+        self.assertEqual(task.is_complete(), task.is_completed())
+
     def test_unique_ids(self):
         task1 = Task("task 1")
         task2 = Task("task 2")
