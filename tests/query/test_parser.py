@@ -94,6 +94,13 @@ def test_parser_no_prefix_fun_raises_parse_error():
         assert str(e) == "no prefix function for: Type.UNEXPECTED"
 
 
+def test_parser_can_change_input():
+    parser = Parser("foo = bar")
+    assert parser.lexer.data == "foo = bar"
+    parser.set_input("bar = foo")
+    assert parser.lexer.data == "bar = foo"
+
+
 def test_parser_empty_query_raises_stopiteration():
     try:
         parser = Parser("")
