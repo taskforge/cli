@@ -57,6 +57,12 @@ class ModelTests(unittest.TestCase):
         s = json.dumps(j)
         self.assertEqual(j, json.loads(s))
         self.assertEqual(m, Task.from_dict(json.loads(s)))
+        # Test that completed_date can be de/serialized
+        m = m.complete()
+        j = m.to_json()
+        s = json.dumps(j)
+        self.assertEqual(j, json.loads(s))
+        self.assertEqual(m, Task.from_dict(json.loads(s)))
 
     def test_note_can_serialize_to_json(self):
         m = Note("JSON")
