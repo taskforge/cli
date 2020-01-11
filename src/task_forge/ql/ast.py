@@ -152,10 +152,6 @@ class Expression:
         """Indicate whether this expression is a literal value."""
         return self.value is not None
 
-    def is_comparison_infix(self):
-        """Indicate if this is a value comparison expression."""
-        return self.is_infix() and not self.is_logical_infix()
-
     def is_logical_infix(self):
         """Indicate if this is a logical AND/OR expression."""
         return self.is_and_infix() or self.is_or_infix()
