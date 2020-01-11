@@ -78,3 +78,8 @@ class ModelTests(unittest.TestCase):
     def test_note_repr(self):
         m = Note("JSON")
         self.assertEqual(repr(m), "Note({})".format(str(m.id)))
+
+    def test_compare_non_model(self):
+        self.assertNotEqual(Task("JSON"), 0)
+        self.assertNotEqual(Note("JSON"), 0)
+
