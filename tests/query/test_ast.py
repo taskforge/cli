@@ -108,6 +108,22 @@ class ExpressionTests(unittest.TestCase):
         literal = Expression(Token("milk"))
         self.assertTrue(literal.is_literal())
 
+    def test_is_logical_infix(self):
+        logical_and = Expression(
+            Token("and"), left=Expression(Token("foo")), right=Expression(Token("bar")),
+        )
+        self.assertEqual(logical_and.is_logical_infix(), True)
+
+        logical_or = Expression(
+            Token("and"), left=Expression(Token("foo")), right=Expression(Token("bar")),
+        )
+        self.assertEqual(logical_or.is_logical_infix(), True)
+
+        illogical = Expression(
+            Token("="), left=Expression(Token("foo")), right=Expression(Token("bar")),
+        )
+        self.assertEqual(illogical.is_logical_infix(), False)
+
     def test_date_formats(self):
         date_strings = [
             {
