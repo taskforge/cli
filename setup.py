@@ -22,8 +22,7 @@ setup(
     license="AGPL-3.0",
     author="Mathew Robinson",
     author_email="chasinglogic@gmail.com",
-    description="A task management library and tool that integrates"
-    " with 3rd party services",
+    description="A task management tool that integrates with 3rd party services",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     packages=find_packages(where="src"),
