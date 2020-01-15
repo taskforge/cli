@@ -74,6 +74,43 @@ class Model:
         }
 
 
+# We only enable the User model when bcrypt is installed, it is only
+# installed for task_forge[server]
+try:
+    import bcrypt
+
+    class User(Model):
+        """A Taskforge user"""
+
+        def __init__(
+            self,
+            username: str,
+            email: str,
+            id: Union[str, ObjectId, None] = None,
+            password: str = None,
+        ):
+            super().__init__(id=id)
+            self.username = username
+            self.email = email
+            self.password = password
+
+        @classmethod
+        def new(cls, username: str, email: str, password: str) -> User:
+            """Create a new user, secures password using bcrypt."""
+            bcrypted_pass = bcrypt.hashpw(password, bcrypt.gensalt())
+            user = cls(id=None, username=username, email=email, password=bcrypted_pass,)
+            return user
+
+        def update_password(self, password: str):
+            """Update the password of this user hashing password with bcrypt."""
+            bcrypted_pass = bcrypt.hashpw(password, bcrypt.gensalt())
+            self.password = bcrypted_pass
+
+
+except ImportError:
+    pass
+
+
 class Note(Model):
     """
     A note or 'comment' on a task.
