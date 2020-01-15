@@ -1,5 +1,6 @@
 """Provides the Task and Note classes used throughout Taskforge."""
 
+from typing import List, Union
 from datetime import datetime
 
 from bson.objectid import ObjectId
@@ -22,6 +23,14 @@ class Model:
         "completed_date": date_to_string,
         "id": str,
     }
+
+    def __init__(self, id: Union[str, ObjectId, None] = None):
+        if id is None:
+            id = ObjectId()
+        elif isinstance(id, str):
+            id = ObjectId(id)
+
+        self.id = id
 
     def __repr__(self):
         """Return a simple string of Model subclass name and id."""
@@ -86,21 +95,31 @@ class Note(Model):
     :type created_date: Optional[datetime.datetime].
     """
 
-    def __init__(self, body, id=None, created_date=None):
+    def __init__(
+        self,
+        author: str,
+        body: str,
+        id: Union[str, ObjectId, None] = None,
+        created_date: Union[datetime, None] = None,
+    ):
         """Create a note with body."""
-        if id is None:
-            id = ObjectId()
-        self.id = id
         if created_date is None:
             created_date = datetime.now()
         elif isinstance(created_date, str):
             created_date = datetime.strptime(created_date, DATE_FORMAT)
-        self.created_date = created_date
+
+        super().__init__(id=id)
         self.body = body
+        self.created_date = created_date
 
     def to_dict(self):
         """Convert this note object into a dictionary."""
-        return {"id": self.id, "created_date": self.created_date, "body": self.body}
+        return {
+            "id": self.id,
+            "author": self.author,
+            "body": self.body,
+            "created_date": self.created_date,
+        }
 
 
 class Task(Model):
@@ -147,14 +166,14 @@ class Task(Model):
 
     def __init__(
         self,
-        title,
-        id=None,
-        context="default",
-        priority=1,
-        notes=None,
-        created_date=None,
-        completed_date=None,
-        body="",
+        title: str,
+        id: Union[str, ObjectId, None] = None,
+        context: str = "default",
+        priority: int = 1,
+        notes: Union[List[Note], None] = None,
+        created_date: Union[str, datetime, None] = None,
+        completed_date: Union[str, datetime, None] = None,
+        body: str = "",
     ):
         """
         Create a Task with the given fields, defaulting appropriate metadata.
@@ -162,24 +181,25 @@ class Task(Model):
         All other fields are optional and id should not be set unless
         instantiating from an existing task.
         """
-        if id is None:
-            id = ObjectId()
-        self.id = id
-        self.title = title
         if created_date is None:
             created_date = datetime.now()
         elif isinstance(created_date, str):
             created_date = datetime.strptime(created_date, DATE_FORMAT)
-        self.created_date = created_date
-        self.context = context
-        self.priority = priority
+
         if isinstance(completed_date, str):
             completed_date = datetime.strptime(completed_date, DATE_FORMAT)
-        self.completed_date = completed_date
+
         if notes is None:
             notes = []
-        self.notes = notes
+
+        super().__init__(id=id)
+        self.title = title
+        self.context = context
+        self.priority = priority
         self.body = body
+        self.created_date = created_date
+        self.completed_date = completed_date
+        self.notes = notes
 
     def __lt__(self, other):
         """Sorts highest priority first then oldest first."""
