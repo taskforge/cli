@@ -1,1 +1,1 @@
-"""Entry point for task_forge Server APIs."""
+"""Module containing the implementation of the Taskforge API server."""
