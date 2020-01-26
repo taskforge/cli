@@ -2,12 +2,12 @@ import unittest
 import json
 from datetime import datetime
 
-from task_forge.task import Task, Note, Model, date_to_string
+from task_forge.models import Task, Note, Model, date_to_string
 
 
 class TaskTests(unittest.TestCase):
     def test_is_complete_and_completed(self):
-        task = Task("task 1")
+        task = Task("foouser", "task 1")
         self.assertEqual(task.is_complete(), False)
         self.assertEqual(task.is_complete(), task.is_completed())
         task.complete()
@@ -15,18 +15,18 @@ class TaskTests(unittest.TestCase):
         self.assertEqual(task.is_complete(), task.is_completed())
 
     def test_unique_ids(self):
-        task1 = Task("task 1")
-        task2 = Task("task 2")
-        task3 = Task("task 3")
+        task1 = Task("foouser", "task 1")
+        task2 = Task("foouser", "task 2")
+        task3 = Task("foouser", "task 3")
         self.assertNotEqual(task1, task2)
         self.assertNotEqual(task1, task3)
         self.assertNotEqual(task2, task3)
         self.assertNotEqual(task1.created_date, task3.created_date)
 
     def test_sort_order(self):
-        task1 = Task("task 1")
-        task2 = Task("task 2")
-        task3 = Task("task 3")
+        task1 = Task("foouser", "task 1")
+        task2 = Task("foouser", "task 2")
+        task3 = Task("foouser", "task 3")
 
         listask1 = sorted([task3, task2, task1])
 
@@ -53,7 +53,7 @@ class ModelTests(unittest.TestCase):
     ]
 
     def test_task_can_serialize_to_json(self):
-        m = Task("JSON")
+        m = Task("foouser", "JSON")
         j = m.to_json()
         s = json.dumps(j)
         self.assertEqual(j, json.loads(s))
@@ -66,23 +66,23 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(m, Task.from_dict(json.loads(s)))
 
     def test_note_can_serialize_to_json(self):
-        m = Note("JSON")
+        m = Note("foouser", "JSON")
         j = m.to_json()
         s = json.dumps(j)
         self.assertEqual(j, json.loads(s))
         self.assertEqual(m, Note.from_dict(json.loads(s)))
 
     def test_task_repr(self):
-        m = Task("JSON")
+        m = Task("foouser", "JSON")
         self.assertEqual(repr(m), "Task({})".format(str(m.id)))
 
     def test_note_repr(self):
-        m = Note("JSON")
+        m = Note("foouser", "JSON")
         self.assertEqual(repr(m), "Note({})".format(str(m.id)))
 
     def test_compare_non_model(self):
-        self.assertNotEqual(Task("JSON"), 0)
-        self.assertNotEqual(Note("JSON"), 0)
+        self.assertNotEqual(Task("foouser", "JSON"), 0)
+        self.assertNotEqual(Note("foouser", "JSON"), 0)
 
     def test_generic_model_to_dict(self):
         now = datetime.now()
@@ -115,7 +115,7 @@ class ModelTests(unittest.TestCase):
             "transforms",
         ]
 
-        for model in [Task("task 1"), Note("note 1")]:
+        for model in [Task("foouser", "task 1"), Note("foouser", "note 1")]:
             self.assertEqual(
                 sorted(list(model.to_dict().keys())),
                 sorted(

@@ -146,6 +146,7 @@ class Note(Model):
             created_date = datetime.strptime(created_date, DATE_FORMAT)
 
         super().__init__(id=id)
+        self.author = author
         self.body = body
         self.created_date = created_date
 
@@ -203,6 +204,7 @@ class Task(Model):
 
     def __init__(
         self,
+        owner: str,
         title: str,
         id: Union[str, ObjectId, None] = None,
         context: str = "default",
@@ -237,6 +239,7 @@ class Task(Model):
         self.created_date = created_date
         self.completed_date = completed_date
         self.notes = notes
+        self.owner = owner
 
     def __lt__(self, other):
         """Sorts highest priority first then oldest first."""
@@ -274,6 +277,7 @@ class Task(Model):
             "body": self.body,
             "context": self.context,
             "priority": self.priority,
+            "owner": self.owner,
             "created_date": date_to_string(self.created_date),
             "notes": [n.to_json() for n in self.notes],
         }
@@ -291,6 +295,7 @@ class Task(Model):
             "body": self.body,
             "context": self.context,
             "priority": self.priority,
+            "owner": self.owner,
             "created_date": self.created_date,
             "completed_date": self.completed_date,
             "notes": [n.to_dict() for n in self.notes],
