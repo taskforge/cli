@@ -1,6 +1,6 @@
 """A task management tool that integrates with 3rd party services."""
 
-from os import getenv, walk
+from os import getenv, walk, path
 from setuptools import find_packages, setup
 
 with open("README.md") as f:
@@ -12,12 +12,12 @@ with open("requirements/runtime.txt") as f:
 extras = {}
 for root, filenames, _ in walk("requirements/extras"):
     for filename in filenames:
-        with open(os.path.join(root, filename)) as f:
+        with open(path.join(root, filename)) as f:
             extras[filename[: len(".txt")]] = f.read().splitlines()
 
 setup(
     name="task_forge",
-    version=os.getenv("VERSION", "0.0.0"),
+    version=getenv("VERSION", "0.0.0"),
     url="https://github.com/chasinglogic/taskforge",
     license="AGPL-3.0",
     author="Mathew Robinson",
@@ -36,15 +36,13 @@ setup(
     entry_points={
         "task_forge.lists": [
             "task_server = task_forge.lists.task_server_client",
-            "mongodb = task_forge.lists.mongo",
             "sqlite = task_forge.lists.sqlite",
         ],
         "console_scripts": [
             "task=task_forge.cli.main",
             "taskforged=task_forge.daemon.main",
-        ]
+        ],
     },
-    extras_require=extras,
     classifiers=[
         # As from https://pypi.org/classifiers/
         "Development Status :: 4 - Beta",
