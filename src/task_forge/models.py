@@ -1,5 +1,6 @@
 """Provides the Task and Note classes used throughout Taskforge."""
 
+from uuid import uuid4
 from typing import List, Union
 from datetime import datetime
 
@@ -22,11 +23,9 @@ class Model:
         "id": str,
     }
 
-    def __init__(self, id: Union[str, ObjectId, None] = None):
+    def __init__(self, id: Union[str, uuid4, None] = None):
         if id is None:
-            id = ObjectId()
-        elif isinstance(id, str):
-            id = ObjectId(id)
+            id = str(uuid4())
 
         self.id = id
 
@@ -72,43 +71,6 @@ class Model:
         }
 
 
-# We only enable the User model when bcrypt is installed, it is only
-# installed for task_forge[server]
-try:
-    import bcrypt
-
-    class User(Model):
-        """A Taskforge user"""
-
-        def __init__(
-            self,
-            username: str,
-            email: str,
-            id: Union[str, ObjectId, None] = None,
-            password: str = None,
-        ):
-            super().__init__(id=id)
-            self.username = username
-            self.email = email
-            self.password = password
-
-        @classmethod
-        def new(cls, username: str, email: str, password: str) -> User:
-            """Create a new user, secures password using bcrypt."""
-            bcrypted_pass = bcrypt.hashpw(password, bcrypt.gensalt())
-            user = cls(id=None, username=username, email=email, password=bcrypted_pass,)
-            return user
-
-        def update_password(self, password: str):
-            """Update the password of this user hashing password with bcrypt."""
-            bcrypted_pass = bcrypt.hashpw(password, bcrypt.gensalt())
-            self.password = bcrypted_pass
-
-
-except ImportError:
-    pass
-
-
 class Note(Model):
     """
     A note or 'comment' on a task.
@@ -132,9 +94,8 @@ class Note(Model):
 
     def __init__(
         self,
-        author: str,
         body: str,
-        id: Union[str, ObjectId, None] = None,
+        id: Union[str, uuid4, None] = None,
         created_date: Union[datetime, None] = None,
     ):
         """Create a note with body."""
@@ -144,7 +105,6 @@ class Note(Model):
             created_date = datetime.strptime(created_date, DATE_FORMAT)
 
         super().__init__(id=id)
-        self.author = author
         self.body = body
         self.created_date = created_date
 
@@ -152,7 +112,6 @@ class Note(Model):
         """Convert this note object into a dictionary."""
         return {
             "id": self.id,
-            "author": self.author,
             "body": self.body,
             "created_date": self.created_date,
         }
@@ -168,7 +127,7 @@ class Task(Model):
     The basic instantiation of a Task only requires a title and will fill out
     any required metadata with default values:
 
-    >>> from task_forge.task import Task
+    >>> from task_forge.models import Task
     >>> Task('An example Task')
     Task(c659687d9ad54b308a258850a5a06af1)
 
@@ -202,9 +161,8 @@ class Task(Model):
 
     def __init__(
         self,
-        owner: str,
         title: str,
-        id: Union[str, ObjectId, None] = None,
+        id: Union[str, uuid4, None] = None,
         context: str = "default",
         priority: int = 1,
         notes: Union[List[Note], None] = None,
@@ -237,7 +195,6 @@ class Task(Model):
         self.created_date = created_date
         self.completed_date = completed_date
         self.notes = notes
-        self.owner = owner
 
     def __lt__(self, other):
         """Sorts highest priority first then oldest first."""
@@ -275,7 +232,6 @@ class Task(Model):
             "body": self.body,
             "context": self.context,
             "priority": self.priority,
-            "owner": self.owner,
             "created_date": date_to_string(self.created_date),
             "notes": [n.to_json() for n in self.notes],
         }
@@ -293,7 +249,6 @@ class Task(Model):
             "body": self.body,
             "context": self.context,
             "priority": self.priority,
-            "owner": self.owner,
             "created_date": self.created_date,
             "completed_date": self.completed_date,
             "notes": [n.to_dict() for n in self.notes],
