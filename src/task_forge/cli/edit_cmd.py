@@ -18,7 +18,7 @@ import toml
 
 from task_forge.cli.utils import inject_list
 from task_forge.lists import NotFoundError
-from task_forge.task import Task
+from task_forge.models import Task
 
 
 def get_editor_program():

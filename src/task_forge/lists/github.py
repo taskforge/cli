@@ -8,7 +8,7 @@ from github import Github, GithubObject
 
 from task_forge.lists import List as IList
 from task_forge.lists.sqlite import List as SQLiteList
-from task_forge.task import Note, Task
+from task_forge.models import Note, Task
 
 PRIORITY_LABEL = re.compile("^P[0-9]{1,}$")
 DEFAULT_CACHE_FILE = os.path.join(user_data_dir(), "taskforge", "github_cache.sqlite")

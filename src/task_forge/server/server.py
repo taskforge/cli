@@ -11,7 +11,7 @@ from autobahn.websocket.types import ConnectionDeny
 
 from task_forge.ql.ast import AST
 from task_forge.ql.parser import Parser
-from task_forge.task import Note, Task
+from task_forge.models import Note, Task
 
 STATUS_SUCCESS = "success"
 STATUS_FAILURE = "failure"

@@ -21,7 +21,7 @@ import sys
 
 from task_forge.cli.utils import inject_list
 from task_forge.cli.workon_cmd import top_priority
-from task_forge.task import Task
+from task_forge.models import Task
 
 
 def import_file(filename, task_list):

@@ -5,7 +5,7 @@ from task_forge.lists import List as IList
 from task_forge.lists import NotFoundError
 from task_forge.server.client import Client
 from task_forge.server.server import STATUS_FAILURE
-from task_forge.task import Task
+from task_forge.models import Task
 
 
 class List(IList):
