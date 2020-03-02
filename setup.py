@@ -39,6 +39,10 @@ setup(
             "mongodb = task_forge.lists.mongo",
             "sqlite = task_forge.lists.sqlite",
         ],
+        "console_scripts": [
+            "task=task_forge.cli.main",
+            "taskforged=task_forge.daemon.main",
+        ]
     },
     extras_require=extras,
     classifiers=[
