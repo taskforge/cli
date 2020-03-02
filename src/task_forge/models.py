@@ -3,8 +3,6 @@
 from typing import List, Union
 from datetime import datetime
 
-from bson.objectid import ObjectId
-
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
