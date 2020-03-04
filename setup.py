@@ -39,8 +39,8 @@ setup(
             "sqlite = task_forge.lists.sqlite",
         ],
         "console_scripts": [
-            "task=task_forge.cli.main",
-            "taskforged=task_forge.daemon.main",
+            "task=task_forge.cli:main",
+            "taskforged=task_forge.daemon:main",
         ],
     },
     classifiers=[
