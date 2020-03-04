@@ -52,15 +52,14 @@ WEBSITEDIR          = $(BUILDDIR)/website/public
 ############
 
 .PHONY: clean pydocstyle pylint lint lint-docs-validate-links \
-	lint-docs-vale help livehtml docs dist
+	lint-docs-vale help livehtml docs dist lint-and-test
+
+lint-and-test: lint test-all
 
 install-dev: $(DEV_INSTALL_LINK)
 $(DEV_INSTALL_LINK):
 	$(PIP) install --editable .
-	$(PIP) install --editable ".[mongo]"
 	$(PIP) install --editable ".[github]"
-	$(PIP) install --editable ".[server]"
-	# $(PIP) install --editable ".[cli]"
 	$(PIP) install -r requirements/dev.txt
 
 install:
@@ -172,13 +171,17 @@ lint-docs-validate-links:
 
 lint-docs: lint-docs-vale lint-docs-validate-links
 
-flake8:
-	$(PYTHON) -m flake8 src tests
+mypy:
+	$(PYTHON) -m mypy src tests
+
+pylint:
+	$(PYTHON) -m pylint --rcfile=setup.cfg src
+	$(PYTHON) -m pylint --rcfile=tests/.pylintrc tests
 
 pydocstyle:
 	$(PYTHON) -m pydocstyle src
 
-lint: fmt flake8 pydocstyle
+lint: fmt pylint pydocstyle mypy
 	@echo "Ready to commit!"
 
 fmt:
@@ -190,6 +193,7 @@ fmt:
 ###########
 
 test: test-not-slow
+	mypy src
 
 test-all:
 	$(PYTEST) $(PYTEST_OPTS)
