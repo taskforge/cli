@@ -4,8 +4,8 @@ import os
 import re
 
 from appdirs import user_data_dir
-from github import Github, GithubObject
 
+from github import Github, GithubObject
 from task_forge.lists import List as IList
 from task_forge.lists.sqlite import List as SQLiteList
 from task_forge.models import Note, Task

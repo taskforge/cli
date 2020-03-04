@@ -5,8 +5,8 @@ import sqlite3
 from datetime import datetime
 from uuid import uuid1
 
-from task_forge.ql.tokens import Type
 from task_forge.models import Note, Task
+from task_forge.ql.tokens import Type
 
 from . import InvalidConfigError
 from . import List as AList

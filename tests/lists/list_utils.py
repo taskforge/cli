@@ -10,10 +10,10 @@ from datetime import datetime
 
 import pytest
 
+from task_forge.models import Note, Task
 from task_forge.ql.ast import AST, Expression
 from task_forge.ql.parser import Parser
 from task_forge.ql.tokens import Token
-from task_forge.models import Note, Task
 
 
 class ListTests:

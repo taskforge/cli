@@ -1,8 +1,8 @@
 import pytest
 
 from task_forge.ql.ast import AST, Expression
-from task_forge.ql.parser import Parser, ParseError
 from task_forge.ql.lexer import Lexer
+from task_forge.ql.parser import ParseError, Parser
 from task_forge.ql.tokens import Token
 
 

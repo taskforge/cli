@@ -1,8 +1,8 @@
-import unittest
 import json
+import unittest
 from datetime import datetime
 
-from task_forge.models import Task, Note, Model, date_to_string
+from task_forge.models import Model, Note, Task, date_to_string
 
 
 class TaskTests(unittest.TestCase):
