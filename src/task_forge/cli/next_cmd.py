@@ -17,8 +17,8 @@ Options:
 
 from typing import Any
 
-from task_forge.lists import NotFoundError, TaskList
 from task_forge.cli.utils import inject_list
+from task_forge.lists import NotFoundError, TaskList
 
 
 @inject_list

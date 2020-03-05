@@ -1,13 +1,12 @@
 """Provides a TaskList implementation for talking to a Taskforge server."""
 
-from typing import Union, List, Dict, Any, cast
+from typing import Any, Dict, List, Union, cast
 
 import requests
 
-from task_forge.lists import InvalidConfigError
+from task_forge.lists import InvalidConfigError, NotFoundError
 from task_forge.lists import TaskList as IList
-from task_forge.lists import NotFoundError
-from task_forge.models import Task, Note
+from task_forge.models import Note, Task
 from task_forge.ql.ast import AST
 
 

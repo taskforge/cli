@@ -18,12 +18,11 @@ If an import option is provided all other options are ignored.
 """
 
 import sys
-
 from typing import Any
 
-from task_forge.lists import TaskList
 from task_forge.cli.utils import inject_list
 from task_forge.cli.workon_cmd import top_priority
+from task_forge.lists import TaskList
 from task_forge.models import Task
 
 

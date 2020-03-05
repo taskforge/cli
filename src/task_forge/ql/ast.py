@@ -1,7 +1,7 @@
 """AST and Expression classes for the Taskforge query language."""
 
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 from task_forge.ql.tokens import Token, Type
 

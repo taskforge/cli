@@ -6,12 +6,11 @@ Complete tasks by ID. If no IDs are provided then the current task indicated by
 """
 
 import sys
-
 from typing import Any, List
 
-from task_forge.models import Task
-from task_forge.lists import NotFoundError, TaskList
 from task_forge.cli.utils import inject_list
+from task_forge.lists import NotFoundError, TaskList
+from task_forge.models import Task
 
 
 @inject_list

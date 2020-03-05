@@ -184,6 +184,9 @@ pydocstyle:
 lint: fmt pylint pydocstyle mypy
 	@echo "Ready to commit!"
 
+black-check:
+	$(PYTHON) -m black --check src tests
+
 fmt:
 	$(PYTHON) -m isort --recursive src tests
 	$(PYTHON) -m black src tests

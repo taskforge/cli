@@ -2,8 +2,7 @@
 
 import os
 import sys
-
-from typing import Dict, Any, Optional, cast
+from typing import Any, Dict, Optional, cast
 
 import appdirs
 import toml

@@ -11,10 +11,9 @@ platform.
 import os
 import shlex
 import sys
-
-from typing import Any, cast, Dict
 from subprocess import call
 from tempfile import NamedTemporaryFile
+from typing import Any, Dict, cast
 
 import toml
 

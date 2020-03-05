@@ -5,7 +5,6 @@ import socket
 import subprocess
 import sys
 import time
-
 from typing import Any, Dict
 
 from task_forge.cli.config import Config

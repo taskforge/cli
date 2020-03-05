@@ -1,6 +1,6 @@
 """Contains the Lexer class for tokenizing input for the Taskforge Query Language."""
 
-from typing import Iterable, Iterator, Callable
+from typing import Callable, Iterable, Iterator
 
 from .tokens import Token, Type
 

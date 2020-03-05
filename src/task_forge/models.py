@@ -1,7 +1,7 @@
 """Provides the Task and Note classes used throughout Taskforge."""
 
 from datetime import datetime
-from typing import List, Union, Dict, Callable, Any, NewType
+from typing import Any, Callable, Dict, List, NewType, Union
 from uuid import uuid4
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"

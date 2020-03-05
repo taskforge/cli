@@ -7,8 +7,9 @@ name should be a human readable name. It is used when loading a list such as
 inherits  from the abstract class 'List' in task_forge.lists.
 """
 
-import pkg_resources
 from typing import Any
+
+import pkg_resources
 
 
 def __entry_points() -> Any:

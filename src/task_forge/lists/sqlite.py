@@ -2,18 +2,16 @@
 
 import os
 import sqlite3
-from typing import Tuple, Any, List, Dict
 from datetime import datetime
+from typing import Any, Dict, List, Tuple
 from uuid import uuid1
 
 from task_forge.models import Note, Task
 from task_forge.ql.ast import AST, Expression
 from task_forge.ql.tokens import Type
 
-from . import InvalidConfigError
+from . import InvalidConfigError, NotFoundError
 from . import TaskList as AList
-from . import NotFoundError
-
 
 QueryContext = Tuple[str, Dict[str, Any]]
 

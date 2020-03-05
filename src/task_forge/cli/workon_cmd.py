@@ -7,12 +7,10 @@ making it the "current" task in Taskforge terms.
 """
 
 import sys
-
 from typing import Any
 
-from task_forge.lists import TaskList
 from task_forge.cli.utils import inject_list
-from task_forge.lists import NotFoundError
+from task_forge.lists import NotFoundError, TaskList
 
 
 def top_priority(task_list: TaskList) -> int:

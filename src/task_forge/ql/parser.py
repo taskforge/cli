@@ -1,7 +1,7 @@
 """Contains the Parser class for the Taskforge Query Language."""
 
-from typing import Optional, Callable, Dict
 from enum import IntEnum
+from typing import Callable, Dict, Optional
 
 from .ast import AST, Expression
 from .lexer import Lexer

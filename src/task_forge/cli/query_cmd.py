@@ -25,13 +25,12 @@ For information on available output formats see 'man task-query'
 import csv
 import json
 import sys
-
 from typing import Any, List
 
-from task_forge.models import Task
-from task_forge.lists import NotFoundError, TaskList
-from task_forge.ql.parser import ParseError, Parser
 from task_forge.cli.utils import inject_list
+from task_forge.lists import NotFoundError, TaskList
+from task_forge.models import Task
+from task_forge.ql.parser import ParseError, Parser
 
 
 def print_table(tasks: List[Task]) -> None:

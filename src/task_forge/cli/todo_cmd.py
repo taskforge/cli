@@ -15,11 +15,11 @@ For more information on available output formats see 'man task-query'
 
 from typing import Any
 
+from task_forge.cli.query_cmd import print_tasks
+from task_forge.cli.utils import inject_list
 from task_forge.lists import NotFoundError, TaskList
 from task_forge.ql.ast import AST, Expression
 from task_forge.ql.tokens import Token
-from task_forge.cli.query_cmd import print_tasks
-from task_forge.cli.utils import inject_list
 
 
 @inject_list

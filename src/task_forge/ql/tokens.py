@@ -2,7 +2,7 @@
 
 import re
 from enum import Enum
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 DATE_REGEX = re.compile(
     "^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2})? ?(AM|PM|pm|am)?"
