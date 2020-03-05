@@ -89,6 +89,7 @@ class ModelTests(unittest.TestCase):
 
         class GenericModel(Model):
             def __init__(self):
+                super().__init__()
                 self.__really_should_not_appear = 0
                 self._should_not_appear = 0
                 self.should_appear = 0

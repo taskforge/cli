@@ -44,7 +44,7 @@ class Config:
     def __init__(
         self,
         general: ConfigDict = None,
-        list: ConfigDict = None,
+        list: ConfigDict = None,  # pylint: disable=redefined-builtin
         server: ConfigDict = None,
     ):
         self.general = general if general is not None else {}

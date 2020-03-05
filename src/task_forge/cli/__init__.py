@@ -61,7 +61,7 @@ def print_lists() -> None:
         print(f"  {name}")
 
 
-def main() -> None:
+def main() -> None:  # pylint: disable=too-many-branches
     """CLI entrypoint, handles subcommand parsing"""
     args = docopt(
         __doc__, version="task version {}".format(__version__), options_first=True,

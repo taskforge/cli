@@ -21,7 +21,7 @@ class Lexer(Iterable[Token]):
         """Return self, for use with for loops."""
         return self
 
-    def __next__(self) -> Token:
+    def __next__(self) -> Token:  # pylint: disable=too-many-branches
         """Return the next token from input."""
         self._skip_whitespace()
 

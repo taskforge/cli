@@ -20,6 +20,6 @@ class SQLiteTaskListTests(unittest.TestCase, TaskListTests):
 @pytest.mark.benchmark(group="SQLite")
 class TestSQLiteTaskListPerformance(TaskListBenchmarks):
     @pytest.fixture
-    def task_list(self, tmpdir):
+    def task_list(self, tmpdir):  # pylint: disable=arguments-differ
         tmpfile = tmpdir.join("tasks.sqlite3")
         return TaskList(file_name=str(tmpfile), create_tables=True)

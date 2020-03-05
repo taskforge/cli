@@ -5,11 +5,6 @@ import unittest
 from contextlib import closing
 from tempfile import NamedTemporaryFile
 
-import pytest
-import requests
-
-from task_forge.daemon import Daemon
-from task_forge.lists.sqlite import TaskList as SQLiteList
 from task_forge.lists.taskforged import TaskList
 
 from ..list_utils import TaskListTests

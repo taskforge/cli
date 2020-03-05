@@ -1,3 +1,6 @@
+# Disable no-member since TaskListTests is always inherited by
+# unittest testcases which set self.list
+# pylint: disable=no-member
 """
 A common suite of tests for lists that ensure compliance.
 
@@ -197,10 +200,10 @@ class TaskListTests:
 @pytest.mark.benchmark
 class TaskListBenchmarks:
     @pytest.fixture
-    def task_list(self):
+    def task_list(self):  # pylint: disable=no-self-use
         raise NotImplementedError
 
-    def test_query_benchmark(self, task_list, benchmark):
+    def test_query_benchmark(self, task_list, benchmark):  # pylint: disable=no-self-use
         # Hand-crafted artisinal Abstract Syntax Tree
         ast = AST(
             Expression(
