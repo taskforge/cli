@@ -45,7 +45,7 @@ class Daemon:
 
         jsn = await request.json()
         note = Note.from_dict(jsn)
-        self.list.add_note(task_id, jsn)
+        self.list.add_note(task_id, note)
         return web.json_response({"message": "success"})
 
     async def create_tasks(self, request):
