@@ -24,7 +24,14 @@ def find_free_port():
 class TaskforgeDaemonListTests(unittest.TestCase, TaskListTests):
     def setUp(self):
         self.tmpfile = NamedTemporaryFile()
+
+        # Have to remove the file that NamedTemporaryFile creates so
+        # the sqlite list created by taskforged will run create_tables
         os.remove(self.tmpfile.name)
+
+        # Can't used NamedTemporaryFile here because for some reason
+        # os.path.isfile (used in config.py for loading) returns False
+        # for them even after we create it below by writing to it.
         self.cfgfile = "/tmp/taskforged_test_config.toml"
 
         port = find_free_port()
@@ -48,6 +55,11 @@ port = {free_port}
         self.proc = subprocess.Popen(
             ["taskforged", "--config-file={}".format(self.cfgfile)]
         )
+
+        # Give the server time to start, if we don't do this some
+        # weird GIL-ness (I'm guessing) causes the process to never
+        # get to the point of accepting connections before we try
+        # connecting.
         try:
             self.proc.communicate(timeout=2)
         except subprocess.TimeoutExpired:
