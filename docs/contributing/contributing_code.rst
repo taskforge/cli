@@ -115,7 +115,7 @@ previous command:
 
 .. note::
 
-   For unix systems which have ``make`` installed you can perform the above
+   For Unix systems which have ``make`` installed you can perform the above
    commands with:
 
    .. code::
