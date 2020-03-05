@@ -2,10 +2,10 @@
 
 name: Documentation validation
 on: [push]
-runs-on: ubuntu-latest
 
 jobs:
   vale:
+    runs-on: ubuntu-latest
     container:
       image: ubuntu:latest
     steps:
@@ -18,6 +18,7 @@ jobs:
         run: ./bin/vale --ext='.rst' --glob='*.rst' docs
 
   check-documentation-for-broken-links:
+    runs-on: ubuntu-latest
     container:
       image: nginx:latest
     steps:

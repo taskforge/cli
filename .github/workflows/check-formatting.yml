@@ -1,11 +1,11 @@
 ---
 name: Check Code Style
 on: [push]
-runs-on: ubuntu-latest
 
 jobs:
   lint:
     name: Pylint
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set Up Python
@@ -21,6 +21,7 @@ jobs:
 
   black:
     name: Black
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set Up Python
@@ -36,6 +37,7 @@ jobs:
 
   pydocstyle:
     name: Pydocstyle
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set Up Python
