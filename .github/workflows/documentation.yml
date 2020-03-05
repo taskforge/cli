@@ -29,6 +29,8 @@ jobs:
           pip3 install pylinkvalidator
           make PYTHON=$(which python3) website
           cp -R build/website/public/* /usr/share/nginx/html/
+      - name: Start NGINX
+        run: nginx &
       - name: Validate links
         run: pylinkvalidate.py -P http://localhost:80
 
