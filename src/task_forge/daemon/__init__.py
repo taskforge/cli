@@ -111,7 +111,7 @@ class Daemon:
                     status=400,
                 )
         else:
-            tasks = self.task_list.task_list()
+            tasks = self.task_list.list()
 
         return web.json_response([t.to_json() for t in tasks])
 
