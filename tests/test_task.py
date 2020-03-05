@@ -88,6 +88,8 @@ class ModelTests(unittest.TestCase):
         now = datetime.now()
 
         class GenericModel(Model):
+            dict_blacklist = ["id"]
+
             def __init__(self):
                 super().__init__()
                 self.__really_should_not_appear = 0
