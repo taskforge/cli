@@ -12,7 +12,7 @@ PIP					= $(PYTHON) -m pip
 PYTEST				= PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest
 PYTEST_OPTS			= --disable-pytest-warnings
 DOCKER				= docker
-SITE_PACKAGES		= $(shell python -c 'import sys; print([p for p in sys.path if "site-packages" in p][0])')
+SITE_PACKAGES		= $(shell $(PYTHON) -c 'import sys; print([p for p in sys.path if "site-packages" in p][0])')
 DEV_INSTALL_LINK	= $(SITE_PACKAGES)/taskforge-cli.egg-link
 DOCS				= $(shell find src/docs -name '*.rst' -or -name '*.html' | grep -v 'cli/task_.*\.rst')
 VALE				= $(DOCKER) run		\
