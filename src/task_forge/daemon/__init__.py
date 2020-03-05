@@ -82,6 +82,9 @@ class Daemon:
         query = request.query.get("query", None)
         if query is not None:
             try:
+                if not query:
+                    raise ParseError("can not parse an empty query")
+
                 parser = Parser(query)
                 tasks = self.list.search(parser.parse())
             except ParseError as e:
