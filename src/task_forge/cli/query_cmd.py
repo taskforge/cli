@@ -26,12 +26,15 @@ import csv
 import json
 import sys
 
-from ..lists import NotFoundError
-from ..ql.parser import ParseError, Parser
-from .utils import inject_list
+from typing import Any, List
+
+from task_forge.models import Task
+from task_forge.lists import NotFoundError, TaskList
+from task_forge.ql.parser import ParseError, Parser
+from task_forge.cli.utils import inject_list
 
 
-def print_table(tasks):
+def print_table(tasks: List[Task]) -> None:
     """Print an ASCII table of the tasks."""
     rows = [["ID", "Created Date", "Completed Date", "Priority", "Title", "Context"]]
     rows += [
@@ -48,7 +51,7 @@ def print_table(tasks):
 
     # Create a list of the lengths of the longest item in each column.
     # Something like [10, 4, 3, 8]
-    column_widths = None
+    column_widths: List[int] = []
     for row in rows:
         if not column_widths:
             # Get the initial length of our headers
@@ -73,13 +76,13 @@ def print_table(tasks):
         print(f"| {' | '.join(cols)} |")
 
 
-def print_text(tasks):
+def print_text(tasks: List[Task]) -> None:
     """Print the __repr__ of all tasks in the list."""
     for task in tasks:
         print(task)
 
 
-def print_json(tasks):
+def print_json(tasks: List[Task]) -> None:
     """Print a list of tasks as json to stdout."""
     dicts = [task.to_json() for task in tasks]
     json.dump(dicts, sys.stdout, indent="\t")
@@ -87,7 +90,7 @@ def print_json(tasks):
     print()
 
 
-def print_csv(tasks):
+def print_csv(tasks: List[Task]) -> None:
     """Print a list of tasks as csv to stdout."""
     writer = csv.DictWriter(
         sys.stdout,
@@ -108,7 +111,7 @@ def print_csv(tasks):
         writer.writerow(task.to_dict())
 
 
-def print_tasks(tasks, output="table"):
+def print_tasks(tasks: List[Task], output: str = "table") -> None:
     """Print tasks using the print function which corresponds to output."""
     if output == "table":
         print_table(tasks)
@@ -124,8 +127,10 @@ def print_tasks(tasks, output="table"):
 
 
 @inject_list
-def query_tasks(query, task_list=None):
+def query_tasks(query: str, task_list: TaskList) -> List[Task]:
     """Return tasks which match query or all tasks if query is blank"""
+    assert task_list is not None
+
     if query:
         ast = Parser(query).parse()
         return task_list.search(ast)
@@ -133,7 +138,7 @@ def query_tasks(query, task_list=None):
     return task_list.list()
 
 
-def run(args):
+def run(args: Any) -> None:
     """Add the query command to parser."""
     query = " ".join(args["<query>"]) if args["<query>"] else ""
     try:

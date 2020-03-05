@@ -42,9 +42,9 @@ ALIASES = {
 }
 
 
-def print_lists():
+def print_lists() -> None:
     """Print installed list implementations"""
-    from ..lists.load import get_all_lists
+    from task_forge.lists.load import get_all_lists
 
     print("Available lists are:")
     try:
@@ -61,7 +61,7 @@ def print_lists():
         print(f"  {name}")
 
 
-def main():
+def main() -> None:
     """CLI entrypoint, handles subcommand parsing"""
     args = docopt(
         __doc__, version="task version {}".format(__version__), options_first=True,
@@ -70,7 +70,11 @@ def main():
         print(__doc__)
         sys.exit(1)
 
+    if args["--verbose"]:
+        logging.basicConfig(level=logging.DEBUG)
+
     command = args["<command>"]
+    command = ALIASES.get(command, command)
     if command == "help" or args["--help"]:
         topic = None
         if args["<args>"]:
@@ -82,34 +86,28 @@ def main():
             try:
                 from importlib import import_module
 
-                command_mod = import_module(f"task_forge.cli.{topic}_cmd")
-                print(command_mod.__doc__)
+                cmd_mod = import_module(f"task_forge.cli.{topic}_cmd")
+                print(cmd_mod.__doc__)
             except ImportError:
                 print(f"{topic} is not a known task command")
                 sys.exit(1)
         else:
             print(__doc__)
 
-        sys.exit(0)
-
-    if args["--verbose"]:
-        logging.basicConfig(level=logging.DEBUG)
-
-    command = ALIASES.get(command, command)
     if command == "add":
-        import task_forge.cli.add_cmd as command_mod
+        import task_forge.cli.add_cmd as command_mod  # type: ignore
     elif command == "next":
-        import task_forge.cli.next_cmd as command_mod
+        import task_forge.cli.next_cmd as command_mod  # type: ignore
     elif command == "todo":
-        import task_forge.cli.todo_cmd as command_mod
+        import task_forge.cli.todo_cmd as command_mod  # type: ignore
     elif command == "edit":
-        import task_forge.cli.edit_cmd as command_mod
+        import task_forge.cli.edit_cmd as command_mod  # type: ignore
     elif command == "complete":
-        import task_forge.cli.complete_cmd as command_mod
+        import task_forge.cli.complete_cmd as command_mod  # type: ignore
     elif command == "query":
-        import task_forge.cli.query_cmd as command_mod
+        import task_forge.cli.query_cmd as command_mod  # type: ignore
     elif command == "workon":
-        import task_forge.cli.workon_cmd as command_mod
+        import task_forge.cli.workon_cmd as command_mod  # type: ignore
     else:
         print(f"{command} is not a known task command")
         print(__doc__)

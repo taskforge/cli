@@ -1,5 +1,6 @@
 """Contains the Parser class for the Taskforge Query Language."""
 
+from typing import Optional, Callable, Dict
 from enum import IntEnum
 
 from .ast import AST, Expression
@@ -34,7 +35,7 @@ PRECEDENCES = {
 class ParseError(Exception):
     """Raised by the Parser when invalid syntax occurs."""
 
-    def __init__(self, msg, pos=0):
+    def __init__(self, msg: str, pos: int = 0):
         self.args = (msg,)
         self.pos = pos
 
@@ -42,7 +43,7 @@ class ParseError(Exception):
 class Parser:
     """Parser for the task_forge query language."""
 
-    def __init__(self, query="", lexer=None):
+    def __init__(self, query: str = "", lexer: Optional[Lexer] = None):
         """
         Create a lexer and parser for query.
 
@@ -54,10 +55,7 @@ class Parser:
         else:
             self.lexer = lexer
 
-        self.current_token = None
-        self.peek_token = None
-
-        self.prefixes = {
+        self.prefixes: Dict[Type, Callable[[], Expression]] = {
             Type.STRING: self._parse_literal,
             Type.NUMBER: self._parse_literal,
             Type.DATE: self._parse_literal,
@@ -65,7 +63,7 @@ class Parser:
             Type.LPAREN: self._parse_grouped_expression,
         }
 
-        self.infixes = {
+        self.infixes: Dict[Type, Callable[[Expression], Expression]] = {
             Type.EQ: self._parse_infix_expression,
             Type.NE: self._parse_infix_expression,
             Type.LT: self._parse_infix_expression,
@@ -79,11 +77,13 @@ class Parser:
             Type.STRING: self._concat,
         }
 
+        self.peek_token = Token("", token_type=Type.STRING)
+        self.current_token = Token("", token_type=Type.STRING)
         # Populate current and peek token
         self.next_token()
         self.next_token()
 
-    def next_token(self):
+    def next_token(self) -> Token:
         """Get the next token from input."""
         self.current_token = self.peek_token
         try:
@@ -91,25 +91,25 @@ class Parser:
         except StopIteration:
             self.peek_token = Token("EOF", token_type=Type.EOF)
 
-        if self.current_token is not None and self.current_token.token_type == Type.EOF:
+        if self.current_token.token_type == Type.EOF:
             raise StopIteration
 
         return self.current_token
 
     @classmethod
-    def from_lexer(cls, lexer):
+    def from_lexer(cls, lexer: Lexer) -> "Parser":
         """Create a Parser from lexer."""
         return cls(lexer=lexer)
 
-    def set_input(self, query):
+    def set_input(self, query: str) -> None:
         """Change the input of this parser."""
         self.lexer = Lexer(query)
 
-    def parse(self):
+    def parse(self) -> AST:
         """Parse the query returning an AST. Raises ParseError on failure."""
         return AST(self._parse_expression(Precedence.LOWEST))
 
-    def _parse_expression(self, precedence):
+    def _parse_expression(self, precedence: Precedence) -> Expression:
         """Parse an expression."""
         prefix_fun = self.prefixes.get(self.current_token.token_type)
         if prefix_fun is None:
@@ -120,14 +120,25 @@ class Parser:
             self.peek_token.token_type, Precedence.LOWEST
         ):
             infix_fun = self.infixes.get(self.peek_token.token_type)
+            try:
+                assert infix_fun is not None
+            except AssertionError:
+                raise ParseError(
+                    f"no infix function for: {self.current_token.token_type}"
+                )
+
             self.next_token()
             expression = infix_fun(expression)
 
         return expression
 
-    def _parse_infix_expression(self, left):
+    def _parse_infix_expression(self, left: Expression) -> Expression:
         """Parse a an infix expression."""
         expression = Expression(self.current_token, left=left)
+
+        assert expression.operator is not None
+        assert expression.left is not None
+
         if (
             expression.operator.token_type == Type.AND
             or expression.operator.token_type == Type.OR
@@ -154,7 +165,7 @@ class Parser:
         expression.right = self._parse_expression(precedence)
         return expression
 
-    def _concat(self, left):
+    def _concat(self, left: Expression) -> Expression:
         """Concatenate multiple unquoted strings into one value."""
         if not (left.is_literal() and isinstance(left.value, str)):
             raise ParseError(f"can only concat string literals got: {left}")
@@ -163,11 +174,11 @@ class Parser:
         left.value += " " + self.current_token.literal
         return left
 
-    def _parse_literal(self):
+    def _parse_literal(self) -> Expression:
         """Return a literal expression from the current token of parser."""
         return Expression(self.current_token)
 
-    def _parse_grouped_expression(self):
+    def _parse_grouped_expression(self) -> Expression:
         """Return an expression with a the LOWEST precedence."""
         # Skip the (
         self.next_token()

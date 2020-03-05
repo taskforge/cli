@@ -2,15 +2,20 @@
 
 import os
 import sqlite3
+from typing import Tuple, Any, List, Dict
 from datetime import datetime
 from uuid import uuid1
 
 from task_forge.models import Note, Task
+from task_forge.ql.ast import AST, Expression
 from task_forge.ql.tokens import Type
 
 from . import InvalidConfigError
 from . import TaskList as AList
 from . import NotFoundError
+
+
+QueryContext = Tuple[str, Dict[str, Any]]
 
 
 class TaskList(AList):
@@ -55,7 +60,9 @@ SELECT id, title, body, context, priority, created_date, completed_date
 FROM tasks
 """
 
-    def __init__(self, directory="", file_name="", create_tables=False):
+    def __init__(
+        self, directory: str = "", file_name: str = "", create_tables: bool = False
+    ):
         """Create a TaskList from the given configuration.
 
         Either directory or file_name should be provided. Raises
@@ -88,12 +95,12 @@ FROM tasks
             self.conn.execute(self.__create_note_table)
 
     @staticmethod
-    def note_from_row(row):
+    def note_from_row(row: Tuple[Any, Any, Any]) -> Note:
         """Convert a SQL row tuple back into a Note object."""
         return Note(id=row[0], body=row[1], created_date=datetime.fromtimestamp(row[2]))
 
     @staticmethod
-    def task_to_row(task):
+    def task_to_row(task: Task) -> Tuple[str, str, str, str, int, float, float]:
         """Convert a task to a tuple with the correct column order."""
         return (
             task.id,
@@ -105,7 +112,7 @@ FROM tasks
             task.completed_date.timestamp() if task.completed_date else 0,
         )
 
-    def task_from_row(self, row):
+    def task_from_row(self, row: Tuple[Any, Any, Any, Any, Any, Any, Any]) -> Task:
         """Convert a SQL row tuple back into a Task object.
 
         Raises a NotFoundError if row is None
@@ -127,7 +134,7 @@ FROM tasks
             notes=self.__get_notes(row[0]),
         )
 
-    def __get_notes(self, id):
+    def __get_notes(self, id: str) -> List[Note]:
         return [
             TaskList.note_from_row(row)
             for row in self.conn.execute(
@@ -135,26 +142,28 @@ FROM tasks
             )
         ]
 
-    def add(self, task):
+    def add(self, task: Task) -> None:
         """Add a task to the TaskList."""
         self.conn.execute(self.__insert, TaskList.task_to_row(task))
         self.conn.commit()
 
-    def add_multiple(self, tasks):
+    def add_multiple(self, tasks: List[Task]) -> None:
         """Add multiple tasks to the TaskList."""
-        self.conn.executemany(self.__insert, [List.task_to_row(task) for task in tasks])
+        self.conn.executemany(
+            self.__insert, [TaskList.task_to_row(task) for task in tasks]
+        )
         self.conn.commit()
 
-    def list(self):
+    def list(self) -> List[Task]:
         """Return a python list of the Task in this TaskList."""
         return [self.task_from_row(row) for row in self.conn.execute(self.__select)]
 
-    def find_by_id(self, task_id):
+    def find_by_id(self, task_id: str) -> Task:
         """Find a task by task_id."""
         cursor = self.conn.execute(self.__select + "WHERE id = ?", (task_id,))
         return self.task_from_row(cursor.fetchone())
 
-    def current(self):
+    def current(self) -> Task:
         """Return the current task."""
         return self.task_from_row(
             self.conn.execute(
@@ -164,7 +173,7 @@ FROM tasks
             ).fetchone()
         )
 
-    def complete(self, task_id):
+    def complete(self, task_id: str) -> None:
         """Complete a task by task_id."""
         self.conn.execute(
             "UPDATE tasks SET completed_date = ? WHERE id = ?",
@@ -172,21 +181,21 @@ FROM tasks
         )
         self.conn.commit()
 
-    def update(self, task):
+    def update(self, task: Task) -> None:
         """Update a task in the list.
 
         The original is retrieved using the id of the given task.
         """
-        update_tuple = TaskList.task_to_row(task)
+        task_row = TaskList.task_to_row(task)
         # move id to the end
         update_tuple = (
-            update_tuple[1],
-            update_tuple[2],
-            update_tuple[3],
-            update_tuple[4],
-            update_tuple[5],
-            update_tuple[6],
-            update_tuple[0],
+            task_row[1],
+            task_row[2],
+            task_row[3],
+            task_row[4],
+            task_row[5],
+            task_row[6],
+            task_row[0],
         )
         self.conn.execute(
             r"""
@@ -204,7 +213,7 @@ WHERE id = ?
         )
         self.conn.commit()
 
-    def add_note(self, task_id, note):
+    def add_note(self, task_id: str, note: Note) -> None:
         """Add note to a task by task_id."""
         self.conn.execute(
             "INSERT INTO notes (task_id, id, body, created_date) VALUES (?, ?, ?, ?)",
@@ -212,7 +221,7 @@ WHERE id = ?
         )
         self.conn.commit()
 
-    def search(self, ast):
+    def search(self, ast: AST) -> List[Task]:
         """Evaluate the AST and return a List of matching results."""
         where, values = TaskList.__eval(ast.expression)
         return [
@@ -221,7 +230,7 @@ WHERE id = ?
         ]
 
     @staticmethod
-    def __eval(expression):
+    def __eval(expression: Expression) -> QueryContext:
         """Evaluate expression returning a where clause and a dictionary of values."""
         if expression.is_str_literal():
             return TaskList.__eval_str_literal(expression)
@@ -232,7 +241,7 @@ WHERE id = ?
         return ("", {})
 
     @staticmethod
-    def __eval_str_literal(expression):
+    def __eval_str_literal(expression: Expression) -> QueryContext:
         """Evaluate a string literal query."""
         ident = uuid1().hex
         return (
@@ -241,8 +250,12 @@ WHERE id = ?
         )
 
     @staticmethod
-    def __eval_infix(expression):
+    def __eval_infix(expression: Expression) -> QueryContext:
         """Evaluate an infix expression."""
+        assert expression.left is not None
+        assert expression.right is not None
+        assert expression.operator is not None
+
         if expression.is_logical_infix():
             left, left_values = TaskList.__eval(expression.left)
             right, right_values = TaskList.__eval(expression.right)
@@ -269,7 +282,8 @@ WHERE id = ?
                 {ident: f"%{expression.right.value}%"},
             )
 
+        # Type ignore because we know that if we got here the right value is valid.
         return (
             f"({expression.left.value} {expression.operator.literal} :{ident})",
-            {ident: expression.right.value},
+            {ident: expression.right.value},  # type: ignore
         )

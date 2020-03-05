@@ -6,21 +6,23 @@ import subprocess
 import sys
 import time
 
+from typing import Any, Dict
+
 from task_forge.cli.config import Config
 
 
-def config(func):
+def config(func: Any) -> Any:
     """Load config and inject it as the keyword argument cfg."""
     cfg = Config.load()
 
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # type: ignore
         kwargs["cfg"] = cfg
         return func(*args, **kwargs)
 
     return wrapper
 
 
-def server_is_reachable(srv_cfg):
+def server_is_reachable(srv_cfg: Dict[str, Any]) -> bool:
     """Return a boolean indicating if the server is reachable or not."""
     host = srv_cfg.get("host", "localhost")
     port = srv_cfg.get("port", 8000)
@@ -37,7 +39,7 @@ def server_is_reachable(srv_cfg):
         sock.close()
 
 
-def start_server(cfg):
+def start_server(cfg: Config) -> None:
     """Start the taskforge server as a daemon if necessary."""
     logging.debug("checking if server is running...")
     if server_is_reachable(cfg.server):
@@ -65,11 +67,11 @@ def start_server(cfg):
         sys.exit(1)
 
 
-def inject_list(func):  # noqa: D202
+def inject_list(func: Any) -> Any:  # noqa: D202
     """Injects a kwarg task_list which contains a configured list object."""
 
     @config
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # type: ignore
         cfg = kwargs.pop("cfg")
         if cfg.general.get("disable_server", False):
             kwargs["task_list"] = cfg.load_list()

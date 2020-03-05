@@ -5,6 +5,8 @@ mypy
 pydocstyle
 pylinkvalidator
 pytest
+pytest-stub
+typeshed
 pytest-benchmark
 pytest-coverage
 sphinx

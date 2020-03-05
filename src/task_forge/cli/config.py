@@ -3,10 +3,12 @@
 import os
 import sys
 
+from typing import Dict, Any, Optional, cast
+
 import appdirs
 import toml
 
-from task_forge.lists import InvalidConfigError
+from task_forge.lists import InvalidConfigError, TaskList
 from task_forge.lists.load import get_list
 
 CONFIG_FILES = [
@@ -16,7 +18,10 @@ CONFIG_FILES = [
 ]
 
 
-def default_list_config():
+ConfigDict = Dict[str, Any]
+
+
+def default_list_config() -> ConfigDict:
     """Return the default list configuration."""
     return {
         "name": "sqlite",
@@ -24,7 +29,7 @@ def default_list_config():
     }
 
 
-def default_server_config():
+def default_server_config() -> ConfigDict:
     """Return the default configuration for a server."""
     return {
         "host": "localhost",
@@ -37,15 +42,20 @@ def default_server_config():
 class Config:
     """Configuration object for Taskforge CLI and taskforged."""
 
-    def __init__(self, general=None, list=None, server=None):
+    def __init__(
+        self,
+        general: ConfigDict = None,
+        list: ConfigDict = None,
+        server: ConfigDict = None,
+    ):
         self.general = general if general is not None else {}
         self.list = list if list is not None else default_list_config()
         self.server = server if server is not None else default_server_config()
         self.list_impl = None
-        self.path = None
+        self.path: Optional[str] = None
 
     @staticmethod
-    def load(path=None):
+    def load(path: str = None) -> "Config":
         """Load the config file from path or from the default config file paths."""
         cfg = Config()
 
@@ -60,11 +70,11 @@ class Config:
                     cfg.general.update(user_cfg.get("general", {}))
                     cfg.list.update(user_cfg.get("list", {}))
                     cfg.server.update(user_cfg.get("server", {}))
-                    cfg.path = config_file
+                    cfg.path = filename
 
         return cfg
 
-    def load_list(self, override_config=None):
+    def load_list(self, override_config: ConfigDict = None) -> TaskList:
         """Return the loaded list from this config."""
         if self.list_impl is not None:
             return self.list_impl
@@ -80,7 +90,7 @@ class Config:
             sys.exit(1)
 
         try:
-            return impl(**list_cfg["config"])
+            return cast(TaskList, impl(**list_cfg["config"]))
         except InvalidConfigError as invalid_config:
             print(f"Invalid config: {invalid_config}")
             sys.exit(1)
@@ -88,16 +98,8 @@ class Config:
             print(f"Invalid config unknown config key: {unknown_key}")
             sys.exit(1)
 
-    def toml(self):
+    def toml(self) -> str:
         """Return a toml string of this config."""
         return toml.dumps(
             {key: val for key, val in self.__dict__.items() if key[0] != "_"}
         )
-
-    def __getitem__(self, key):
-        """Allow retrieval of config values as if Config was a dict."""
-        return self.__dict__[key]
-
-    def __setitem__(self, key, value):
-        """Allow setting of config values as if Config was a dict."""
-        self.__dict__[key] = value

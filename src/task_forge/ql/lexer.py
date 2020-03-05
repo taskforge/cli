@@ -1,12 +1,14 @@
 """Contains the Lexer class for tokenizing input for the Taskforge Query Language."""
 
+from typing import Iterable, Iterator, Callable
+
 from .tokens import Token, Type
 
 
-class Lexer:
+class Lexer(Iterable[Token]):
     """Scans input producing tokens."""
 
-    def __init__(self, query):
+    def __init__(self, query: str):
         """Create a lexer for the string query."""
         self.length = len(query)
         self.data = query
@@ -15,11 +17,11 @@ class Lexer:
         self.char = ""
         self._read_char()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Token]:
         """Return self, for use with for loops."""
         return self
 
-    def __next__(self):
+    def __next__(self) -> Token:
         """Return the next token from input."""
         self._skip_whitespace()
 
@@ -75,7 +77,7 @@ class Lexer:
         self._read_char()
         return token
 
-    def _read_char(self):
+    def _read_char(self) -> None:
         """Read a character from input advancing the cursor."""
         if self.read_pos >= len(self.data):
             self.char = ""
@@ -85,14 +87,14 @@ class Lexer:
         self.pos = self.read_pos
         self.read_pos += 1
 
-    def _peek_char(self):
+    def _peek_char(self) -> str:
         """Return the next character."""
         if self.read_pos > self.length:
             return ""
 
         return self.data[self.read_pos]
 
-    def _read(self, valid):
+    def _read(self, valid: Callable[[str], bool]) -> str:
         """
         Read characters in the lexer until valid returns False.
 
@@ -104,15 +106,15 @@ class Lexer:
 
         return self.data[start : self.pos]
 
-    def _skip_whitespace(self):
+    def _skip_whitespace(self) -> None:
         while self.char.isspace():
             self._read_char()
 
-    def _unquoted_string(self):
+    def _unquoted_string(self) -> str:
         return self._read(lambda c: c.isalpha())
 
-    def _number(self):
+    def _number(self) -> str:
         return self._read(lambda c: c.isdigit() or c == ".")
 
-    def _quoted_string(self):
+    def _quoted_string(self) -> str:
         return self._read(lambda c: c not in ('"', "'"))

@@ -1,3 +1,5 @@
+# Ignore types because aiohttp does not support them
+# type: ignore
 """
 Usage: taskforged [options]
 
@@ -9,17 +11,24 @@ Options:
 
 from docopt import docopt
 from aiohttp import web
+from typing import Any
 
 from task_forge import __version__
-from task_forge.lists import NotFoundError
+from task_forge.lists import NotFoundError, TaskList
 from task_forge.cli.config import Config
 from task_forge.models import Note, Task
 from task_forge.ql import Parser, ParseError
 
 
 class Daemon:
-    def __init__(self, list, loop=None, host="localhost", port=8000):
-        self.list = list
+    def __init__(
+        self,
+        task_list: TaskList,
+        loop: Any = None,
+        host: str = "localhost",
+        port: int = 8000,
+    ):
+        self.task_list = task_list
         self.host = host
         self.port = port
         self.loop = loop
@@ -29,13 +38,13 @@ class Daemon:
 
     async def complete_task(self, request):
         task_id = request.match_info.get("id")
-        self.list.complete(task_id)
+        self.task_list.complete(task_id)
         return web.json_response({"message": "success"})
 
     async def update_task(self, request):
         jsn = await request.json()
         task = Task.from_dict(jsn)
-        self.list.update(task)
+        self.task_list.update(task)
         return web.json_response(task.to_json())
 
     async def add_note(self, request):
@@ -45,17 +54,17 @@ class Daemon:
 
         jsn = await request.json()
         note = Note.from_dict(jsn)
-        self.list.add_note(task_id, note)
+        self.task_list.add_note(task_id, note)
         return web.json_response({"message": "success"})
 
     async def create_tasks(self, request):
         jsn = await request.json()
-        if isinstance(jsn, list):
+        if isinstance(jsn, task_list):
             tasks = [Task.from_dict(j) for j in jsn]
-            self.list.add_multiple(tasks)
+            self.task_list.add_multiple(tasks)
         else:
             task = Task.from_dict(jsn)
-            self.list.add(task)
+            self.task_list.add(task)
 
         return web.json_response({"message": "success"})
 
@@ -64,14 +73,14 @@ class Daemon:
         if task_id is not None:
             if task_id == "current":
                 try:
-                    task = self.list.current()
+                    task = self.task_list.current()
                 except NotFoundError:
                     return web.json_response(
                         {"message": "no current task found"}, status=404
                     )
             else:
                 try:
-                    task = self.list.find_by_id(task_id)
+                    task = self.task_list.find_by_id(task_id)
                 except NotFoundError:
                     return web.json_response(
                         {"message": f"no task with {task_id} exists"}, status=404
@@ -86,13 +95,13 @@ class Daemon:
                     raise ParseError("can not parse an empty query")
 
                 parser = Parser(query)
-                tasks = self.list.search(parser.parse())
+                tasks = self.task_list.search(parser.parse())
             except ParseError as e:
                 return web.json_response(
                     {"message": str(e), "position": e.pos}, status=400
                 )
         else:
-            tasks = self.list.list()
+            tasks = self.task_list.task_list()
 
         return web.json_response([t.to_json() for t in tasks])
 
@@ -120,9 +129,9 @@ def main():
     args = docopt(__doc__, version="taskforged version {}".format(__version__))
     cfgfile = args.get("--config-file")
     config = Config.load(cfgfile)
-    list_impl = config.load_list()
+    task_list_impl = config.load_task_list()
     daemon = Daemon(
-        list_impl,
+        task_list_impl,
         host=config.server.get("host", "localhost"),
         port=config.server.get("port", 8000),
     )

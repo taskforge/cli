@@ -8,23 +8,26 @@ making it the "current" task in Taskforge terms.
 
 import sys
 
+from typing import Any
+
+from task_forge.lists import TaskList
 from task_forge.cli.utils import inject_list
 from task_forge.lists import NotFoundError
 
 
-def top_priority(task_list):
+def top_priority(task_list: TaskList) -> int:
     """Return a priority that is 0.1 more than the current highest priority."""
     try:
         task = task_list.current()
         current_priority = task.priority
     except NotFoundError:
-        current_priority = 1.0
+        current_priority = 1
 
-    return current_priority + 0.1
+    return current_priority + 1
 
 
 @inject_list
-def run(args, task_list=None):
+def run(args: Any, task_list: TaskList) -> None:
     """Print the current task in task_list."""
     try:
         new_current = task_list.find_by_id(args["<ID>"])

@@ -13,15 +13,17 @@ Options:
 For more information on available output formats see 'man task-query'
 """
 
-from ..lists import NotFoundError
-from ..ql.ast import AST, Expression
-from ..ql.tokens import Token
-from .query_cmd import print_tasks
-from .utils import inject_list
+from typing import Any
+
+from task_forge.lists import NotFoundError, TaskList
+from task_forge.ql.ast import AST, Expression
+from task_forge.ql.tokens import Token
+from task_forge.cli.query_cmd import print_tasks
+from task_forge.cli.utils import inject_list
 
 
 @inject_list
-def run(args, task_list=None):
+def run(args: Any, task_list: TaskList) -> None:
     """Print the current task in task_list."""
     ast = AST(
         Expression(

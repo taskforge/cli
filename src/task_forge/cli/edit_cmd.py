@@ -11,17 +11,19 @@ platform.
 import os
 import shlex
 import sys
+
+from typing import Any, cast, Dict
 from subprocess import call
 from tempfile import NamedTemporaryFile
 
 import toml
 
 from task_forge.cli.utils import inject_list
-from task_forge.lists import NotFoundError
+from task_forge.lists import NotFoundError, TaskList
 from task_forge.models import Task
 
 
-def get_editor_program():
+def get_editor_program() -> str:
     """Return editor based on operating system"""
     if sys.platform == "win32":
         if "EDITOR" in os.environ:
@@ -32,7 +34,7 @@ def get_editor_program():
     return os.getenv("EDITOR", "vi")
 
 
-def editor(filename):
+def editor(filename: str) -> None:
     """Open filename in $EDITOR"""
     program = get_editor_program()
     args = f"{program} {filename}"
@@ -40,7 +42,7 @@ def editor(filename):
 
 
 @inject_list
-def run(args, task_list=None):
+def run(args: Any, task_list: TaskList) -> None:
     """Open task by ID in $EDITOR. Update task based on result."""
     try:
         if args["<ID>"]:
@@ -55,7 +57,7 @@ def run(args, task_list=None):
         editor(tmp.name)
 
         with open(tmp.name) as tmp:
-            new_task = Task.from_dict(toml.load(tmp))
+            new_task = Task.from_dict(cast(Dict[str, Any], toml.load(tmp)))
 
         task_list.update(new_task)
         os.remove(tmp.name)

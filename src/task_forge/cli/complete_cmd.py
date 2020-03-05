@@ -7,12 +7,15 @@ Complete tasks by ID. If no IDs are provided then the current task indicated by
 
 import sys
 
-from ..lists import NotFoundError
-from .utils import inject_list
+from typing import Any, List
+
+from task_forge.models import Task
+from task_forge.lists import NotFoundError, TaskList
+from task_forge.cli.utils import inject_list
 
 
 @inject_list
-def complete_tasks(tasks, task_list=None):
+def complete_tasks(tasks: List[str], task_list: TaskList) -> None:
     """
     Complete tasks by the ids in tasks.
 
@@ -29,7 +32,7 @@ def complete_tasks(tasks, task_list=None):
         task_list.complete(task)
 
 
-def run(args):
+def run(args: Any) -> None:
     """Add the next command to parser."""
     tasks = args["<ID>"]
     complete_tasks(tasks)

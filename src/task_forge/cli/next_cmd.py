@@ -15,12 +15,14 @@ Options:
     -t, --title-only  Print only the task title
 """
 
-from ..lists import NotFoundError
-from .utils import inject_list
+from typing import Any
+
+from task_forge.lists import NotFoundError, TaskList
+from task_forge.cli.utils import inject_list
 
 
 @inject_list
-def run(args, task_list=None):
+def run(args: Any, task_list: TaskList) -> None:
     """Print the current task in task_list."""
     try:
         task = task_list.current()

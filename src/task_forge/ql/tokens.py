@@ -2,6 +2,7 @@
 
 import re
 from enum import Enum
+from typing import Optional, Dict
 
 DATE_REGEX = re.compile(
     "^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2})? ?(AM|PM|pm|am)?"
@@ -64,7 +65,7 @@ LITERAL_TYPES = {
 class Token:
     """A query language lexical Token."""
 
-    def __init__(self, literal, token_type=None):
+    def __init__(self, literal: str, token_type: Optional[Type] = None):
         """
         Return a token for literal.
 
@@ -84,19 +85,23 @@ class Token:
         else:
             self.token_type = Type.STRING
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, str]:
         """Return a JSON serializable Dictionary represenation of this AST."""
         return {"token_type": self.token_type.value, "literal": self.literal}
 
     @classmethod
-    def from_dict(cls, dictionary):
+    def from_dict(cls, dictionary: Dict[str, str]) -> "Token":
         """Deserialize from a Dictionary."""
         return Token(literal=dictionary["literal"])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of this token."""
         return f"Token({self.token_type}, {self.literal})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Return equal if other's literal and token_type are the same."""
-        return self.literal == other.literal and self.token_type == other.token_type
+        literal = getattr(other, "literal", None)
+        token_type = getattr(other, "token_type", Type.EOF)
+        if self.literal == literal and self.token_type == token_type:
+            return True
+        return False

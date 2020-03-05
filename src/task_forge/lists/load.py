@@ -8,18 +8,19 @@ inherits  from the abstract class 'List' in task_forge.lists.
 """
 
 import pkg_resources
+from typing import Any
 
 
-def __entry_points():
+def __entry_points() -> Any:
     return pkg_resources.iter_entry_points("task_forge.lists")
 
 
-def get_all_lists():
+def get_all_lists() -> Any:
     """Return a list of Tuples of list names to class objects"""
     return [(mod.name, mod.load().List) for mod in __entry_points()]
 
 
-def get_list(name):
+def get_list(name: str) -> Any:
     """
     Return the list implementation which corresponds to name.
 

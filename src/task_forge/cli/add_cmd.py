@@ -19,12 +19,15 @@ If an import option is provided all other options are ignored.
 
 import sys
 
+from typing import Any
+
+from task_forge.lists import TaskList
 from task_forge.cli.utils import inject_list
 from task_forge.cli.workon_cmd import top_priority
 from task_forge.models import Task
 
 
-def import_file(filename, task_list):
+def import_file(filename: str, task_list: TaskList) -> None:
     """Import tasks from filename into the configured task list"""
     import json
 
@@ -38,7 +41,7 @@ def import_file(filename, task_list):
 
 
 @inject_list
-def run(args, task_list=None):
+def run(args: Any, task_list: TaskList) -> None:
     """Parse the docopt args and call add_task."""
     if args["--from-file"]:
         import_file(args["--from-file"], task_list)
@@ -49,7 +52,7 @@ def run(args, task_list=None):
         sys.exit(1)
 
     title = " ".join(args["<title>"])
-    priority = float(args["--priority"]) if args["--priority"] else 1.0
+    priority = int(args["--priority"]) if args["--priority"] else 1
     context = args["--context"] if args["--context"] else "default"
     body = args["--body"] if args["--body"] else ""
 
