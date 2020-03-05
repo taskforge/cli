@@ -19,8 +19,9 @@ def date_to_string(dateobj: datetime) -> str:
     return dateobj.strftime(DATE_FORMAT)
 
 
-def no_transform(x: JSONPrimitives) -> JSONPrimitives:
-    return x
+def no_transform(obj: JSONPrimitives) -> JSONPrimitives:
+    """A reasonable default that will perform no transformation on an already valid JSON type."""
+    return obj
 
 
 class Model:
