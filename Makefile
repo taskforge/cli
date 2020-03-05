@@ -186,6 +186,9 @@ lint: fmt pylint pydocstyle mypy
 black-check:
 	$(PYTHON) -m black --check src tests
 
+isort-check:
+	$(PYTHON) -m isort --check-only --recursive src tests
+
 fmt:
 	$(PYTHON) -m isort --recursive src tests
 	$(PYTHON) -m black src tests

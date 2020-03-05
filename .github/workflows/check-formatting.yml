@@ -51,3 +51,20 @@ jobs:
       - name: Check Pydocstyle
         run: make pydocstyle 
 
+
+  isort:
+    name: Isort
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install make
+        run: sudo apt install -y -qq make
+      - name: Install dev tooling
+        run: make install-dev
+      - name: Check Isort
+        run: make isort-check
+
