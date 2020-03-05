@@ -95,6 +95,8 @@ def main() -> None:  # pylint: disable=too-many-branches
         else:
             print(__doc__)
 
+        return
+
     if command == "add":
         import task_forge.cli.add_cmd as command_mod  # type: ignore
     elif command == "next":
