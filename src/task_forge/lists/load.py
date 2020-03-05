@@ -29,5 +29,5 @@ def get_list(name: str) -> Any:
     """
     for mod in __entry_points():
         if mod.name == name:
-            return mod.load().List
+            return mod.load().TaskList
     return None
