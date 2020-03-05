@@ -6,7 +6,7 @@ Add or import tasks into the list.
 Options:
    -p <priority>, --priority <priority>  Create the task with the indicated
                                          priority, this can be an integer or
-                                         float [default: 1.0]
+                                         float [default: 1]
    -b <body>, --body <body>              The body or "description" of the task
    -c <context>, --context <context>     The context in which to create the task
    -t, --top                             Make this task the top priority
