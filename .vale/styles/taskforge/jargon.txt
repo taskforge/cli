@@ -26,3 +26,9 @@ websockets
 deserialize
 deserialized
 deserializing
+toml
+ascii
+stdout
+workon
+taskforged
+todo
