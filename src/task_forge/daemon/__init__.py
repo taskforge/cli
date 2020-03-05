@@ -37,7 +37,7 @@ class Daemon:
         self.loop = loop
 
     async def status(self, _request):
-        """An API endpoint for reliably determining if the server is online."""
+        """Endpoint for reliably determining if the server is online."""
         return web.json_response({"message": "available"})
 
     async def complete_task(self, request):

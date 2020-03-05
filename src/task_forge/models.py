@@ -20,7 +20,7 @@ def date_to_string(dateobj: datetime) -> str:
 
 
 def no_transform(obj: JSONPrimitives) -> JSONPrimitives:
-    """A reasonable default that will perform no transformation on an already valid JSON type."""
+    """Reasonable default that will perform no transformation on an already valid JSON type."""
     return obj
 
 

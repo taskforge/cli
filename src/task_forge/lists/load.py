@@ -1,5 +1,5 @@
 """
-Implements loading lists from entry_points
+Functions for loading lists via entry_points.
 
 List plugins are created as python modules using entry_points. The entry_point
 name should be a human readable name. It is used when loading a list such as
@@ -17,7 +17,7 @@ def __entry_points() -> Any:
 
 
 def get_all_lists() -> Any:
-    """Return a list of Tuples of list names to class objects"""
+    """Return a list of Tuples of list names to class objects."""
     return [(mod.name, mod.load().List) for mod in __entry_points()]
 
 
