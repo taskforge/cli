@@ -172,7 +172,7 @@ lint-docs-validate-links:
 lint-docs: lint-docs-vale lint-docs-validate-links
 
 mypy:
-	$(PYTHON) -m mypy src tests
+	$(PYTHON) -m mypy src
 
 pylint:
 	$(PYTHON) -m pylint --rcfile=setup.cfg src
