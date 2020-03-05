@@ -49,8 +49,8 @@ def start_server(cfg: Config) -> None:
     logging.debug("starting task server...")
     argv = ["taskforged"]
     if cfg.path is not None:
-    proc = subprocess.Popen(argv)
         argv += ["--config-file", cfg.path]
+    proc = subprocess.Popen(argv, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     logging.debug("task server started with pid: %d", proc.pid)
 
     logging.debug("waiting for server to start...")
