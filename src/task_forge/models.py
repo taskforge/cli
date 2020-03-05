@@ -1,59 +1,67 @@
 """Provides the Task and Note classes used throughout Taskforge."""
 
 from datetime import datetime
-from typing import List, Union
+from typing import List, Union, Dict, Callable, Any, NewType
 from uuid import uuid4
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def date_to_string(dateobj):
+# Someday recursive type definitions may work so we'll leave this
+# alias here. But for now the modelling of JSON types is inherently
+# recursive but python typing does not allow recursive definitions.
+JSONPrimitives = Union[str, int, float]
+JSONDict = Dict[str, Any]
+
+
+def date_to_string(dateobj: datetime) -> str:
     """Format dateobj using the standard DATE_FORMAT."""
     return dateobj.strftime(DATE_FORMAT)
+
+
+def no_transform(x: JSONPrimitives) -> JSONPrimitives:
+    return x
 
 
 class Model:
     """Common base functionality for all Models in task forge."""
 
-    id = None
-    dict_blacklist = []
-    transforms = {
+    id: str
+    dict_blacklist: List[str] = []
+    transforms: Dict[str, Callable[[Any], JSONPrimitives]] = {
         "created_date": date_to_string,
         "completed_date": date_to_string,
         "id": str,
     }
 
-    def __init__(self, id: Union[str, uuid4, None] = None):
+    def __init__(self, id: Union[str, None] = None):
         if id is None:
             id = str(uuid4())
 
         self.id = id
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a simple string of Model subclass name and id."""
         return f"{self.__class__.__name__}({self.id})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Return True if self and other have the same id."""
-        if not hasattr(other, "id"):
-            return False
+        return str(self.id) == str(getattr(other, "id", None))
 
-        return str(self.id) == str(other.id)
-
-    def to_json(self):
+    def to_json(self) -> JSONDict:
         """
         Convert this Model object into a dictionary with JSON incompatible types serialized.
 
         .. note:: For richer data types use :meth:`Note.to_dict` instead.
         """
         return {
-            key: self.transforms.get(key, lambda x: x)(value)
+            key: self.transforms.get(key, no_transform)(value)
             for key, value in self.__dict__.items()
             if not key.startswith("_") and key not in self.dict_blacklist
         }
 
     @classmethod
-    def from_dict(cls, dictionary):
+    def from_dict(cls, dictionary: Dict[str, Any]) -> Any:
         """
         Create a Model instance from a dictionary.
 
@@ -62,8 +70,8 @@ class Model:
         """
         return cls(**dictionary)
 
-    def to_dict(self):
-        """Transform this model into a dictionary for easy use to/from BSON."""
+    def to_dict(self) -> Dict[str, Any]:
+        """Transform this model into a dictionary for easy use to/from non-JSON types."""
         return {
             key: value
             for key, value in self.__dict__.items()
@@ -95,7 +103,7 @@ class Note(Model):
     def __init__(
         self,
         body: str,
-        id: Union[str, uuid4, None] = None,
+        id: Union[str, None] = None,
         created_date: Union[datetime, None] = None,
     ):
         """Create a note with body."""
@@ -108,7 +116,7 @@ class Note(Model):
         self.body = body
         self.created_date = created_date
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Union[str, datetime]]:
         """Convert this note object into a dictionary."""
         return {
             "id": self.id,
@@ -162,7 +170,7 @@ class Task(Model):
     def __init__(
         self,
         title: str,
-        id: Union[str, uuid4, None] = None,
+        id: Union[str, None] = None,
         context: str = "default",
         priority: int = 1,
         notes: Union[List[Note], None] = None,
@@ -196,7 +204,7 @@ class Task(Model):
         self.completed_date = completed_date
         self.notes = notes
 
-    def __lt__(self, other):
+    def __lt__(self, other: "Task") -> bool:
         """Sorts highest priority first then oldest first."""
         if self.priority > other.priority:
             return True
@@ -207,7 +215,7 @@ class Task(Model):
         return self.created_date < other.created_date
 
     @classmethod
-    def from_dict(cls, dictionary):
+    def from_dict(cls, dictionary: Dict[str, Any]) -> "Task":
         """
         Create a Task from a dictionary representation.
 
@@ -220,13 +228,13 @@ class Task(Model):
 
         return cls(**dictionary)
 
-    def to_json(self):
+    def to_json(self) -> JSONDict:
         """
         Convert to a dictionary which has JSON incompatible types properly serialized.
 
         .. note:: For richer data types use :meth:`Task.to_dict` instead.
         """
-        j = {
+        j: JSONDict = {
             "id": str(self.id),
             "title": self.title,
             "body": self.body,
@@ -241,7 +249,7 @@ class Task(Model):
 
         return j
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Convert this task object into a dictionary."""
         return {
             "id": self.id,
@@ -254,7 +262,7 @@ class Task(Model):
             "notes": [n.to_dict() for n in self.notes],
         }
 
-    def complete(self):
+    def complete(self) -> "Task":
         """
         Complete this task.
 
@@ -263,10 +271,10 @@ class Task(Model):
         self.completed_date = datetime.now()
         return self
 
-    def is_complete(self):
+    def is_complete(self) -> bool:
         """Indicate whether this task is completed or not."""
         return self.is_completed()
 
-    def is_completed(self):
+    def is_completed(self) -> bool:
         """Indicate whether this task is completed or not."""
         return self.completed_date is not None
