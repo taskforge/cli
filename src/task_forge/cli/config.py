@@ -57,7 +57,9 @@ class Config:
             if os.path.isfile(filename):
                 with open(filename) as config_file:
                     user_cfg = toml.load(config_file)
-                    cfg.__dict__.update(user_cfg)
+                    cfg.general.update(user_cfg.get("general", {}))
+                    cfg.list.update(user_cfg.get("list", {}))
+                    cfg.server.update(user_cfg.get("server", {}))
                     cfg.path = config_file
 
         return cfg
