@@ -6,15 +6,15 @@ import re
 from appdirs import user_data_dir
 
 from github import Github, GithubObject
-from task_forge.lists import List as IList
-from task_forge.lists.sqlite import List as SQLiteList
+from task_forge.lists import TaskList as IList
+from task_forge.lists.sqlite import TaskList as SQLiteList
 from task_forge.models import Note, Task
 
 PRIORITY_LABEL = re.compile("^P[0-9]{1,}$")
 DEFAULT_CACHE_FILE = os.path.join(user_data_dir(), "taskforge", "github_cache.sqlite")
 
 
-class List(IList):
+class TaskList(IList):
     """A list which aggregates Github issues."""
 
     __create_task_id_mapping_table = r"""
@@ -138,12 +138,12 @@ VALUES (?, ?)
         self._cache_invalid = False
 
     def search(self, ast):
-        """Evaluate the AST and return a List of matching results."""
+        """Evaluate the AST and return a TaskList of matching results."""
         self._cache()
         return self.sqlite_cache.search(ast)
 
     def add(self, task):
-        """Add a task to the List."""
+        """Add a task to the TaskList."""
         kwargs = {"title": task.title}
         if self.self_assign_on_create:
             kwargs["assignee"] = self.client.get_user(self.client.get_user().login)
@@ -167,7 +167,7 @@ VALUES (?, ?)
         self.sqlite_cache.add(task)
 
     def add_multiple(self, tasks):
-        """Add multiple tasks to the List.
+        """Add multiple tasks to the TaskList.
 
         Ideally should be more efficient resource utilization.
         """
@@ -175,7 +175,7 @@ VALUES (?, ?)
             self.add(task)
 
     def list(self):
-        """Return a python list of the Task in this List."""
+        """Return a python list of the Task in this TaskList."""
         return self._get_issues()
 
     def find_by_id(self, task_id):
@@ -188,7 +188,7 @@ VALUES (?, ?)
         """Return the current task.
 
         The current task is defined as the oldest uncompleted
-        task in the List.
+        task in the TaskList.
         """
         self._cache()
         return self.sqlite_cache.current()

@@ -1,14 +1,14 @@
-"""Provides a List implementation for talking to a Taskforge server."""
+"""Provides a TaskList implementation for talking to a Taskforge server."""
 
 from task_forge.lists import InvalidConfigError
-from task_forge.lists import List as IList
+from task_forge.lists import TaskList as IList
 from task_forge.lists import NotFoundError
 from task_forge.models import Task
 
 import requests
 
 
-class List(IList):
+class TaskList(IList):
     """An base class that all list implementations must derive from."""
 
     def __init__(self, host="localhost", port=8000):
@@ -41,11 +41,11 @@ class List(IList):
                 return Task.from_dict(jsn)
 
     def add(self, task):
-        """Add a task to the List."""
+        """Add a task to the TaskList."""
         return self.__request("/tasks", method="POST", json=task.to_json())
 
     def add_multiple(self, tasks):
-        """Add multiple tasks to the List.
+        """Add multiple tasks to the TaskList.
 
         Ideally should be more efficient resource utilization.
         """
@@ -54,7 +54,7 @@ class List(IList):
         )
 
     def list(self):
-        """Return a python list of the Task in this List."""
+        """Return a python list of the Task in this TaskList."""
         return self.__request("/tasks")
 
     def find_by_id(self, task_id):
@@ -65,7 +65,7 @@ class List(IList):
         """Return the current task.
 
         The current task is defined as the oldest uncompleted
-        task in the List.
+        task in the TaskList.
         """
         return self.__request("/tasks/current")
 

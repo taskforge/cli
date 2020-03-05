@@ -1,7 +1,7 @@
 """
 A common suite of tests for lists that ensure compliance.
 
-All Lists should have a test which subclasses this test suite and
+All TaskLists should have a test which subclasses this test suite and
 overrides the setUp and tearDown appropriately. Setting the self.list
 variable to the initialized list.
 """
@@ -16,7 +16,7 @@ from task_forge.ql.parser import Parser
 from task_forge.ql.tokens import Token
 
 
-class ListTests:
+class TaskListTests:
     """A class which implements the standard list tests"""
 
     def test_add_one_and_find_by_id(self):
@@ -195,7 +195,7 @@ class ListTests:
 
 @pytest.mark.slow
 @pytest.mark.benchmark
-class ListBenchmarks:
+class TaskListBenchmarks:
     @pytest.fixture
     def task_list(self):
         raise NotImplementedError

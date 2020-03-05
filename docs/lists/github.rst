@@ -1,5 +1,5 @@
-Github List
-===========
+Github TaskList
+===============
 
 Why use the Github list
 -----------------------
@@ -21,7 +21,7 @@ create_repo
 
 This repo will be used when creating issues in the Github API. It is a
 string of the form ``user/repo``. If not set you will not be able to
-add issues to a Github List.
+add issues to a Github TaskList.
 
 query_repo
 ++++++++++

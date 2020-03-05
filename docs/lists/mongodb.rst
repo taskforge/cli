@@ -1,5 +1,5 @@
-MongoDB List
-============
+MongoDB TaskList
+================
 
 Why use the MongoDB list
 ------------------------

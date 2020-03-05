@@ -3,23 +3,23 @@ from tempfile import NamedTemporaryFile
 
 import pytest
 
-from task_forge.lists.sqlite import List
+from task_forge.lists.sqlite import TaskList
 
-from ..list_utils import ListBenchmarks, ListTests
+from ..list_utils import TaskListBenchmarks, TaskListTests
 
 
-class SQLiteListTests(unittest.TestCase, ListTests):
+class SQLiteTaskListTests(unittest.TestCase, TaskListTests):
     def setUp(self):
         self.tmpfile = NamedTemporaryFile()
-        self.list = List(file_name=self.tmpfile.name, create_tables=True)
+        self.list = TaskList(file_name=self.tmpfile.name, create_tables=True)
 
     def tearDown(self):
         self.tmpfile.close()
 
 
 @pytest.mark.benchmark(group="SQLite")
-class TestSQLiteListPerformance(ListBenchmarks):
+class TestSQLiteTaskListPerformance(TaskListBenchmarks):
     @pytest.fixture
     def task_list(self, tmpdir):
         tmpfile = tmpdir.join("tasks.sqlite3")
-        return List(file_name=str(tmpfile), create_tables=True)
+        return TaskList(file_name=str(tmpfile), create_tables=True)

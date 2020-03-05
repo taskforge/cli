@@ -17,7 +17,7 @@ Goals
 - Configurable socket name, listen address / port, log file.
 - Config file can disable use of server since not every list will need it and
   some users would prefer to skip the overhead.
-- A List implementation that speaks the server protocol
+- A TaskList implementation that speaks the server protocol
 - Docker container which can be used to run the Taskforge server
  
 
@@ -50,7 +50,7 @@ Additionally, it will add the following options to the new "general" section.
 .. code::
 
    [general]
-   # If true the server will not be started and Taskforge will run using List
+   # If true the server will not be started and Taskforge will run using TaskList
    # implementations directly.
    # disable_server = false
    # Only used with network server communication
@@ -74,10 +74,10 @@ The server will speak JSON messages which have the following structure:
 Server Methods
 ++++++++++++++
 
-The server will expose methods which map directly to the List API. The only
+The server will expose methods which map directly to the TaskList API. The only
 exception being there will be two methods ``search`` and ``query``. Search will
 take an AST as JSON. The ``query`` method will take the string query as the
-payload which it will then lex and parse before sending to the List
+payload which it will then lex and parse before sending to the TaskList
 implementation.
 
 The specification for each method is described in detail below.
@@ -158,7 +158,7 @@ Task objects instead of a single Task.
 ``list``
 ^^^^^^^^
 
-``list`` returns all of the tasks in the List implementation. It only requires
+``list`` returns all of the tasks in the TaskList implementation. It only requires
 the method name in the message.
 
 .. code::
@@ -251,7 +251,7 @@ required looks like:
 ^^^^^^^^^^
 
 ``search`` takes a JSON representation of the Taskfoge Query Language AST and
-uses it to search the List implementation. The payload looks like:
+uses it to search the TaskList implementation. The payload looks like:
 
 .. code::
 

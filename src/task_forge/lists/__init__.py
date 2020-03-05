@@ -1,10 +1,10 @@
-"""Contains the List abstract base class as well as error types."""
+"""Contains the TaskList abstract base class as well as error types."""
 
 from abc import ABC, abstractmethod
 
 
 class InvalidConfigError(Exception):
-    """Indicate an invalid configuration was provided to the List."""
+    """Indicate an invalid configuration was provided to the TaskList."""
 
 
 class NotFoundError(Exception):
@@ -22,7 +22,7 @@ class NotFoundError(Exception):
         return "no task that matched query found"
 
 
-class List(ABC):
+class TaskList(ABC):
     """An base class that all list implementations must derive from."""
 
     @abstractmethod
@@ -58,7 +58,7 @@ class List(ABC):
         """Return the current task.
 
         The current task is defined as the oldest uncompleted
-        task in the List.
+        task in the TaskList.
         """
         raise NotImplementedError
 

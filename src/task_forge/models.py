@@ -119,7 +119,7 @@ class Note(Model):
 
 class Task(Model):
     """
-    Represents a task in a Task List.
+    Represents a task in a TaskList.
 
     This class is the basic unit in Taskforge and is central to all
     functionality.

@@ -9,11 +9,11 @@ from task_forge.models import Note, Task
 from task_forge.ql.tokens import Type
 
 from . import InvalidConfigError
-from . import List as AList
+from . import TaskList as AList
 from . import NotFoundError
 
 
-class List(AList):
+class TaskList(AList):
     """A SQLite 3 backed list implementation."""
 
     __create_task_table = r"""
@@ -56,7 +56,7 @@ FROM tasks
 """
 
     def __init__(self, directory="", file_name="", create_tables=False):
-        """Create a List from the given configuration.
+        """Create a TaskList from the given configuration.
 
         Either directory or file_name should be provided. Raises
         InvalidConfigError if neither are provided. If both are
@@ -129,24 +129,24 @@ FROM tasks
 
     def __get_notes(self, id):
         return [
-            List.note_from_row(row)
+            TaskList.note_from_row(row)
             for row in self.conn.execute(
                 "SELECT id, body, created_date FROM notes WHERE task_id = ?", (id,)
             )
         ]
 
     def add(self, task):
-        """Add a task to the List."""
-        self.conn.execute(self.__insert, List.task_to_row(task))
+        """Add a task to the TaskList."""
+        self.conn.execute(self.__insert, TaskList.task_to_row(task))
         self.conn.commit()
 
     def add_multiple(self, tasks):
-        """Add multiple tasks to the List."""
+        """Add multiple tasks to the TaskList."""
         self.conn.executemany(self.__insert, [List.task_to_row(task) for task in tasks])
         self.conn.commit()
 
     def list(self):
-        """Return a python list of the Task in this List."""
+        """Return a python list of the Task in this TaskList."""
         return [self.task_from_row(row) for row in self.conn.execute(self.__select)]
 
     def find_by_id(self, task_id):
@@ -177,7 +177,7 @@ FROM tasks
 
         The original is retrieved using the id of the given task.
         """
-        update_tuple = List.task_to_row(task)
+        update_tuple = TaskList.task_to_row(task)
         # move id to the end
         update_tuple = (
             update_tuple[1],
@@ -214,7 +214,7 @@ WHERE id = ?
 
     def search(self, ast):
         """Evaluate the AST and return a List of matching results."""
-        where, values = List.__eval(ast.expression)
+        where, values = TaskList.__eval(ast.expression)
         return [
             self.task_from_row(task)
             for task in self.conn.execute(self.__select + "WHERE " + where, values)
@@ -224,10 +224,10 @@ WHERE id = ?
     def __eval(expression):
         """Evaluate expression returning a where clause and a dictionary of values."""
         if expression.is_str_literal():
-            return List.__eval_str_literal(expression)
+            return TaskList.__eval_str_literal(expression)
 
         if expression.is_infix():
-            return List.__eval_infix(expression)
+            return TaskList.__eval_infix(expression)
 
         return ("", {})
 
@@ -244,8 +244,8 @@ WHERE id = ?
     def __eval_infix(expression):
         """Evaluate an infix expression."""
         if expression.is_logical_infix():
-            left, left_values = List.__eval(expression.left)
-            right, right_values = List.__eval(expression.right)
+            left, left_values = TaskList.__eval(expression.left)
+            right, right_values = TaskList.__eval(expression.right)
             return (
                 f"({left}) {expression.operator.literal} ({right})",
                 {**left_values, **right_values},

@@ -9,10 +9,10 @@ from contextlib import closing
 from tempfile import NamedTemporaryFile
 
 from task_forge.daemon import Daemon
-from task_forge.lists.sqlite import List as SQLiteList
-from task_forge.lists.taskforged import List
+from task_forge.lists.sqlite import TaskList as SQLiteList
+from task_forge.lists.taskforged import TaskList
 
-from ..list_utils import ListTests
+from ..list_utils import TaskListTests
 
 
 def find_free_port():
@@ -21,7 +21,7 @@ def find_free_port():
         return s.getsockname()[1]
 
 
-class TaskforgeDaemonListTests(unittest.TestCase, ListTests):
+class TaskforgeDaemonListTests(unittest.TestCase, TaskListTests):
     def setUp(self):
         self.tmpfile = NamedTemporaryFile()
         os.remove(self.tmpfile.name)
@@ -53,7 +53,7 @@ port = {free_port}
         except subprocess.TimeoutExpired:
             pass
 
-        self.list = List(port=port)
+        self.list = TaskList(port=port)
 
     def tearDown(self):
         self.tmpfile.close()

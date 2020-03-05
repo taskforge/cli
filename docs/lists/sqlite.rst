@@ -1,9 +1,9 @@
-SQLite List
+SQLite TaskList
 ===========
 
 A task list backed by a local sqlite database.
 
-Why Use the SQLite List
+Why Use the SQLite TaskList
 -----------------------
 
 The SQLite list is very fast, has 0 external dependencies, and is

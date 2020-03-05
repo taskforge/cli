@@ -1,6 +1,6 @@
 ---
-name: List Request Template
-about: Request that Taskforge support a new service as a List
+name: TaskList Request Template
+about: Request that Taskforge support a new service as a TaskList
 
 ---
 

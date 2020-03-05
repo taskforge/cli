@@ -30,7 +30,7 @@ The design process is as follows:
    - Design docs go under ``src/docs/designs``
    - All design docs should use the design doc template found at
      ``src/docs/designs/template.rst``
-   - List designs have their own template which is slightly different. It is
+   - TaskList designs have their own template which is slightly different. It is
      located at ``src/docs/designs/list_template.rst``
 
 3. The maintainers will review your pull request

@@ -16,7 +16,7 @@ Goals
       -  `List Design <#lists>`__
 
 -  Supports saving and loading of tasks from multiple “services” via
-   List implementations
+   TaskList implementations
 
    -  **MVP:** Only supports one list: `SQLite <#sqlite-list>`__
 
@@ -296,36 +296,36 @@ All ID’s will be hex strings of python std library uuids regardless of
 list storage. This is a nice, 0 dependency, and easy to use UUID that
 can be made into a string.
 
-Task Lists
-++++++++++
+TaskLists
++++++++++
 
 List will be an abstract class which all list implementations will need
 to subclass, it has the following definition:
 
 .. code:: python
 
-   class List(ABC):
+   class TaskList(ABC):
        """An abstract base class that all list implementations but derive from."""
 
        @abstractmethod
        def search(self, ast):
-           """Evaluate the AST and return a List of matching results"""
+           """Evaluate the AST and return a TaskList of matching results"""
            raise NotImplementedError
 
        @abstractmethod
        def add(self, task):
-           """Add a task to the List"""
+           """Add a task to the TaskList"""
            raise NotImplementedError
 
        @abstractmethod
        def add_multiple(self, tasks):
-           """Add multiple tasks to the List, should be more efficient
+           """Add multiple tasks to the TaskList, should be more efficient
            resource utilization."""
            raise NotImplementedError
 
        @abstractmethod
        def list(self):
-           """Return a python list of the Task in this List"""
+           """Return a python list of the Task in this TaskList"""
            raise NotImplementedError
 
        @abstractmethod
@@ -336,7 +336,7 @@ to subclass, it has the following definition:
        @abstractmethod
        def current(self):
            """Return the current task, meaning the oldest uncompleted
-           task in the List"""
+           task in the TaskList"""
            raise NotImplementedError
 
        @abstractmethod
@@ -369,7 +369,7 @@ Future Work / Ideas
 
 Future ideas and features I will implement are as follows:
 
--  Additional Lists:
+-  Additional TaskLists:
 
    -  Postgres
    -  MongoDB
