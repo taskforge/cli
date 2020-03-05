@@ -196,7 +196,6 @@ fmt:
 ###########
 
 test: test-not-slow
-	mypy src
 
 test-all:
 	$(PYTEST) $(PYTEST_OPTS)

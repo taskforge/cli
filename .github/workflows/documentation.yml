@@ -1,0 +1,30 @@
+---
+
+name: Documentation validation
+jobs:
+  vale:
+    container:
+      image: ubuntu:latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install vale
+        run: |
+          apt-get update -qq && apt-get install -y -qq python python-docutils curl
+          curl -sfL https://install.goreleaser.com/github.com/ValeLint/vale.sh | sh
+      - name: Check docs
+        run: ./bin/vale --ext='.rst' --glob='*.rst' docs
+
+  check-documentation-for-broken-links:
+    container:
+      image: nginx:latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docs
+        run: |
+          sudo apt-get install -y -qq python3-sphinx make
+          pip3 install pylinkvalidator
+          make website
+          cp -R public/* /usr/share/nginx/html/
+      - name: Validate links
+        run: pylinkvalidate.py -P http://localhost:80
+
