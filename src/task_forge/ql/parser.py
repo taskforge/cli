@@ -34,6 +34,10 @@ PRECEDENCES = {
 class ParseError(Exception):
     """Raised by the Parser when invalid syntax occurs."""
 
+    def __init__(self, msg, pos=0):
+        self.args = (msg,)
+        self.pos = pos
+
 
 class Parser:
     """Parser for the task_forge query language."""
