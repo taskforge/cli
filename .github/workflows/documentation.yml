@@ -2,6 +2,7 @@
 
 name: Documentation validation
 on: [push]
+runs-on: ubuntu-latest
 
 jobs:
   vale:
