@@ -1,12 +1,12 @@
-task_forge.task package
-=======================
+task_forge.models package
+=========================
 
-.. automodule:: task_forge.task
+.. automodule:: task_forge.models
 
 Module Contents
 ---------------
 
-.. autoclass:: task_forge.task.Task
+.. autoclass:: task_forge.models.Task
 
    .. automethod:: complete
    .. automethod:: is_completed
@@ -21,7 +21,7 @@ Module Contents
 
    .. automethod:: to_dict
 
-.. autoclass:: task_forge.task.Note
+.. autoclass:: task_forge.models.Note
 
    .. automethod:: from_dict
 

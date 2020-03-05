@@ -12,13 +12,6 @@ task_forge.lists.load module
     :undoc-members:
     :show-inheritance:
 
-task_forge.lists.mongo module
------------------------------
-
-.. automodule:: task_forge.lists.mongo
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 task_forge.lists.sqlite module
 ------------------------------

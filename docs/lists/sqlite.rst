@@ -1,10 +1,10 @@
 SQLite TaskList
-===========
+===============
 
 A task list backed by a local sqlite database.
 
 Why Use the SQLite TaskList
------------------------
+---------------------------
 
 The SQLite list is very fast, has 0 external dependencies, and is
 shipped by default with Python. This means it can be used with 0

@@ -1,5 +1,5 @@
-Lists
-=====
+TaskLists
+=========
 
 Something something about lists
 
@@ -8,5 +8,3 @@ Something something about lists
    :maxdepth: 2
 
    sqlite
-   mongodb
-   github
