@@ -1,7 +1,7 @@
 MongoDB TaskList
 ================
 
-Why use the MongoDB list
+Why Use The MongoDB list
 ------------------------
 
 MongoDB is a fast document database that's easy to setup. The benefits
