@@ -61,7 +61,11 @@ def print_lists():
 
 def main():
     """CLI entrypoint, handles subcommand parsing"""
-    args = docopt(__doc__, version="task version 0.3.0", options_first=True)
+    args = docopt(
+        __doc__,
+        version="task version {}".format(task_forge.VERSION),
+        options_first=True,
+    )
     if not args["<command>"]:
         print(__doc__)
         sys.exit(1)
