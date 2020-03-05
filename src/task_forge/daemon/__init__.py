@@ -11,14 +11,14 @@ Options:
 
 from typing import Any
 
-from docopt import docopt
 from aiohttp import web
+from docopt import docopt
 
 from task_forge import __version__
-from task_forge.lists import NotFoundError, TaskList
 from task_forge.cli.config import Config
+from task_forge.lists import NotFoundError, TaskList
 from task_forge.models import Note, Task
-from task_forge.ql import Parser, ParseError
+from task_forge.ql import ParseError, Parser
 
 
 class Daemon:
