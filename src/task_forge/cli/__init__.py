@@ -26,6 +26,8 @@ import sys
 
 from docopt import docopt
 
+from task_forge import __version__
+
 ALIASES = {
     "n": "next",
     "new": "add",
@@ -62,9 +64,7 @@ def print_lists():
 def main():
     """CLI entrypoint, handles subcommand parsing"""
     args = docopt(
-        __doc__,
-        version="task version {}".format(task_forge.VERSION),
-        options_first=True,
+        __doc__, version="task version {}".format(__version__), options_first=True,
     )
     if not args["<command>"]:
         print(__doc__)

@@ -10,7 +10,7 @@ Options:
 from docopt import docopt
 from aiohttp import web
 
-from task_forge import VERSION
+from task_forge import __version__
 from task_forge.lists import NotFoundError
 from task_forge.cli.config import Config
 from task_forge.models import Note, Task
@@ -117,7 +117,7 @@ class Daemon:
 
 
 def main():
-    args = docopt(__doc__, version="taskforged version {}".format(VERSION))
+    args = docopt(__doc__, version="taskforged version {}".format(__version__))
     cfgfile = args.get("--config-file")
     config = Config.load(cfgfile)
     list_impl = config.load_list()
