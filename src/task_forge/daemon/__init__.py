@@ -17,22 +17,12 @@ from task_forge.models import Note, Task
 from task_forge.ql import Parser, ParseError
 
 
-class Daemon(web.Application):
-    def __init__(self, list, loop=None):
+class Daemon:
+    def __init__(self, list, loop=None, host="localhost", port=8000):
         self.list = list
-        super().__init__(loop=loop)
-
-        self.add_routes(
-            [
-                web.get("/status", self.status),
-                web.get("/tasks", self.get_tasks),
-                web.post("/tasks", self.create_tasks),
-                web.get("/tasks/{id}", self.get_tasks),
-                web.put("/tasks/{id}", self.update_task),
-                web.post("/tasks/{id}/note", self.add_note),
-                web.put("/tasks/{id}/complete", self.complete_task),
-            ]
-        )
+        self.host = host
+        self.port = port
+        self.loop = loop
 
     async def status(self, request):
         return web.json_response({"message": "available"})

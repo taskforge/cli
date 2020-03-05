@@ -26,16 +26,9 @@ def default_list_config():
 
 def default_server_config():
     """Return the default configuration for a server."""
-    if sys.platform == "win32":
-        return {
-            "host": "localhost",
-            "port": 8080,
-            # 'secret_file': '~/.taskforge.d/server_secret'
-        }
-
     return {
-        # By default use a unix socket not a network socket
-        "unix_socket": f"/var/run/user/{os.getuid()}/taskforge.sock",
+        "host": "localhost",
+        "port": 8000,
         # Only used with network communication
         # 'secret_file': '~/.taskforge.d/server_secret'
     }
