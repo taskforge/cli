@@ -22,24 +22,13 @@ def config(func):
 
 def server_is_reachable(srv_cfg):
     """Return a boolean indicating if the server is reachable or not."""
-    if "unix_socket" in srv_cfg:
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    else:
-        host = srv_cfg.get("host", "localhost")
-        port = srv_cfg.get("port", 8080)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = srv_cfg.get("host", "localhost")
+    port = srv_cfg.get("port", 8000)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        if "unix_socket" in srv_cfg:
-            logging.debug("checking for unix socket: %s", srv_cfg["unix_socket"])
-            # if not os.path.isfile(srv_cfg['unix_socket']):
-            #     logging.debug('unix socket not found: %s', srv_cfg['unix_socket'])
-            #     return False
-            sock.connect(srv_cfg["unix_socket"])
-        else:
-            logging.debug("checking for network connection: %s:%d", host, port)
-            sock.connect((host, port))
-
+        logging.debug("checking for network connection: %s:%d", host, port)
+        sock.connect((host, port))
         return True
     except (ConnectionRefusedError, FileNotFoundError):
         logging.debug("server refused connection")
@@ -87,7 +76,7 @@ def inject_list(func):  # noqa: D202
         else:
             start_server(cfg)
             kwargs["task_list"] = cfg.load_list(
-                override_config={"name": "task_server", "config": cfg.server}
+                override_config={"name": "taskforged", "config": cfg.server}
             )
 
         return func(*args, **kwargs)

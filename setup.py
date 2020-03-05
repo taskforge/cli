@@ -35,7 +35,7 @@ setup(
     python_requires=">=3.6",
     entry_points={
         "task_forge.lists": [
-            "task_server = task_forge.lists.task_server_client",
+            "taskforged = task_forge.lists.taskforged",
             "sqlite = task_forge.lists.sqlite",
         ],
         "console_scripts": [
