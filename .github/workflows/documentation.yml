@@ -29,8 +29,9 @@ jobs:
           pip3 install deadlinks
           make PYTHON=$(which python3) website
           cp -R build/website/public/* /usr/share/nginx/html/
-      - name: Start NGINX
-        run: nginx &
       - name: Validate links
-        run: deadlinks http://localhost:80
+        run: |
+          nginx &
+          deadlinks http://localhost:80
+          kill %1
 
