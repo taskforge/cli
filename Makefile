@@ -30,6 +30,10 @@ DIST_TARBALL        = dist/$(PROJECT)-cli-$(VERSION).tar.gz
 DEB_ORIG_TARBALL    = ../$(PROJECT)_$(VERSION).orig.tar.gz
 DEB_MAN_PAGES_DIR   = debian/taskforge/usr/share/man/man1
 
+WEBSITE_DEPLOY_DIR  = /var/www/html
+WEBSITE_DEPLOY_PORT = 22
+WEBSITE_DEPLOY_USER = deploy
+WEBSITE_HOSTNAME    = taskforge.io
 DOC_SOURCEDIR		= docs
 DOC_BUILDDIR		= $(BUILDDIR)/docs
 
@@ -141,7 +145,7 @@ docker-website: website
 		--file Dockerfile.website .
 
 publish-website: website
-	docker push "chasinglogic/taskforge.io:latest"
+	rsync -e "ssh -p $(WEBSITE_DEPLOY_PORT)" -avz build/website/public/* $(WEBSITE_DEPLOY_USER)@$(WEBSITE_HOSTNAME):$(WEBSITE_DEPLOY_DIR)/$(WEBSITE_HOSTNAME)/
 
 docs-live-%:
 	sphinx-autobuild --watch ./src -b $* $(SPHINXOPTS) "$(DOC_SOURCEDIR)" $(DOC_BUILDDIR)/html
