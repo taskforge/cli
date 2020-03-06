@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Union, cast
 
 import requests
 
-from task_forge.lists import InvalidConfigError, NotFoundError
+from task_forge.lists import NotFoundError
 from task_forge.lists import TaskList as IList
 from task_forge.models import Note, Task
 from task_forge.ql.ast import AST
@@ -37,16 +37,18 @@ class TaskList(IList):
         res = self.session.send(self.session.prepare_request(req))
         if res.status_code == 404:
             raise NotFoundError
-        elif res.status_code != 200:
+
+        if res.status_code != 200:
             raise Exception(res.text)
-        else:
-            jsn = res.json()
-            if isinstance(jsn, list):
-                return [Task.from_dict(j) for j in jsn]
-            elif jsn.get("message") == "success":
-                return None
-            else:
-                return Task.from_dict(jsn)
+
+        jsn = res.json()
+        if isinstance(jsn, list):
+            return [Task.from_dict(j) for j in jsn]
+
+        if jsn.get("message") == "success":
+            return None
+
+        return Task.from_dict(jsn)
 
     def add(self, task: Task) -> Any:
         """Add a task to the TaskList."""

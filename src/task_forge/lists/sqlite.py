@@ -132,7 +132,9 @@ FROM tasks
             notes=self.__get_notes(row[0]),
         )
 
-    def __get_notes(self, id: str) -> List[Note]:
+    def __get_notes(  # pylint: disable=invalid-name
+        self, id: str  # pylint: disable=redefined-builtin
+    ) -> List[Note]:
         return [
             TaskList.note_from_row(row)
             for row in self.conn.execute(

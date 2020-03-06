@@ -12,6 +12,7 @@ from task_forge.lists.load import get_list
 
 CONFIG_FILES = [
     "/etc/taskforge/config.toml",
+    os.path.join(os.getenv("TASKFORGE_CONFIG_DIR", ""), "config.toml"),
     os.path.join(appdirs.user_config_dir(), "taskforge", "config.toml"),
     "taskforge.toml",
 ]
@@ -44,7 +45,7 @@ class Config:
     def __init__(
         self,
         general: ConfigDict = None,
-        list: ConfigDict = None,
+        list: ConfigDict = None,  # pylint: disable=redefined-builtin
         server: ConfigDict = None,
     ):
         self.general = general if general is not None else {}

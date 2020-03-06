@@ -6,10 +6,7 @@ from contextlib import closing
 from tempfile import NamedTemporaryFile
 
 import pytest
-import requests
 
-from task_forge.daemon import Daemon
-from task_forge.lists.sqlite import TaskList as SQLiteList
 from task_forge.lists.taskforged import TaskList
 
 from ..list_utils import TaskListTests
@@ -21,6 +18,7 @@ def find_free_port():
         return s.getsockname()[1]
 
 
+@pytest.mark.slow
 class TaskforgeDaemonListTests(unittest.TestCase, TaskListTests):
     def setUp(self):
         self.tmpfile = NamedTemporaryFile()

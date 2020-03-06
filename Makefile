@@ -12,9 +12,9 @@ PIP					= $(PYTHON) -m pip
 PYTEST				= PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest
 PYTEST_OPTS			= --disable-pytest-warnings
 DOCKER				= docker
-SITE_PACKAGES		= $(shell python -c 'import sys; print([p for p in sys.path if "site-packages" in p][0])')
+SITE_PACKAGES		= $(shell $(PYTHON) -c 'import sys; print([p for p in sys.path if "site-packages" in p][0])')
 DEV_INSTALL_LINK	= $(SITE_PACKAGES)/taskforge-cli.egg-link
-DOCS				= $(shell find src/docs -name '*.rst' -or -name '*.html' | grep -v 'cli/task_.*\.rst')
+DOCS				= $(shell find docs -name '*.rst' -or -name '*.html' | grep -v 'cli/task_.*\.rst')
 VALE				= $(DOCKER) run		\
 	--rm -v $(PWD)/.vale/styles:/styles \
 	--rm -v $(PWD):/docs				\
@@ -59,7 +59,6 @@ lint-and-test: lint test-all
 install-dev: $(DEV_INSTALL_LINK)
 $(DEV_INSTALL_LINK):
 	$(PIP) install --editable .
-	$(PIP) install --editable ".[github]"
 	$(PIP) install -r requirements/dev.txt
 
 install:
@@ -131,8 +130,8 @@ docs: docs-html docs-man
 
 # Build the website directory
 website: install-dev clean docs-html
-	mkdir -p $(WEBSITEDIR)
-	cp -R $(DOC_BUILDDIR)/html/* $(WEBSITEDIR)/
+	mkdir -p $(WEBSITEDIR)/docs
+	cp -R $(DOC_BUILDDIR)/html/* $(WEBSITEDIR)/docs
 	cp $(DOC_SOURCEDIR)/index.html $(WEBSITEDIR)/index.html
 
 # Build the web site container
@@ -186,6 +185,9 @@ lint: fmt pylint pydocstyle mypy
 
 black-check:
 	$(PYTHON) -m black --check src tests
+
+isort-check:
+	$(PYTHON) -m isort --check-only --recursive src tests
 
 fmt:
 	$(PYTHON) -m isort --recursive src tests

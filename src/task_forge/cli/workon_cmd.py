@@ -30,7 +30,7 @@ def run(args: Any, task_list: TaskList) -> None:
     try:
         new_current = task_list.find_by_id(args["<ID>"])
     except NotFoundError:
-        print("no task with that id exists")
+        print("no task with id: {} exists".format(args["<ID>"]))
         sys.exit(1)
 
     new_current.priority = top_priority(task_list)

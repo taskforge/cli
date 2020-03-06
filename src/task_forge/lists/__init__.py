@@ -1,7 +1,7 @@
 """Contains the TaskList abstract base class as well as error types."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 from task_forge.models import Note, Task
 from task_forge.ql.ast import AST

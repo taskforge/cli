@@ -36,6 +36,7 @@ ALIASES = {
     "done": "complete",
     "q": "query",
     "s": "query",
+    "search": "query",
     "l": "query",
     "list": "query",
     "e": "edit",
@@ -61,7 +62,7 @@ def print_lists() -> None:
         print(f"  {name}")
 
 
-def main() -> None:
+def main() -> None:  # pylint: disable=too-many-branches
     """CLI entrypoint, handles subcommand parsing"""
     args = docopt(
         __doc__, version="task version {}".format(__version__), options_first=True,
@@ -93,6 +94,8 @@ def main() -> None:
                 sys.exit(1)
         else:
             print(__doc__)
+
+        return
 
     if command == "add":
         import task_forge.cli.add_cmd as command_mod  # type: ignore

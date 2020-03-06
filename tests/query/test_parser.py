@@ -103,7 +103,7 @@ def test_parser_can_change_input():
 
 def test_parser_empty_query_raises_stopiteration():
     try:
-        parser = Parser("")
+        Parser("")
         assert False
     except StopIteration:
         pass
@@ -175,7 +175,7 @@ def test_parser_performance(query, benchmark):
     """Benchmark the performance of various queries."""
 
     @benchmark
-    def parse_query():
+    def parse_query():  # pylint: disable=unused-variable
         """Benchmark query parsing"""
         parser = Parser(query)
         parser.parse()

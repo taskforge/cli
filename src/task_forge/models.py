@@ -1,7 +1,7 @@
 """Provides the Task and Note classes used throughout Taskforge."""
 
 from datetime import datetime
-from typing import Any, Callable, Dict, List, NewType, Union
+from typing import Any, Callable, Dict, List, Union
 from uuid import uuid4
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -19,8 +19,9 @@ def date_to_string(dateobj: datetime) -> str:
     return dateobj.strftime(DATE_FORMAT)
 
 
-def no_transform(x: JSONPrimitives) -> JSONPrimitives:
-    return x
+def no_transform(obj: JSONPrimitives) -> JSONPrimitives:
+    """Reasonable default that will perform no transformation on an already valid JSON type."""
+    return obj
 
 
 class Model:
@@ -34,11 +35,13 @@ class Model:
         "id": str,
     }
 
-    def __init__(self, id: Union[str, None] = None):
+    def __init__(
+        self, id: Union[str, None] = None  # pylint: disable=redefined-builtin
+    ):
         if id is None:
-            id = str(uuid4())
+            id = str(uuid4())  # pylint: disable=redefined-builtin
 
-        self.id = id
+        self.id = id  # pylint: disable=invalid-name
 
     def __repr__(self) -> str:
         """Return a simple string of Model subclass name and id."""
@@ -103,7 +106,7 @@ class Note(Model):
     def __init__(
         self,
         body: str,
-        id: Union[str, None] = None,
+        id: Union[str, None] = None,  # pylint: disable=redefined-builtin
         created_date: Union[datetime, None] = None,
     ):
         """Create a note with body."""
@@ -167,10 +170,10 @@ class Task(Model):
     :type completed_date: datetime.datetime
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         title: str,
-        id: Union[str, None] = None,
+        id: Union[str, None] = None,  # pylint: disable=redefined-builtin
         context: str = "default",
         priority: int = 1,
         notes: Union[List[Note], None] = None,

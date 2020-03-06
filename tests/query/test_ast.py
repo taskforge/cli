@@ -68,6 +68,16 @@ class ASTTests(unittest.TestCase):
                     )
                 ),
             ),
+            (
+                "(title = 'another task')",
+                AST(
+                    Expression(
+                        Token("="),
+                        left=Expression(Token("title")),
+                        right=Expression(Token("another task")),
+                    )
+                ),
+            ),
         ]
 
         for query, obj in test_cases:

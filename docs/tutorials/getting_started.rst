@@ -90,7 +90,7 @@ date. To demonstrate let's add a few more tasks:
    $ task add --priority 2 a high priority task
 
 This introduces a new flag ``--priority``. You can set many fields on a task via
-flags to the add command. See the :doc:`../cli/task_add` documentation for more
+flags to the add command. See the :doc:`../man/task-add` documentation for more
 information.
 
 Now our ``task list`` should look like this:

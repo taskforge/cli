@@ -15,3 +15,5 @@ discussion to occur before a feature is built.
 
    initial_design
    cli_design
+
+   server

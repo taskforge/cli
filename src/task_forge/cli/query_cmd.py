@@ -141,7 +141,7 @@ def run(args: Any) -> None:
     """Add the query command to parser."""
     query = " ".join(args["<query>"]) if args["<query>"] else ""
     try:
-        tasks = query_tasks(query)
+        tasks = query_tasks(query)  # pylint: disable=no-value-for-parameter
         print_tasks(tasks, output=args["--output"])
     except NotFoundError:
         print("no tasks matched query")

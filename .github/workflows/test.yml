@@ -1,29 +1,52 @@
 ---
 name: Run tests
+on: [push]
 
 jobs:
   tests:
-    - uses: actions/checkout@v2
-    - name: Set Up Python
-      users: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Install make
-      run: sudo apt install -y -qq make
-    - name: Install dev tooling
-      run: make install-dev
-    - name: Run tests
-      run: make test-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.0.0
+      - name: Set Up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install make
+        run: sudo apt install -y -qq make
+      - name: Install dev tooling
+        run: make install-dev
+      - name: Run tests
+        run: make test-all
 
   type-check:
-    - uses: actions/checkout@v2
-    - name: Set Up Python
-      users: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Install make
-      run: sudo apt install -y -qq make
-    - name: Install dev tooling
-      run: make install-dev
-    - name: Run tests
-      run: make mypy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.0.0
+      - name: Set Up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install make
+        run: sudo apt install -y -qq make
+      - name: Install dev tooling
+        run: make install-dev
+      - name: Run tests
+        run: make mypy
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.0.0
+      - name: Set Up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install make
+        run: sudo apt install -y -qq make
+      - name: Install dev tooling
+        run: make install-dev
+      - name: Run tests
+        run: bash ./scripts/integration_test.sh

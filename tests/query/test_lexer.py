@@ -1,3 +1,6 @@
+# We're testing low-level Lexer methods here so need to use protected
+# methods
+# pylint: disable=protected-access
 import pytest
 
 from task_forge.ql.lexer import Lexer
@@ -93,7 +96,7 @@ def test_lexer_performance(query, benchmark):
     """Benchmark the performance of various queries."""
 
     @benchmark
-    def parse_query():
+    def parse_query():  # pylint: disable=unused-variable
         """Benchmark query parsing"""
         lexer = Lexer(query)
         list(lexer)

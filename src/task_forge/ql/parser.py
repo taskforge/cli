@@ -36,7 +36,7 @@ class ParseError(Exception):
     """Raised by the Parser when invalid syntax occurs."""
 
     def __init__(self, msg: str, pos: int = 0):
-        self.args = (msg,)
+        super().__init__(msg)
         self.pos = pos
 
 

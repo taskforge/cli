@@ -9,7 +9,7 @@ Subpackages
     task_forge.cli
     task_forge.lists
     task_forge.ql
-    task_forge.task
+    task_forge.models
 
 Submodules
 ----------
