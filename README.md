@@ -5,7 +5,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/taskforge-cli.svg)](https://pypi.python.org/pypi/taskforge-cli/)
 [![GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/chasinglogic/taskforge/blob/master/LICENSE)
 
-![Taskforge](https://raw.githubusercontent.com/chasinglogic/taskforge/master/src/docs/_static/logo_wide.png)
+# ![Taskforge](https://raw.githubusercontent.com/chasinglogic/taskforge/master/src/docs/_static/logo_wide.png)
 
 Task management tool and library that integrates and aggregates other services.
 
