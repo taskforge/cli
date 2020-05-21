@@ -5,51 +5,18 @@
 # You can set these variables from the command line
 
 VERSION = $(shell git tag --list | tail -n1 | sed s/v//)
-PROJECT = taskforge
 
 PYTHON				= python3
 PIP					= $(PYTHON) -m pip
 PYTEST				= PYTHONPATH="$$PYTHONPATH:src" $(PYTHON) -m pytest
 PYTEST_OPTS			= --disable-pytest-warnings
-DOCKER				= docker
 SITE_PACKAGES		= $(shell $(PYTHON) -c 'import sys; print([p for p in sys.path if "site-packages" in p][0])')
 DEV_INSTALL_LINK	= $(SITE_PACKAGES)/taskforge-cli.egg-link
-DOCS				= $(shell find docs -name '*.rst' -or -name '*.html' | grep -v 'cli/task_.*\.rst')
-VALE				= $(DOCKER) run		\
-	--rm -v $(PWD)/.vale/styles:/styles \
-	--rm -v $(PWD):/docs				\
-	-w /docs							\
-	jdkato/vale
-
-
-SPHINXOPTS			= 
-SPHINXBUILD			= sphinx-build
 BUILDDIR            = build
-DIST_TARBALL        = dist/$(PROJECT)-cli-$(VERSION).tar.gz     
+DIST_TARBALL        = dist/$(PROJECT)-cli-$(VERSION).tar.gz
 
 DEB_ORIG_TARBALL    = ../$(PROJECT)_$(VERSION).orig.tar.gz
 DEB_MAN_PAGES_DIR   = debian/taskforge/usr/share/man/man1
-
-WEBSITE_DEPLOY_DIR  = /var/www/html
-WEBSITE_DEPLOY_PORT = 22
-WEBSITE_DEPLOY_USER = deploy
-WEBSITE_HOSTNAME    = taskforge.io
-DOC_SOURCEDIR		= docs
-DOC_BUILDDIR		= $(BUILDDIR)/docs
-
-MAN_PAGES = $(DOC_BUILDDIR)/man/task.1 \
-			$(DOC_BUILDDIR)/man/task-add.1 \
-			$(DOC_BUILDDIR)/man/task-complete.1 \
-			$(DOC_BUILDDIR)/man/task-edit.1 \
-			$(DOC_BUILDDIR)/man/taskforged.1 \
-			$(DOC_BUILDDIR)/man/task-next.1 \
-			$(DOC_BUILDDIR)/man/task-query.1 \
-			$(DOC_BUILDDIR)/man/task-todo.1 \
-			$(DOC_BUILDDIR)/man/task-workon.1
-MAN_PAGES_GZ = $(addsuffix .gz,$(MAN_PAGES))
-
-WEBSITEDIR          = $(BUILDDIR)/website/public
-
 
 ############
 # BUILDING #
@@ -95,7 +62,7 @@ $(DIST_TARBALL):
 	VERSION=$(VERSION) python setup.py sdist bdist_wheel
 pkg-pypi: $(DIST_TARBALL)
 
-pkg-pypi-upload: docs pkg-pypi 
+pkg-pypi-upload: docs pkg-pypi
 	twine upload dist/*
 
 $(DEB_ORIG_TARBALL): $(DIST_TARBALL)
@@ -124,55 +91,11 @@ pkg-deb: $(MAN_PAGES_GZ) $(DEB_ORIG_TARBALL)
 		-I"debian/*" \
 		-I".benchmarks/*" \
 		-I".github/*" \
-		-i'(\.pytest_cache|\.benchmarks|debian|.*taskforge_cli\.egg-info|\.git|\.github|tests|\.vale|dist|docs)/.*|\.gitignore|Dockerfile.*|\.pylintrc|\.travis\.yml|\.vale\.ini|requirements.*\.txt|setup\.cfg|Makefile|pytest\.ini'	
-
-########
-# DOCS #
-########
-
-docs: docs-html docs-man
-
-# Build the website directory
-website: install-dev clean docs-html
-	mkdir -p $(WEBSITEDIR)/docs
-	cp -R $(DOC_BUILDDIR)/html/* $(WEBSITEDIR)/docs
-	cp $(DOC_SOURCEDIR)/index.html $(WEBSITEDIR)/index.html
-
-# Build the web site container
-docker-website: website
-	docker build --no-cache \
-		--tag "chasinglogic/taskforge.io:latest" \
-		--file Dockerfile.website .
-
-publish-website: website
-	rsync -e "ssh -p $(WEBSITE_DEPLOY_PORT)" -avz build/website/public/* $(WEBSITE_DEPLOY_USER)@$(WEBSITE_HOSTNAME):$(WEBSITE_DEPLOY_DIR)/$(WEBSITE_HOSTNAME)/
-
-docs-live-%:
-	sphinx-autobuild --watch ./src -b $* $(SPHINXOPTS) "$(DOC_SOURCEDIR)" $(DOC_BUILDDIR)/html
-
-$(DOC_BUILDDIR):
-	mkdir -p $(DOC_BUILDDIR)
-
-$(MAN_PAGES): docs-man
-$(MAN_PAGES_GZ): $(MAN_PAGES)
-%.1.gz:
-	gzip --force --keep $*.1
-docs-%: $(DOC_BUILDIR)
-	$(SPHINXBUILD) -M $* "$(DOC_SOURCEDIR)" "$(DOC_BUILDDIR)" $(SPHINXOPTS) $(O)
+		-i'(\.pytest_cache|\.benchmarks|debian|.*taskforge_cli\.egg-info|\.git|\.github|tests|\.vale|dist|docs)/.*|\.gitignore|Dockerfile.*|\.pylintrc|\.travis\.yml|\.vale\.ini|requirements.*\.txt|setup\.cfg|Makefile|pytest\.ini'
 
 ###########
 # LINTING #
 ###########
-
-lint-docs-vale:
-	$(VALE) --glob='!docs/cli/task_*.rst' $(DOCS)
-
-lint-docs-validate-links:
-	$(DOCKER) run --name taskforge_link_validation -p 8080:80 -d chasinglogic/taskforge.io:latest
-	pylinkvalidate.py -P http://localhost:8080
-	$(DOCKER) stop taskforge_link_validation
-
-lint-docs: lint-docs-vale lint-docs-validate-links
 
 mypy:
 	$(PYTHON) -m mypy src
