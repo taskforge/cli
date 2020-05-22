@@ -40,7 +40,7 @@ class V1UserClient(HTTPClient):
         return self.request(
             "POST",
             "/api/token",
-            data={"username": username, "password": password},
+            json={"username": username, "password": password},
             retry=False,
         )
 
@@ -58,11 +58,15 @@ class API:
         self.sources = V1SourceClient(server_hostname, *args, **kwargs)
         self.contexts = V1ContextClient(server_hostname, *args, **kwargs)
 
+    def set_token(self, access, refresh):
+        self.users.set_token(access, refresh)
+        self.tasks.set_token(access, refresh)
+        self.comments.set_token(access, refresh)
+        self.sources.set_token(access, refresh)
+        self.contexts.set_token(access, refresh)
+        return self
+
     def login(self, username, password):
         tokens = self.users.login(username, password)
-        self.users.set_token(tokens["access"], tokens["refresh"])
-        self.tasks.set_token(tokens["access"], tokens["refresh"])
-        self.comments.set_token(tokens["access"], tokens["refresh"])
-        self.sources.set_token(tokens["access"], tokens["refresh"])
-        self.contexts.set_token(tokens["access"], tokens["refresh"])
+        self.set_token(tokens["access"], tokens["refresh"])
         return tokens
