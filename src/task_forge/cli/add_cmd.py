@@ -20,30 +20,34 @@ If an import option is provided all other options are ignored.
 import sys
 from typing import Any
 
-from task_forge.cli.utils import inject_list
-from task_forge.cli.workon_cmd import top_priority
-from task_forge.lists import TaskList
-from task_forge.models import Task
+from task_forge.cli.config import Config
+from task_forge.cli.utils import config, get_client
+from task_forge.sdk.types import Task
 
 
-def import_file(filename: str, task_list: TaskList) -> None:
+def import_file(filename: str) -> None:
     """Import tasks from filename into the configured task list"""
     import json
 
     with open(filename) as tasks_file:
         task = json.load(tasks_file)
         if isinstance(task, list):
-            tasks = [Task.from_dict(t) for t in task]
-            task_list.add_multiple(tasks)
+            tasks = [Task(**t) for t in task]
         else:
-            task_list.add(task)
+            tasks = [Task(**task)]
+
+    return tasks
 
 
-@inject_list
-def run(args: Any, task_list: TaskList) -> None:
+@config
+def run(args: Any, cfg: Config) -> None:
     """Parse the docopt args and call add_task."""
+    client = get_client(cfg)
+
     if args["--from-file"]:
-        import_file(args["--from-file"], task_list)
+        tasks = import_file(args["--from-file"])
+        for task in tasks:
+            client.tasks.create(task)
         return
 
     if not args["<title>"]:
@@ -51,11 +55,12 @@ def run(args: Any, task_list: TaskList) -> None:
         sys.exit(1)
 
     title = " ".join(args["<title>"])
-    priority = int(args["--priority"]) if args["--priority"] else 1
-    context = args["--context"] if args["--context"] else "default"
-    body = args["--body"] if args["--body"] else ""
-
-    if args["--top"]:
-        priority = top_priority(task_list)
-
-    task_list.add(Task(title, body=body, context=context, priority=priority))
+    priority = int(args["--priority"]) if args["--priority"] else None
+    context = args["--context"] if args["--context"] else None
+    if context:
+        context_obj = client.contexts.get_by_name(context)
+        if context_obj:
+            context = context_obj.id
+    body = args["--body"] if args["--body"] else None
+    task = Task(title=title, priority=priority, body=body, context=context)
+    client.tasks.create(task)
