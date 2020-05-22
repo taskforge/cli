@@ -17,17 +17,20 @@ Options:
 
 from typing import Any
 
-from task_forge.cli.utils import inject_list
-from task_forge.lists import NotFoundError, TaskList
+from task_forge.cli.config import Config
+from task_forge.cli.utils import config, get_client
+from task_forge.sdk.exceptions import NotFound
 
 
-@inject_list
-def run(args: Any, task_list: TaskList) -> None:
+@config
+def run(args: Any, cfg: Config) -> None:
     """Print the current task in task_list."""
+    client = get_client(cfg)
+
     try:
-        task = task_list.current()
-    except NotFoundError:
-        print("No current task!")
+        task = client.tasks.current()
+    except NotFound:
+        print("No next task, you're all done!")
         return
 
     if args["--title-only"]:
