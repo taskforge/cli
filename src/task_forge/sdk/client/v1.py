@@ -52,6 +52,7 @@ class V1UserClient(HTTPClient):
         """
         Login and return the tokens
         """
+        self.client.headers.update({"Authorization": None})
         return self.request(
             "POST",
             "/api/token",
