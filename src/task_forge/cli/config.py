@@ -2,41 +2,38 @@
 
 import os
 import sys
+
 from typing import Any, Dict, Optional, cast
+from getpass import getpass
 
 import appdirs
 import toml
 
-from task_forge.lists import InvalidConfigError, TaskList
-from task_forge.lists.load import get_list
-
+USER_CONFIG = os.path.join(appdirs.user_config_dir(), "taskforge", "config.toml")
 CONFIG_FILES = [
     "/etc/taskforge/config.toml",
     os.path.join(os.getenv("TASKFORGE_CONFIG_DIR", ""), "config.toml"),
-    os.path.join(appdirs.user_config_dir(), "taskforge", "config.toml"),
+    USER_CONFIG,
     "taskforge.toml",
 ]
 
 
-ConfigDict = Dict[str, Any]
+class ConfigDict(dict):
+    def __setattr__(self, name, value):
+        self[name] = value
 
-
-def default_list_config() -> ConfigDict:
-    """Return the default list configuration."""
-    return {
-        "name": "sqlite",
-        "config": {"directory": os.path.join(appdirs.user_data_dir(), "taskforge")},
-    }
+    def __getattr__(self, name):
+        return self.get(name, None)
 
 
 def default_server_config() -> ConfigDict:
     """Return the default configuration for a server."""
-    return {
-        "host": "localhost",
-        "port": 8000,
-        # Only used with network communication
-        # 'secret_file': '~/.taskforge.d/server_secret'
-    }
+    return ConfigDict(
+        **{
+            # TODO: change
+            "hostname": "http://localhost:8000",
+        }
+    )
 
 
 class Config:
@@ -45,14 +42,51 @@ class Config:
     def __init__(
         self,
         general: ConfigDict = None,
-        list: ConfigDict = None,  # pylint: disable=redefined-builtin
         server: ConfigDict = None,
+        creds: ConfigDict = None,
     ):
-        self.general = general if general is not None else {}
-        self.list = list if list is not None else default_list_config()
+        self.general = general if general is not None else dict()
         self.server = server if server is not None else default_server_config()
-        self.list_impl = None
-        self.path: Optional[str] = None
+        self.creds = creds if creds is not None else ConfigDict()
+        self.path: str = USER_CONFIG
+        self.cred_file: Optional[str] = self.general.get("cred_file", None)
+
+    def set_token(self, access_token, refresh_token) -> None:
+        self.creds.tokens = {
+            "access": access_token,
+            "refresh": refresh_token,
+        }
+
+    def get_credentials(self, username: Optional[str] = None):
+        if not self.cred_file:
+            self.cred_file = os.path.join(os.path.dirname(self.path), "creds.toml",)
+
+        if os.path.exists(self.cred_file):
+            self.load_creds()
+            if (
+                self.creds.user
+                and "username" in self.creds["user"]
+                and "password" in self.creds["user"]
+            ):
+                return self.creds
+
+        username = username if username else input("Username: ")
+        username.strip()
+        password = getpass("Password: ")
+        password.strip()
+        self.creds = ConfigDict({"user": {"username": username, "password": password}})
+        return self.creds
+
+    def save(self, path: str = None) -> None:
+        with open(self.path, "w") as cfg_file:
+            combined = {
+                "general": self.general,
+                "server": self.server,
+            }
+            toml.dump(combined, cfg_file)
+
+        with open(self.cred_file, "w") as creds_file:
+            toml.dump(self.creds, creds_file)
 
     @staticmethod
     def load(path: str = None) -> "Config":
@@ -63,40 +97,31 @@ class Config:
         if path is not None:
             paths = [path]
 
+        loaded = False
         for filename in paths:
             if os.path.isfile(filename):
+                cred_file = os.path.join(os.path.dirname(filename), "creds.toml")
                 with open(filename) as config_file:
                     user_cfg = toml.load(config_file)
                     cfg.general.update(user_cfg.get("general", {}))
-                    cfg.list.update(user_cfg.get("list", {}))
                     cfg.server.update(user_cfg.get("server", {}))
                     cfg.path = filename
+                    cfg.cred_file = cred_file
+                    cfg.load_creds()
+                    loaded = True
+
+        if not loaded:
+            config_dir = os.path.dirname(USER_CONFIG)
+            if not os.path.isdir(config_dir):
+                os.makedirs(config_dir)
+            with open(USER_CONFIG, "w") as cfg_file:
+                cfg_file.write(cfg.toml())
 
         return cfg
 
-    def load_list(self, override_config: ConfigDict = None) -> TaskList:
-        """Return the loaded list from this config."""
-        if self.list_impl is not None:
-            return self.list_impl
-
-        list_cfg = self.list if override_config is None else override_config
-        try:
-            impl = get_list(list_cfg["name"])
-            if impl is None:
-                print(f'unknown list: {self.list["name"]}')
-                sys.exit(1)
-        except KeyError:
-            print("no list name provided by config: {}", toml.dumps(self.__dict__))
-            sys.exit(1)
-
-        try:
-            return cast(TaskList, impl(**list_cfg["config"]))
-        except InvalidConfigError as invalid_config:
-            print(f"Invalid config: {invalid_config}")
-            sys.exit(1)
-        except TypeError as unknown_key:
-            print(f"Invalid config unknown config key: {unknown_key}")
-            sys.exit(1)
+    def load_creds(self):
+        with open(self.cred_file) as cred_file:
+            self.creds = ConfigDict(toml.load(cred_file))
 
     def toml(self) -> str:
         """Return a toml string of this config."""
