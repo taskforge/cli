@@ -23,6 +23,7 @@ from typing import Any
 from task_forge.cli.config import Config
 from task_forge.cli.utils import config, get_client
 from task_forge.sdk.types import Task
+from task_foreg.cli.workon_cmd import top_priority
 
 
 def import_file(filename: str) -> None:
@@ -56,6 +57,8 @@ def run(args: Any, cfg: Config) -> None:
 
     title = " ".join(args["<title>"])
     priority = int(args["--priority"]) if args["--priority"] else None
+    if args["--top"]:
+        priority = top_priority(client)
     context = args["--context"] if args["--context"] else None
     if context:
         context_obj = client.contexts.get_by_name(context)
