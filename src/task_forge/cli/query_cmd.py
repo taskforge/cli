@@ -27,10 +27,9 @@ import json
 import sys
 from typing import Any, List
 
-from task_forge.cli.utils import inject_list
-from task_forge.lists import NotFoundError, TaskList
-from task_forge.models import Task
-from task_forge.ql.parser import ParseError, Parser
+from task_forge.cli.config import Config
+from task_forge.sdk.types import Task
+from task_forge.cli.utils import config, get_client
 
 
 def print_table(tasks: List[Task]) -> None:
@@ -125,26 +124,15 @@ def print_tasks(tasks: List[Task], output: str = "table") -> None:
         print_table(tasks)
 
 
-@inject_list
-def query_tasks(query: str, task_list: TaskList) -> List[Task]:
+@config
+def query_tasks(query: str, cfg: Config) -> List[Task]:
     """Return tasks which match query or all tasks if query is blank"""
-    assert task_list is not None
-
-    if query:
-        ast = Parser(query).parse()
-        return task_list.search(ast)
-
-    return task_list.list()
+    client = get_client(cfg)
+    return client.tasks.list()
 
 
 def run(args: Any) -> None:
     """Add the query command to parser."""
     query = " ".join(args["<query>"]) if args["<query>"] else ""
-    try:
-        tasks = query_tasks(query)  # pylint: disable=no-value-for-parameter
-        print_tasks(tasks, output=args["--output"])
-    except NotFoundError:
-        print("no tasks matched query")
-    except ParseError as parse_error:
-        print(f"unable to parse query: {parse_error}")
-        sys.exit(1)
+    tasks = query_tasks(query)  # pylint: disable=no-value-for-parameter
+    print_tasks(tasks, output=args["--output"])
