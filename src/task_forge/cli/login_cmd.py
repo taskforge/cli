@@ -6,6 +6,7 @@ Login to the Taskforge server
 Options:
     -u <username>, --username <username>  Your username on the server.
                                           If not provided you will be prompted.
+    -f, --force                           Force a token refresh.
 """
 
 from typing import Any
@@ -17,7 +18,7 @@ from task_forge.cli.utils import get_client, config
 def run(args: Any, cfg: Config) -> None:
     username = args["--username"]
     creds = cfg.get_credentials(username if username else None)
-    if "tokens" in creds:
+    if "tokens" in creds and not args["--force"]:
         print("You're already logged in!")
         return
     client = get_client(cfg)
