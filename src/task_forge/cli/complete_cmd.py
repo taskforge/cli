@@ -8,26 +8,27 @@ Complete tasks by ID. If no IDs are provided then the current task indicated by
 import sys
 from typing import Any, List
 
-from task_forge.cli.utils import inject_list
-from task_forge.lists import NotFoundError, TaskList
+from task_forge.cli.config import Config
+from task_forge.cli.utils import config, get_client
 
 
-@inject_list
-def complete_tasks(tasks: List[str], task_list: TaskList) -> None:
+@config
+def complete_tasks(tasks: List[str], cfg: Config) -> None:
     """
     Complete tasks by the ids in tasks.
 
     If no tasks are provided then complete the current task.
     """
+    client = get_client(cfg)
     try:
-        current = task_list.current()
+        current = client.tasks.current()
         tasks = [current.id]
-    except NotFoundError:
-        print("no ID given and no current task found")
+    except Exception:
+        print("no IDs given and no current task found")
         sys.exit(0)
 
     for task in tasks:
-        task_list.complete(task)
+        client.tasks.complete_by_id(task)
 
 
 def run(args: Any) -> None:
