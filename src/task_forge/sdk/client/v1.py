@@ -1,3 +1,5 @@
+from typing import List
+
 import requests
 
 from task_forge.sdk.client.base import HTTPClient
@@ -15,6 +17,10 @@ class V1TaskClient(HTTPClient):
     def current(self) -> Task:
         data = self.request("GET", f"/api/v1/tasks/current")
         return self.cls(**data)
+
+    def search(self, query) -> List[Task]:
+        data = self.paginate(f"/api/v1/tasks/query", json={"query": query})
+        return [self.cls(**d) for d in data]
 
 
 class V1ContextClient(HTTPClient):

@@ -96,16 +96,19 @@ class HTTPClient:
         data = self.request("GET", f"/api/{self.version}/{self.object_name}/{id}")
         return self.cls(**data)
 
-    def list(self):
+    def paginate(self, url, **kwargs):
         results = []
-        url = f"/api/{self.version}/{self.object_name}"
         while True:
-            data = self.request("GET", url)
+            data = self.request("GET", url, **kwargs)
             results.extend(data["results"])
             if data["next"]:
                 url = data["next"]
             else:
                 break
+        return results
+
+    def list(self):
+        results = self.paginate(f"/api/{self.version}/{self.object_name}")
         return [self.cls(**result) for result in results]
 
     def create(self, instance):
