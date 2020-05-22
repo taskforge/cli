@@ -9,6 +9,9 @@ class V1TaskClient(HTTPClient):
     version = "v1"
     object_name = "tasks"
 
+    def complete_by_id(self, id) -> None:
+        self.request("PUT", f"/api/v1/tasks/{id}/complete")
+
     def current(self) -> Task:
         data = self.request("GET", f"/api/v1/tasks/current")
         return self.cls(**data)
