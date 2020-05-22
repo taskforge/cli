@@ -6,18 +6,19 @@ from datetime import datetime
 
 @dataclass
 class Task:
-    id: UUID
-
-    owner: UUID
-    context: UUID
-    source: UUID
-
     title: str
-    body: str
-    priority: int
 
-    created_date: datetime
-    completed_date: datetime
+    id: UUID = field(default=None)
+
+    owner: UUID = field(default=None)
+    context: UUID = field(default=None)
+    source: UUID = field(default=None)
+
+    body: str = field(default=None)
+    priority: int = field(default=None)
+
+    created_date: datetime = field(default=None)
+    completed_date: datetime = field(default=None)
 
 
 @dataclass
