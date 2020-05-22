@@ -3,7 +3,7 @@ API Client code for the Taskforge backend
 """
 
 import sys
-from json import JSONDecodeError
+from json import JSONDecodeError, dumps
 
 import requests
 
@@ -11,6 +11,8 @@ from uuid import UUID
 from pprint import pprint
 from functools import wraps
 from dataclasses import asdict
+
+from task_forge.sdk.exceptions import Unauthorized, NotFound
 
 
 class HTTPClient:
@@ -52,25 +54,36 @@ class HTTPClient:
             resp.raise_for_status()
             return resp.json()
         except Exception as err:
-            if (
-                getattr(err, "response", None) is not None
-                and err.response.status_code == 401
-                and retry
-            ):
+            if getattr(err, "response", None) is None:
+                raise err
+
+            message = f"Unknown error: {resp.text}"
+            try:
+                obj = resp.json()
+                if "detail" in obj:
+                    print(obj["detail"])
+                else:
+                    obj = dumps(obj)
+            except JSONDecodeError:
+                pass
+
+            response = err.response
+            if response.status_code == 401 and retry:
                 self.token_refresh()
                 return self.request(method, endpoint, retry=False, **kwargs)
-            try:
-                json = resp.json()
-                if "detail" in json:
-                    print(json["detail"])
-                else:
-                    pprint(json)
-            except JSONDecodeError:
-                print("Unknown error:", resp.text)
-
-            sys.exit(1)
+            elif response.status_code == 401:
+                raise Unauthorized("Not authorized or logged in")
+            elif response.status_code == 404:
+                raise NotFound()
+            elif response.status_code == 400:
+                raise BadRequest(message)
+            else:
+                raise Exception(message)
 
     def token_refresh(self):
+        if not self.refresh_token:
+            raise Unauthorized("Refresh token not set")
+
         data = self.request(
             "POST",
             "/api/token/refresh",
