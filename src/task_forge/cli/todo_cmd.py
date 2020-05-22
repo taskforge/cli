@@ -16,25 +16,18 @@ For more information on available output formats see 'man task-query'
 from typing import Any
 
 from task_forge.cli.query_cmd import print_tasks
-from task_forge.cli.utils import inject_list
-from task_forge.lists import NotFoundError, TaskList
-from task_forge.ql.ast import AST, Expression
-from task_forge.ql.tokens import Token
+from task_forge.cli.config import Config
+from task_forge.cli.utils import config, get_client
+from task_forge.sdk.exceptions import NotFound
 
 
-@inject_list
-def run(args: Any, task_list: TaskList) -> None:
+@config
+def run(args: Any, cfg: Config) -> None:
     """Print the current task in task_list."""
-    ast = AST(
-        Expression(
-            Token("="),
-            left=Expression(Token("completed")),
-            right=Expression(Token("false")),
-        )
-    )
-
+    client = get_client(cfg)
+    query = "completed = false"
     try:
-        tasks = task_list.search(ast)
+        tasks = client.tasks.search(query)
         print_tasks(tasks, output=args["--output"])
-    except NotFoundError:
+    except NotFound:
         print("No incomplete tasks!")
