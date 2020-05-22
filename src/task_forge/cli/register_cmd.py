@@ -10,8 +10,8 @@ from task_forge.cli.utils import get_client
 from task_forge.sdk.types import User
 
 
-def run(ags: Any) -> None:
-    cfg = Config.load()
+@config
+def run(ags: Any, cfg: Config) -> None:
     email = input("Email: ")
     creds = cfg.get_credentials()
 
@@ -22,7 +22,6 @@ def run(ags: Any) -> None:
     )
     client = get_client(cfg)
     client.users.create(user)
-    print("Successfully Registered!")
 
     tokens = client.login(user.username, user.password)
     cfg.set_token(tokens["access"], tokens["refresh"])
