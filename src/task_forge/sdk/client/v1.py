@@ -15,6 +15,10 @@ class V1ContextClient(HTTPClient):
     version = "v1"
     object_name = "contexts"
 
+    def get_by_name(self, name: str) -> Context:
+        data = self.request("GET", f"/api/v1/contexts/{name}")
+        return self.cls(**data)
+
 
 class V1SourceClient(HTTPClient):
     cls = Source
