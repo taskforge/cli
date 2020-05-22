@@ -17,6 +17,7 @@ Commands:
    complete (done, d)  Complete tasks in the list.
    query (q, s, list)  Search or list tasks in the list
    workon              Move a task to the top of the list
+   login               Login to the Taskforge server
 
 See 'task help <command>' for more information on a specific command.
 """
@@ -111,6 +112,8 @@ def main() -> None:  # pylint: disable=too-many-branches
         import task_forge.cli.query_cmd as command_mod  # type: ignore
     elif command == "workon":
         import task_forge.cli.workon_cmd as command_mod  # type: ignore
+    elif command == "login":
+        import task_forge.cli.login_cmd as command_mod  # type: ignore
     else:
         print(f"{command} is not a known task command")
         print(__doc__)
