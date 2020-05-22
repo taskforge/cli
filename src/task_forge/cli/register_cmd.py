@@ -15,9 +15,14 @@ def run(ags: Any) -> None:
     email = input("Email: ")
     creds = cfg.get_credentials()
 
-    user = User(username=creds["username"], password=creds["password"], email=email)
+    user = User(
+        username=creds["user"]["username"],
+        password=creds["user"]["password"],
+        email=email,
+    )
     client = get_client(cfg)
     client.users.create(user)
+    print("Successfully Registered!")
 
-    tokens = client.login(creds["username"], creds["password"])
+    tokens = client.login(user.username, user.password)
     cfg.set_token(tokens["access"], tokens["refresh"])
