@@ -61,14 +61,15 @@ class Config:
         if not self.cred_file:
             self.cred_file = os.path.join(os.path.dirname(self.path), "creds.toml",)
 
-        if os.path.exists(self.cred_file):
+        if not self.creds.user:
             self.load_creds()
-            if (
-                self.creds.user
-                and "username" in self.creds["user"]
-                and "password" in self.creds["user"]
-            ):
-                return self.creds
+
+        if (
+            self.creds.user
+            and "username" in self.creds["user"]
+            and "password" in self.creds["user"]
+        ):
+            return self.creds
 
         username = username if username else input("Username: ")
         username.strip()
@@ -120,8 +121,11 @@ class Config:
         return cfg
 
     def load_creds(self):
-        with open(self.cred_file) as cred_file:
-            self.creds = ConfigDict(toml.load(cred_file))
+        if os.path.isfile(self.cred_file):
+            with open(self.cred_file) as cred_file:
+                self.creds = ConfigDict(toml.load(cred_file))
+        else:
+            self.creds = ConfigDict({"user": {}})
 
     def toml(self) -> str:
         """Return a toml string of this config."""
