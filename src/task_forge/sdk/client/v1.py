@@ -33,6 +33,10 @@ class V1UserClient(HTTPClient):
     version = "v1"
     object_name = "users"
 
+    def create(self, *args, **kwargs):
+        self.client.headers.update({"Authorization": None})
+        return super().create(*args, **kwargs)
+
     def login(self, username, password):
         """
         Login and return the tokens
