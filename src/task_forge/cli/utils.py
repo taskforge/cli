@@ -17,7 +17,10 @@ def config(func: Any) -> Any:
 
     def wrapper(*args, **kwargs):  # type: ignore
         kwargs["cfg"] = cfg
-        return func(*args, **kwargs)
+        try:
+            return func(*args, **kwargs)
+        finally:
+            cfg.save()
 
     return wrapper
 
