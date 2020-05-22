@@ -29,4 +29,7 @@ def get_client(cfg: Config):
     """
     Return the API client for the current API version
     """
-    return v1.API(cfg.server.hostname)
+    client = v1.API(cfg.server.hostname,)
+    if cfg.creds and cfg.creds.tokens:
+        client.set_token(cfg.creds.tokens["access"], cfg.creds.tokens["refresh"])
+    return client
