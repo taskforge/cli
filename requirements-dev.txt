@@ -1,12 +1,9 @@
-black 
-pylint
+black
+flake8
 isort
 mypy
 pydocstyle
 pylinkvalidator
 pytest
 pytest-stub
-pytest-benchmark
 pytest-coverage
-sphinx
-sphinx-autobuild

@@ -6,14 +6,8 @@ from setuptools import find_packages, setup
 with open("README.md") as f:
     LONG_DESCRIPTION = f.read()
 
-with open("requirements/runtime.txt") as f:
+with open("requirements.txt") as f:
     requirements = f.read().splitlines()
-
-extras = {}
-for root, filenames, _ in walk("requirements/extras"):
-    for filename in filenames:
-        with open(path.join(root, filename)) as f:
-            extras[filename[: len(".txt")]] = f.read().splitlines()
 
 setup(
     name="task_forge",
@@ -31,7 +25,6 @@ setup(
     zip_safe=False,
     platforms="any",
     install_requires=requirements,
-    extras_require=extras,
     python_requires=">=3.6",
     entry_points={
         "task_forge.lists": [
