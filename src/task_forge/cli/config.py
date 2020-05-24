@@ -1,7 +1,7 @@
 """Configuration class definition."""
 
 import os
-from typing import Optional
+from typing import Any, Dict, Optional
 from getpass import getpass
 
 import toml
@@ -16,7 +16,7 @@ CONFIG_FILES = [
 ]
 
 
-def default_server_config() -> dict:
+def default_server_config() -> Dict[str, Any]:
     """Return the default configuration for a server."""
     return {
         # TODO: change
@@ -28,7 +28,10 @@ class Config:
     """Configuration object for Taskforge CLI and taskforged."""
 
     def __init__(
-        self, general: dict = None, server: dict = None, creds: dict = None,
+        self,
+        general: Dict[str, Any] = None,
+        server: Dict[str, Any] = None,
+        creds: Dict[str, Any] = None,
     ):
         self.general = general if general is not None else dict()
         self.server = server if server is not None else default_server_config()
@@ -36,14 +39,14 @@ class Config:
         self.path: str = USER_CONFIG
         self.cred_file: Optional[str] = self.general.get("cred_file", None)
 
-    def set_token(self, access_token, refresh_token) -> None:
+    def set_token(self, access_token: str, refresh_token: str) -> None:
         """Set the access and refresh token stored in the creds file."""
         self.creds["tokens"] = {
             "access": access_token,
             "refresh": refresh_token,
         }
 
-    def get_credentials(self, username: Optional[str] = None):
+    def get_credentials(self, username: Optional[str] = None) -> Dict[str, Any]:
         """
         Retrieve the stored credentials
 
@@ -52,7 +55,7 @@ class Config:
         if not self.cred_file:
             self.cred_file = os.path.join(os.path.dirname(self.path), "creds.toml",)
 
-        if not self.creds.user:
+        if "user" not in self.creds:
             self.load_creds()
 
         if (
@@ -78,6 +81,7 @@ class Config:
             }
             toml.dump(combined, cfg_file)
 
+        assert self.cred_file is not None
         with open(self.cred_file, "w") as creds_file:
             toml.dump(self.creds, creds_file)
 
@@ -112,13 +116,13 @@ class Config:
 
         return cfg
 
-    def load_creds(self):
+    def load_creds(self) -> None:
         """
         Load the creds file.
 
         This is derived from self.path if not explicitly set.
         """
-        if os.path.isfile(self.cred_file):
+        if self.cred_file is not None and os.path.isfile(self.cred_file):
             with open(self.cred_file) as cred_file:
                 self.creds = dict(toml.load(cred_file))
         else:

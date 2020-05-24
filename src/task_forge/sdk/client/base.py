@@ -1,15 +1,17 @@
 """API Client code for the Taskforge backend."""
 
+from abc import ABC
 from json import JSONDecodeError, dumps
 from uuid import UUID
 from dataclasses import asdict
 
 import requests
+from requests.exceptions import RequestException
 
 from task_forge.sdk.exceptions import NotFound, BadRequest, Unauthorized
 
 
-class HTTPClient:
+class HTTPClient(ABC):
     """
     An Abstract API Client for the Taskforge backend.
 
@@ -17,8 +19,8 @@ class HTTPClient:
     """
 
     cls = callable
-    version = None
-    object_name = None
+    version: str = "v0"
+    object_name: str = "widgets"
 
     def __init__(
         self, server_hostname, session=None, access_token=None, refresh_token=None
@@ -34,19 +36,19 @@ class HTTPClient:
         if access_token is not None and refresh_token is not None:
             self.set_token(access_token, refresh_token)
 
-    def set_token(self, access_token, refresh_token):
+    def set_token(self, access_token: str, refresh_token: str):
         """Set the authentication headers for access and refresh tokens."""
         self.client.headers.update({"Authorization": f"Bearer {access_token}"})
         self.refresh_token = refresh_token
 
-    def full_url(self, endpoint):
+    def full_url(self, endpoint: str):
         """Expand partial url endpoint to include the full protocol and hostname."""
         # Already expanded
         if self.hostname in endpoint:
             return endpoint
         return f"{self.hostname}{endpoint}"
 
-    def request(self, method, endpoint, retry=True, **kwargs):
+    def request(self, method: str, endpoint: str, retry: bool = True, **kwargs):
         """
         Make a request to the Taskforge API.
 
@@ -56,7 +58,7 @@ class HTTPClient:
             resp = self.client.request(method, self.full_url(endpoint), **kwargs)
             resp.raise_for_status()
             return resp.json()
-        except Exception as err:
+        except RequestException as err:
             if getattr(err, "response", None) is None:
                 raise err
 
@@ -76,6 +78,7 @@ class HTTPClient:
                 return self.request(method, endpoint, retry=False, **kwargs)
             else:
                 self.convert_error(err, response, message)
+                return None
 
     def convert_error(self, err, response, message):
         """Convert the response status code to an SDK error type."""

@@ -1,7 +1,6 @@
 black
 flake8
 isort
-mypy
 pydocstyle
 pylinkvalidator
 pytest

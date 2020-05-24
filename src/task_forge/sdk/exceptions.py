@@ -6,13 +6,17 @@ interacting with the server.
 """
 
 
-class Unauthorized(Exception):
+class SDKException(Exception):
+    """Base SDKException used to identify errors thrown from the SDK."""
+
+
+class Unauthorized(SDKException):
     """The current users is not allowed to perform the action or is not logged in."""
 
 
-class NotFound(Exception):
+class NotFound(SDKException):
     """Object was not found, either ID is incorrect or no objects exist."""
 
 
-class BadRequest(Exception):
+class BadRequest(SDKException):
     """Something went horribly wrong, this should indicate a bug in the SDK."""

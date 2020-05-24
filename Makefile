@@ -97,16 +97,13 @@ pkg-deb: $(MAN_PAGES_GZ) $(DEB_ORIG_TARBALL)
 # LINTING #
 ###########
 
-mypy:
-	$(PYTHON) -m mypy src
-
 flake8:
 	$(PYTHON) -m flake8
 
 pydocstyle:
 	$(PYTHON) -m pydocstyle src
 
-lint: fmt flake8 pydocstyle mypy
+lint: fmt flake8 pydocstyle
 	@echo "Ready to commit!"
 
 black-check:
