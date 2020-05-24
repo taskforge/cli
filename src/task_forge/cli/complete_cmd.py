@@ -8,8 +8,8 @@ Complete tasks by ID. If no IDs are provided then the current task indicated by
 import sys
 from typing import Any, List
 
-from task_forge.cli.config import Config
 from task_forge.cli.utils import config, get_client
+from task_forge.cli.config import Config
 
 
 @config

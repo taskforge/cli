@@ -23,13 +23,13 @@ For information on available output formats see 'man task-query'
 """
 
 import csv
-import json
 import sys
+import json
 from typing import Any, List
 
-from task_forge.cli.config import Config
-from task_forge.sdk.types import Task
 from task_forge.cli.utils import config, get_client
+from task_forge.sdk.types import Task
+from task_forge.cli.config import Config
 
 
 def print_table(tasks: List[Task]) -> None:

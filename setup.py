@@ -1,6 +1,6 @@
 """A task management tool that integrates with 3rd party services."""
 
-from os import getenv, walk, path
+from os import getenv
 from setuptools import find_packages, setup
 
 with open("README.md") as f:

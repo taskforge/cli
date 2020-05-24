@@ -9,17 +9,17 @@ platform.
 """
 
 import os
-import shlex
 import sys
-from subprocess import call
-from tempfile import NamedTemporaryFile
+import shlex
 from typing import Any, Dict, cast
+from tempfile import NamedTemporaryFile
+from subprocess import call
 
 import toml
 
-from task_forge.cli.utils import inject_list
-from task_forge.lists import NotFoundError, TaskList
+from task_forge.lists import TaskList, NotFoundError
 from task_forge.models import Task
+from task_forge.cli.utils import inject_list
 
 
 def get_editor_program() -> str:

@@ -1,3 +1,1 @@
-"""
-SDK for interacting with the Taskforge backend.
-"""
+"""SDK for interacting with the Taskforge server."""

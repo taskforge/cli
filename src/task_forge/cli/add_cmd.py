@@ -20,9 +20,9 @@ If an import option is provided all other options are ignored.
 import sys
 from typing import Any
 
-from task_forge.cli.config import Config
 from task_forge.cli.utils import config, get_client
 from task_forge.sdk.types import Task
+from task_forge.cli.config import Config
 from task_foreg.cli.workon_cmd import top_priority
 
 

@@ -1,13 +1,11 @@
 """Configuration class definition."""
 
 import os
-import sys
-
-from typing import Any, Dict, Optional, cast
+from typing import Optional
 from getpass import getpass
 
-import appdirs
 import toml
+import appdirs
 
 USER_CONFIG = os.path.join(appdirs.user_config_dir(), "taskforge", "config.toml")
 CONFIG_FILES = [
@@ -18,46 +16,39 @@ CONFIG_FILES = [
 ]
 
 
-class ConfigDict(dict):
-    def __setattr__(self, name, value):
-        self[name] = value
-
-    def __getattr__(self, name):
-        return self.get(name, None)
-
-
-def default_server_config() -> ConfigDict:
+def default_server_config() -> dict:
     """Return the default configuration for a server."""
-    return ConfigDict(
-        **{
-            # TODO: change
-            "hostname": "http://localhost:8000",
-        }
-    )
+    return {
+        # TODO: change
+        "hostname": "http://localhost:8000",
+    }
 
 
 class Config:
     """Configuration object for Taskforge CLI and taskforged."""
 
     def __init__(
-        self,
-        general: ConfigDict = None,
-        server: ConfigDict = None,
-        creds: ConfigDict = None,
+        self, general: dict = None, server: dict = None, creds: dict = None,
     ):
         self.general = general if general is not None else dict()
         self.server = server if server is not None else default_server_config()
-        self.creds = creds if creds is not None else ConfigDict()
+        self.creds = creds if creds is not None else dict()
         self.path: str = USER_CONFIG
         self.cred_file: Optional[str] = self.general.get("cred_file", None)
 
     def set_token(self, access_token, refresh_token) -> None:
-        self.creds.tokens = {
+        """Set the access and refresh token stored in the creds file."""
+        self.creds["tokens"] = {
             "access": access_token,
             "refresh": refresh_token,
         }
 
     def get_credentials(self, username: Optional[str] = None):
+        """
+        Retrieve the stored credentials
+
+        The user will be prompted to input if none are available.
+        """
         if not self.cred_file:
             self.cred_file = os.path.join(os.path.dirname(self.path), "creds.toml",)
 
@@ -65,7 +56,7 @@ class Config:
             self.load_creds()
 
         if (
-            self.creds.user
+            "user" in self.creds
             and "username" in self.creds["user"]
             and "password" in self.creds["user"]
         ):
@@ -75,10 +66,11 @@ class Config:
         username.strip()
         password = getpass("Password: ")
         password.strip()
-        self.creds = ConfigDict({"user": {"username": username, "password": password}})
+        self.creds = dict({"user": {"username": username, "password": password}})
         return self.creds
 
     def save(self, path: str = None) -> None:
+        """Save the config and creds files."""
         with open(self.path, "w") as cfg_file:
             combined = {
                 "general": self.general,
@@ -121,11 +113,16 @@ class Config:
         return cfg
 
     def load_creds(self):
+        """
+        Load the creds file.
+
+        This is derived from self.path if not explicitly set.
+        """
         if os.path.isfile(self.cred_file):
             with open(self.cred_file) as cred_file:
-                self.creds = ConfigDict(toml.load(cred_file))
+                self.creds = dict(toml.load(cred_file))
         else:
-            self.creds = ConfigDict({"user": {}})
+            self.creds = dict({"user": {}})
 
     def toml(self) -> str:
         """Return a toml string of this config."""

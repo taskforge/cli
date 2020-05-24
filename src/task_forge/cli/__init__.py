@@ -23,8 +23,8 @@ Commands:
 See 'task help <command>' for more information on a specific command.
 """
 
-import logging
 import sys
+import logging
 
 from docopt import docopt
 
@@ -64,7 +64,7 @@ def print_lists() -> None:
         print(f"  {name}")
 
 
-def main() -> None:  # pylint: disable=too-many-branches
+def main() -> None:  # noqa: C901
     """CLI entrypoint, handles subcommand parsing"""
     args = docopt(
         __doc__, version="task version {}".format(__version__), options_first=True,

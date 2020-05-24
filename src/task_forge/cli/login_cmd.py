@@ -10,12 +10,14 @@ Options:
 """
 
 from typing import Any
+
+from task_forge.cli.utils import config, get_client
 from task_forge.cli.config import Config
-from task_forge.cli.utils import get_client, config
 
 
 @config
 def run(args: Any, cfg: Config) -> None:
+    """Run the login command."""
     username = args["--username"]
     creds = cfg.get_credentials(username if username else None)
     if "tokens" in creds and not args["--force"]:

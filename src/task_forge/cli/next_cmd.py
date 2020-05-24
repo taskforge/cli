@@ -17,8 +17,8 @@ Options:
 
 from typing import Any
 
-from task_forge.cli.config import Config
 from task_forge.cli.utils import config, get_client
+from task_forge.cli.config import Config
 from task_forge.sdk.exceptions import NotFound
 
 

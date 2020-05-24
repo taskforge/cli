@@ -15,9 +15,9 @@ For more information on available output formats see 'man task-query'
 
 from typing import Any
 
-from task_forge.cli.query_cmd import print_tasks
-from task_forge.cli.config import Config
 from task_forge.cli.utils import config, get_client
+from task_forge.cli.config import Config
+from task_forge.cli.query_cmd import print_tasks
 from task_forge.sdk.exceptions import NotFound
 
 

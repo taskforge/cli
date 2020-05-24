@@ -101,8 +101,7 @@ mypy:
 	$(PYTHON) -m mypy src
 
 flake8:
-	$(PYTHON) -m flake8 --rcfile=setup.cfg src
-	$(PYTHON) -m flake8 --rcfile=tests/.flake8rc tests
+	$(PYTHON) -m flake8
 
 pydocstyle:
 	$(PYTHON) -m pydocstyle src

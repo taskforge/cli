@@ -1,23 +1,19 @@
-"""
-API Client code for the Taskforge backend
-"""
+"""API Client code for the Taskforge backend."""
 
-import sys
 from json import JSONDecodeError, dumps
+from uuid import UUID
+from dataclasses import asdict
 
 import requests
 
-from uuid import UUID
-from pprint import pprint
-from functools import wraps
-from dataclasses import asdict
-
-from task_forge.sdk.exceptions import Unauthorized, NotFound
+from task_forge.sdk.exceptions import NotFound, BadRequest, Unauthorized
 
 
 class HTTPClient:
     """
-    API Client for the Taskforge backend
+    An Abstract API Client for the Taskforge backend.
+
+    This is meant to be subclassed per object to create an Object-oriented API client.
     """
 
     cls = callable
@@ -39,16 +35,23 @@ class HTTPClient:
             self.set_token(access_token, refresh_token)
 
     def set_token(self, access_token, refresh_token):
+        """Set the authentication headers for access and refresh tokens."""
         self.client.headers.update({"Authorization": f"Bearer {access_token}"})
         self.refresh_token = refresh_token
 
     def full_url(self, endpoint):
+        """Expand partial url endpoint to include the full protocol and hostname."""
         # Already expanded
         if self.hostname in endpoint:
             return endpoint
         return f"{self.hostname}{endpoint}"
 
     def request(self, method, endpoint, retry=True, **kwargs):
+        """
+        Make a request to the Taskforge API.
+
+        This handles error conversion and retry logic.
+        """
         try:
             resp = self.client.request(method, self.full_url(endpoint), **kwargs)
             resp.raise_for_status()
@@ -71,16 +74,22 @@ class HTTPClient:
             if response.status_code == 401 and retry:
                 self.token_refresh()
                 return self.request(method, endpoint, retry=False, **kwargs)
-            elif response.status_code == 401:
-                raise Unauthorized("Not authorized or logged in")
-            elif response.status_code == 404:
-                raise NotFound()
-            elif response.status_code == 400:
-                raise BadRequest(message)
             else:
-                raise Exception(message)
+                self.convert_error(err, response, message)
+
+    def convert_error(self, err, response, message):
+        """Convert the response status code to an SDK error type."""
+        if response.status_code == 401:
+            raise Unauthorized("Not authorized or logged in")
+        elif response.status_code == 404:
+            raise NotFound()
+        elif response.status_code == 400:
+            raise BadRequest(message)
+        else:
+            raise Exception(message)
 
     def token_refresh(self):
+        """Reresh the access token."""
         if not self.refresh_token:
             raise Unauthorized("Refresh token not set")
 
@@ -93,10 +102,12 @@ class HTTPClient:
         self.set_token(data["access"], self.refresh_token)
 
     def get(self, id: UUID):
+        """Get a single object by ID."""
         data = self.request("GET", f"/api/{self.version}/{self.object_name}/{id}")
         return self.cls(**data)
 
     def paginate(self, url, **kwargs):
+        """Consume a paginated response from the API."""
         results = []
         while True:
             data = self.request("GET", url, **kwargs)
@@ -108,10 +119,12 @@ class HTTPClient:
         return results
 
     def list(self):
+        """Return a list of objects."""
         results = self.paginate(f"/api/{self.version}/{self.object_name}")
         return [self.cls(**result) for result in results]
 
     def create(self, instance):
+        """Send a create request for instance."""
         data = {
             key: value for key, value in asdict(instance).items() if value is not None
         }
@@ -121,6 +134,7 @@ class HTTPClient:
         return self.cls(**created)
 
     def update(self, instance):
+        """Send an update request for instance."""
         data = asdict(instance)
         updated = self.request(
             "PUT", f"/api/{self.version}/{self.object_name}/{instance.id}", json=data
@@ -128,6 +142,7 @@ class HTTPClient:
         return self.cls(**updated)
 
     def delete(self, instance):
+        """Delete instance in the backend."""
         data = asdict(instance)
         self.request(
             "DELETE", f"/api/{self.version}/{self.object_name}/{instance.id}", json=data
