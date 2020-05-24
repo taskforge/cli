@@ -1,7 +1,8 @@
 """A task management tool that integrates with 3rd party services."""
 
 from os import getenv
-from setuptools import find_packages, setup
+
+from setuptools import setup, find_packages
 
 with open("README.md") as f:
     LONG_DESCRIPTION = f.read()
