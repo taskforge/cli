@@ -1,6 +1,6 @@
 from tests.utils import CLITestCase
-from task_forge.cli.workon_cmd import run
 from task_forge.sdk.types import Task
+from task_forge.cli.workon_cmd import run
 
 
 class TestWorkon(CLITestCase):
