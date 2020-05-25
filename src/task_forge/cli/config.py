@@ -17,6 +17,7 @@ CONFIG_FILES = [
 
 
 def find_config_file(path=None):
+    """Search the known config file paths for a config file."""
     paths = CONFIG_FILES
     if path is not None:
         paths = [path]
