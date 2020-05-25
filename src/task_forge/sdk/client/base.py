@@ -21,6 +21,7 @@ class HTTPClient(ABC):
     cls = callable
     version: str = "v0"
     object_name: str = "widgets"
+    refresh_hook = None
 
     def __init__(
         self,
@@ -49,7 +50,11 @@ class HTTPClient(ABC):
         self.refresh_token = refresh_token
 
     def set_credentials(self, username, password):
-        """Set the credentials"""
+        """
+        Set the credentials for this client.
+
+        These are only used if the refresh token is expired.
+        """
         self.credentials = {
             "username": username,
             "password": password,
@@ -133,7 +138,13 @@ class HTTPClient(ABC):
             self.set_token(data["access"], self.refresh_token)
         except Unauthorized as exc:
             if self.credentials:
-                self.login(self.credentials["username"], self.credentials["password"])
+                tokens = self.login(
+                    self.credentials["username"], self.credentials["password"]
+                )
+                if self.refresh_hook is not None and callable(self.refresh_hook):
+                    self.refresh_hook(
+                        access=tokens["access"], refresh=tokens["refresh"]
+                    )
             else:
                 raise exc
 

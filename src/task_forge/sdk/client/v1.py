@@ -80,17 +80,26 @@ class UserClient(HTTPClient):
 class API:
     """Backend client for interacting with the v1 API."""
 
+    refresh_hook = None
+
     def __init__(
         self, server_hostname, *args, **kwargs,
     ):
         if "session" not in kwargs or not kwargs["session"]:
             kwargs["session"] = requests.Session()
 
-        self.users = UserClient(server_hostname, *args, **kwargs)
-        self.tasks = TaskClient(server_hostname, *args, **kwargs)
-        self.comments = CommentClient(server_hostname, *args, **kwargs)
-        self.sources = SourceClient(server_hostname, *args, **kwargs)
-        self.contexts = ContextClient(server_hostname, *args, **kwargs)
+        clients = [
+            ("users", UserClient),
+            ("tasks", TaskClient),
+            ("comments", CommentClient),
+            ("sources", SourceClient),
+            ("contexts", ContextClient),
+        ]
+
+        for attr, client in clients:
+            obj = client(server_hostname, *args, **kwargs)
+            obj.refresh_hook = self.proxy_refresh_hook
+            setattr(self, attr, obj)
 
     def set_token(self, access, refresh):
         """Authenticate this client and sub-clients."""
@@ -116,3 +125,9 @@ class API:
         self.set_credentials(username, password)
         self.set_token(tokens["access"], tokens["refresh"])
         return tokens
+
+    def proxy_refresh_hook(self, access, refresh):
+        """If any refresh hook is triggered propagate it."""
+        if self.refresh_hook is not None and callable(self.refresh_hook):
+            self.refresh_hook(access, refresh)
+        self.set_token(access, refresh)

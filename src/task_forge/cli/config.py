@@ -52,11 +52,11 @@ class Config:
         self.path: str = USER_CONFIG
         self.cred_file: Optional[str] = self.general.get("cred_file", None)
 
-    def set_token(self, access_token: str, refresh_token: str) -> None:
+    def set_token(self, access: str, refresh: str) -> None:
         """Set the access and refresh token stored in the creds file."""
         self.creds["tokens"] = {
-            "access": access_token,
-            "refresh": refresh_token,
+            "access": access,
+            "refresh": refresh,
         }
 
     def get_credentials(self, username: Optional[str] = None) -> Dict[str, Any]:
