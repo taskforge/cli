@@ -20,12 +20,13 @@ def complete_tasks(tasks: List[str], cfg: Config) -> None:
     If no tasks are provided then complete the current task.
     """
     client = get_client(cfg)
-    try:
-        current = client.tasks.current()
-        tasks = [current.id]
-    except Exception:
-        print("no IDs given and no current task found")
-        sys.exit(0)
+    if not tasks:
+        try:
+            current = client.tasks.current()
+            tasks = [current.id]
+        except Exception:
+            print("no IDs given and no current task found")
+            sys.exit(0)
 
     for task in tasks:
         client.tasks.complete_by_id(task)
