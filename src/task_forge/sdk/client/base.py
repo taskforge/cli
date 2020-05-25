@@ -23,7 +23,12 @@ class HTTPClient(ABC):
     object_name: str = "widgets"
 
     def __init__(
-        self, server_hostname, session=None, access_token=None, refresh_token=None
+        self,
+        server_hostname,
+        session=None,
+        access_token=None,
+        refresh_token=None,
+        credentials=None,
     ):
         self.hostname = server_hostname
         self.refresh_token = refresh_token
@@ -33,6 +38,8 @@ class HTTPClient(ABC):
             self.client = session
 
         self.client.headers.update({"Content-Type": "application/json"})
+        self.refresh_token = None
+        self.credentials = credentials
         if access_token is not None and refresh_token is not None:
             self.set_token(access_token, refresh_token)
 
@@ -40,6 +47,13 @@ class HTTPClient(ABC):
         """Set the authentication headers for access and refresh tokens."""
         self.client.headers.update({"Authorization": f"Bearer {access_token}"})
         self.refresh_token = refresh_token
+
+    def set_credentials(self, username, password):
+        """Set the credentials"""
+        self.credentials = {
+            "username": username,
+            "password": password,
+        }
 
     def full_url(self, endpoint: str):
         """Expand partial url endpoint to include the full protocol and hostname."""
@@ -91,18 +105,37 @@ class HTTPClient(ABC):
         else:
             raise Exception(message)
 
+    def login(self, username, password):
+        """Login and return the tokens."""
+        self.client.headers.update({"Authorization": None})
+        tokens = self.request(
+            "POST",
+            "/api/token",
+            json={"username": username, "password": password},
+            retry=False,
+        )
+        self.set_token(tokens["access"], tokens["refresh"])
+        self.set_credentials(username, password)
+        return tokens
+
     def token_refresh(self):
         """Reresh the access token."""
         if not self.refresh_token:
             raise Unauthorized("Refresh token not set")
 
-        data = self.request(
-            "POST",
-            "/api/token/refresh",
-            json={"refresh": self.refresh_token},
-            retry=False,
-        )
-        self.set_token(data["access"], self.refresh_token)
+        try:
+            data = self.request(
+                "POST",
+                "/api/token/refresh",
+                json={"refresh": self.refresh_token},
+                retry=False,
+            )
+            self.set_token(data["access"], self.refresh_token)
+        except Unauthorized as exc:
+            if self.credentials:
+                self.login(self.credentials["username"], self.credentials["password"])
+            else:
+                raise exc
 
     def get(self, id: UUID):
         """Get a single object by ID."""
