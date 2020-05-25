@@ -16,6 +16,18 @@ CONFIG_FILES = [
 ]
 
 
+def find_config_file(path=None):
+    paths = CONFIG_FILES
+    if path is not None:
+        paths = [path]
+
+    for filename in paths:
+        if os.path.isfile(filename):
+            return filename
+
+    return None
+
+
 def default_server_config() -> Dict[str, Any]:
     """Return the default configuration for a server."""
     return {
@@ -89,28 +101,22 @@ class Config:
     def load(path: str = None) -> "Config":
         """Load the config file from path or from the default config file paths."""
         cfg = Config()
+        filename = find_config_file()
+        if filename is not None:
+            cred_file = os.path.join(os.path.dirname(filename), "creds.toml")
+            with open(filename) as config_file:
+                user_cfg = toml.load(config_file)
+                cfg.general.update(user_cfg.get("general", {}))
+                cfg.server.update(user_cfg.get("server", {}))
+                cfg.path = filename
+                cfg.cred_file = cred_file
+                cfg.load_creds()
 
-        paths = CONFIG_FILES
-        if path is not None:
-            paths = [path]
-
-        loaded = False
-        for filename in paths:
-            if os.path.isfile(filename):
-                cred_file = os.path.join(os.path.dirname(filename), "creds.toml")
-                with open(filename) as config_file:
-                    user_cfg = toml.load(config_file)
-                    cfg.general.update(user_cfg.get("general", {}))
-                    cfg.server.update(user_cfg.get("server", {}))
-                    cfg.path = filename
-                    cfg.cred_file = cred_file
-                    cfg.load_creds()
-                    loaded = True
-
-        if not loaded:
+        if filename is None:
             config_dir = os.path.dirname(USER_CONFIG)
             if not os.path.isdir(config_dir):
                 os.makedirs(config_dir)
+
             with open(USER_CONFIG, "w") as cfg_file:
                 cfg_file.write(cfg.toml())
 
@@ -124,9 +130,9 @@ class Config:
         """
         if self.cred_file is not None and os.path.isfile(self.cred_file):
             with open(self.cred_file) as cred_file:
-                self.creds = dict(toml.load(cred_file))
+                self.creds = toml.load(cred_file)
         else:
-            self.creds = dict({"user": {}})
+            self.creds = dict()
 
     def toml(self) -> str:
         """Return a toml string of this config."""

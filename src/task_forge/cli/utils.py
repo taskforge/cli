@@ -29,6 +29,12 @@ def config(func: Any) -> Any:
 def get_client(cfg: Config) -> v1.API:
     """Return the API client for the current API version."""
     client = v1.API(cfg.server["hostname"])
-    if cfg.creds and cfg.creds["tokens"]:
+    if cfg.creds and "tokens" in cfg.creds:
         client.set_token(cfg.creds["tokens"]["access"], cfg.creds["tokens"]["refresh"])
+
+    if cfg.creds and "user" in cfg.creds:
+        client.set_credentials(
+            cfg.creds["user"]["username"], cfg.creds["user"]["password"]
+        )
+
     return client
