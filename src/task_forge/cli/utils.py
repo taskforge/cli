@@ -5,17 +5,23 @@ from typing import Any
 from task_forge.cli.config import Config
 from task_forge.sdk.client import v1
 
+CONFIG = None
+
 
 def config(func: Any) -> Any:
     """Load config and inject it as the keyword argument cfg."""
-    cfg = Config.load()
 
     def wrapper(*args, **kwargs):  # type: ignore
-        kwargs["cfg"] = cfg
+        global CONFIG
+
+        if CONFIG is None:
+            CONFIG = Config.load()
+
+        kwargs["cfg"] = CONFIG
         try:
             return func(*args, **kwargs)
         finally:
-            cfg.save()
+            CONFIG.save()
 
     return wrapper
 
