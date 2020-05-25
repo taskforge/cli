@@ -8,7 +8,7 @@ from task_forge.sdk.types import Task, User, Source, Comment, Context
 from task_forge.sdk.client.base import HTTPClient
 
 
-class V1TaskClient(HTTPClient):
+class TaskClient(HTTPClient):
     """Backend client for interacting with Task objects."""
 
     cls = Task
@@ -30,7 +30,7 @@ class V1TaskClient(HTTPClient):
         return [self.cls(**d) for d in data]
 
 
-class V1ContextClient(HTTPClient):
+class ContextClient(HTTPClient):
     """Backend client for interacting with Context objects."""
 
     cls = Context
@@ -43,7 +43,7 @@ class V1ContextClient(HTTPClient):
         return self.cls(**data)
 
 
-class V1SourceClient(HTTPClient):
+class SourceClient(HTTPClient):
     """Backend client for interacting with Source objects."""
 
     cls = Source
@@ -51,7 +51,7 @@ class V1SourceClient(HTTPClient):
     object_name = "sources"
 
 
-class V1CommentClient(HTTPClient):
+class CommentClient(HTTPClient):
     """Backend client for interacting with Comment objects."""
 
     cls = Comment
@@ -59,7 +59,7 @@ class V1CommentClient(HTTPClient):
     object_name = "comments"
 
 
-class V1UserClient(HTTPClient):
+class UserClient(HTTPClient):
     """Backend client for interacting with User objects."""
 
     cls = User
@@ -76,16 +76,6 @@ class V1UserClient(HTTPClient):
         self.client.headers.update({"Authorization": None})
         return super().create(*args, **kwargs)
 
-    def login(self, username, password):
-        """Login and return the tokens."""
-        self.client.headers.update({"Authorization": None})
-        return self.request(
-            "POST",
-            "/api/token",
-            json={"username": username, "password": password},
-            retry=False,
-        )
-
 
 class API:
     """Backend client for interacting with the v1 API."""
@@ -96,11 +86,11 @@ class API:
         if "session" not in kwargs or not kwargs["session"]:
             kwargs["session"] = requests.Session()
 
-        self.users = V1UserClient(server_hostname, *args, **kwargs)
-        self.tasks = V1TaskClient(server_hostname, *args, **kwargs)
-        self.comments = V1CommentClient(server_hostname, *args, **kwargs)
-        self.sources = V1SourceClient(server_hostname, *args, **kwargs)
-        self.contexts = V1ContextClient(server_hostname, *args, **kwargs)
+        self.users = UserClient(server_hostname, *args, **kwargs)
+        self.tasks = TaskClient(server_hostname, *args, **kwargs)
+        self.comments = CommentClient(server_hostname, *args, **kwargs)
+        self.sources = SourceClient(server_hostname, *args, **kwargs)
+        self.contexts = ContextClient(server_hostname, *args, **kwargs)
 
     def set_token(self, access, refresh):
         """Authenticate this client and sub-clients."""
@@ -111,8 +101,18 @@ class API:
         self.contexts.set_token(access, refresh)
         return self
 
+    def set_credentials(self, username, password):
+        """Authenticate this client and sub-clients."""
+        self.users.set_credentials(username, password)
+        self.tasks.set_credentials(username, password)
+        self.comments.set_credentials(username, password)
+        self.sources.set_credentials(username, password)
+        self.contexts.set_credentials(username, password)
+        return self
+
     def login(self, username, password):
         """Attempt to login with the given username and password."""
         tokens = self.users.login(username, password)
+        self.set_credentials(username, password)
         self.set_token(tokens["access"], tokens["refresh"])
         return tokens
