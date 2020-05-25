@@ -1,7 +1,0 @@
-[pylint]
-max-line-length = 120
-# Additionl disables C0011{4,5,6} for missing docstrings
-# C0103 invalid-name - it's ok to use short variables in tests
-# R0904 too-many-public-methods - test cases can have lots of methods
-# R0801 similar-lines - test data is likely to be similar and duplicated across suites
-disable = C0330,C0415,C0114,C0115,C0116,C0103,R0904,R0801
