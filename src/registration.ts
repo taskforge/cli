@@ -5,7 +5,7 @@ import prompts from 'prompts';
 
 import { fail, emailRegex } from './utils';
 
-export async function loginOrRegister(register: boolean = true) {
+export async function loginOrRegister(register = true) {
     const { email, password } = await prompts([
         {
             name: 'email',

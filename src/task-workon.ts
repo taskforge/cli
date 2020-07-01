@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import { fail, highestPriority } from './utils';
 
 async function main() {
-    let givenId: string = 'fail';
+    let givenId = 'fail';
     const cli = new Command();
     cli.arguments('<id>')
         .action(function (id) {
