@@ -1,0 +1,7 @@
+/dist
+/package.json
+/package-lock.json
+/.github
+/tsconfig.json
+/coverage
+/docker-compose.yaml
