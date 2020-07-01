@@ -1,0 +1,30 @@
+import { isAPIError, tasks } from '@taskforge/sdk';
+import { Command } from 'commander';
+
+import { fail } from './utils';
+
+async function main() {
+    const cli = new Command();
+    cli.option('-t --title-only', 'only display the task title')
+        .option('-i --id-only', 'only display the task id')
+        .option('-j --json', 'display the task as JSON')
+        .parse(process.argv);
+
+    const task = await tasks.current();
+    if (isAPIError(task)) {
+        fail(task);
+        return;
+    }
+
+    if (cli.titleOnly) {
+        console.log(task.title);
+    } else if (cli.idOnly) {
+        console.log(task.id);
+    } else if (cli.json) {
+        console.log(task);
+    } else {
+        console.log(task.id, task.title);
+    }
+}
+
+main();
