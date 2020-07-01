@@ -40,6 +40,7 @@
   "homepage": "https://github.com/taskforge/cli#readme",
   "devDependencies": {
     "@types/commander": "^2.12.2",
+    "@types/jest": "^26.0.3",
     "@types/node": "^14.0.14",
     "@types/prompts": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
@@ -48,6 +49,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jest": "^23.17.1",
     "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^26.1.0",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
