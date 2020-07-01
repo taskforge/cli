@@ -43,6 +43,7 @@
   "dependencies": {
     "@taskforge/sdk": "^0.2.1",
     "commander": "^5.1.0",
+    "console-table-printer": "^1.6.3",
     "prompts": "^2.3.2"
   }
 }
