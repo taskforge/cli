@@ -2,7 +2,18 @@
   "name": "@taskforge/cli",
   "version": "0.1.0",
   "description": "CLI client for the Taskforge API",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "task": "dist/index.js",
+    "task-add": "dist/task-add.js",
+    "task-list": "dist/task-list.js",
+    "task-query": "dist/task-list.js",
+    "task-workon": "dist/task-workon.js",
+    "task-next": "dist/task-next.js",
+    "task-todo": "dist/task-todo.js",
+    "task-register": "dist/task-register.js",
+    "task-login": "dist/task-login.js"
+  },
   "scripts": {
     "test": "jest"
   },
