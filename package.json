@@ -15,7 +15,12 @@
     "task-login": "bin/task-login"
   },
   "scripts": {
-    "test": "jest"
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "fmt": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "test": "jest --passWithNoTests"
   },
   "repository": {
     "type": "git",
