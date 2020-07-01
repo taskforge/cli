@@ -1,7 +1,8 @@
 import { isAPIError, Task, tasks } from '@taskforge/sdk';
 import { Command } from 'commander';
 
-import { printList, fail } from './utils';
+import { fail } from './utils';
+import { printList } from './printing';
 
 async function main() {
     const cli = new Command();
