@@ -5,12 +5,11 @@ const { version } = require('../package.json');
 
 const cli = new Command();
 
-process.env.TASKFORGE_HOST = 'http://localhost:8000/api';
-
 cli.command('add', 'add a task to your list')
     .command('list', 'list your tasks')
     .command('query', 'search your tasks')
     .command('complete', 'complete tasks')
+    .command('show', 'show detailed information about a task, including comments')
     .command('workon', 'make a task the top priority')
     .command('next', 'show your next or "current" task')
     .command('todo', 'list your incomplete tasks')
