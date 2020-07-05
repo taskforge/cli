@@ -8,7 +8,7 @@ export function printTable(list: Task[]): void {
     table.printTable();
 }
 
-export function printJSON(list: Task[]): void {
+export function printJSON(list: any): void {
     console.log(list);
 }
 
@@ -39,4 +39,27 @@ export async function highestPriority(): Promise<number> {
     }
 
     return current.priority;
+}
+
+export function printTask(task: Task): void {
+    const table = new Table({
+        title: task.title
+    });
+
+    function prop<K extends keyof Task>(obj: Task, key: K) {
+        return obj[key];
+    }
+
+    table.addRows(
+        Object.keys(task)
+            .filter((key) => key !== 'title')
+            .map((key) => {
+                return {
+                    field: key,
+                    value: prop(task, key as keyof Task)
+                };
+            })
+    );
+
+    table.printTable();
 }
