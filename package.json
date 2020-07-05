@@ -1,6 +1,6 @@
 {
   "name": "@taskforge/cli",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "CLI client for the Taskforge API",
   "main": "dist/index.js",
   "files": [
@@ -58,7 +58,7 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "@taskforge/sdk": "^0.2.1",
+    "@taskforge/sdk": "^0.2.0",
     "commander": "^5.1.0",
     "console-table-printer": "^1.6.3",
     "kleur": "^4.0.2",
