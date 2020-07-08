@@ -37,6 +37,8 @@ jobs:
 
       - name: Wait for API to accept requests
         run: node ./scripts/healthcheck.js
+        env:
+          TASKFORGE_HOST: http://api/api
 
       - name: Run tests
         run: npm test
