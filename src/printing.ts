@@ -1,4 +1,11 @@
-import { users, sources, contexts, tasks, Task, isAPIError } from '@taskforge/sdk';
+import {
+    users,
+    sources,
+    contexts,
+    tasks,
+    Task,
+    isAPIError
+} from '@taskforge/sdk';
 import { fail } from './utils';
 
 function idMemo<T>(fn: (id: string) => Promise<T>): (id: string) => Promise<T> {
@@ -78,14 +85,14 @@ export function printList(list: Task[], format: string): void {
     switch (format) {
         case 'json':
             printJSON(list);
-        break;
+            break;
         default:
             if (list.length === 0) {
-            console.log('No tasks to show!');
-            return;
-        }
+                console.log('No tasks to show!');
+                return;
+            }
 
-        printTable(list);
+            printTable(list);
     }
 }
 
