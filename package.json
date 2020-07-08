@@ -58,7 +58,7 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "@taskforge/sdk": "^0.2.0",
+    "@taskforge/sdk": "^0.2.2",
     "commander": "^5.1.0",
     "kleur": "^4.0.2",
     "ora": "^4.0.4",
