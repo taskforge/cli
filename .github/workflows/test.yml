@@ -1,0 +1,44 @@
+---
+name: Test
+
+on: push
+
+jobs:
+  run-tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    container: node:12
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: taskforge
+          POSTGRES_USER: taskforge
+          POSTGRES_PASSWORD: taskforge
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      api:
+        image: taskforge/backend:latest
+        env:
+          TASKFORGE_DB_HOST: postgres
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Wait for API to accept requests
+        run: node ./scripts/healthcheck.js
+
+      - name: Run tests
+        run: npm test
+        env:
+          TASKFORGE_HOST: http://api/api
