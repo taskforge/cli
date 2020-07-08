@@ -60,7 +60,6 @@
   "dependencies": {
     "@taskforge/sdk": "^0.2.0",
     "commander": "^5.1.0",
-    "console-table-printer": "^1.6.3",
     "kleur": "^4.0.2",
     "ora": "^4.0.4",
     "prompts": "^2.3.2"

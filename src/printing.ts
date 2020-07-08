@@ -1,11 +1,8 @@
 import { tasks, Task, isAPIError } from '@taskforge/sdk';
-import { Table } from 'console-table-printer';
 import { fail } from './utils';
 
 export function printTable(list: Task[]): void {
-    const table = new Table();
-    table.addRows(list);
-    table.printTable();
+    console.table(list);
 }
 
 export function printJSON(list: any): void {
