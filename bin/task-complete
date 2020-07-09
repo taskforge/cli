@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/task-complete');
+require('../dist/src/task-complete');

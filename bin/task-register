@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/task-register');
+require('../dist/src/task-register');

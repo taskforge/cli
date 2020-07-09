@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/task-add');
+require('../dist/src/task-add');
