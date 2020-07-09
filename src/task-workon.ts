@@ -1,7 +1,7 @@
 import { isAPIError, tasks } from '@taskforge/sdk';
 import { Command } from 'commander';
 
-import { fail, highestPriority } from './utils';
+import { fail, unexpected, highestPriority } from './utils';
 
 async function main() {
     let givenId = 'fail';
@@ -12,17 +12,21 @@ async function main() {
         })
         .parse(process.argv);
 
-    const task = await tasks.get(givenId);
-    if (isAPIError(task)) {
-        fail(task);
-        return;
-    }
+    try {
+        const task = await tasks.get(givenId);
+        if (isAPIError(task)) {
+            fail(task);
+            return;
+        }
 
-    task.priority = (await highestPriority()) + 1;
+        task.priority = (await highestPriority()) + 1;
 
-    const update = await tasks.update(task);
-    if (isAPIError(update)) {
-        fail(update);
+        const update = await tasks.update(task);
+        if (isAPIError(update)) {
+            fail(update);
+        }
+    } catch (e) {
+        unexpected(e);
     }
 }
 

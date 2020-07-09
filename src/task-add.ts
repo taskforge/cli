@@ -2,7 +2,7 @@ import { Command } from 'commander';
 
 import { tasks, contexts, isAPIError } from '@taskforge/sdk';
 
-import { fail, highestPriority } from './utils';
+import { fail, unexpected, highestPriority } from './utils';
 
 async function main() {
     const cli = new Command();
@@ -26,20 +26,24 @@ async function main() {
         priority = (await highestPriority()) + 1;
     }
 
-    let context;
-    if (cli.context && cli.context !== 'default') {
-        const contextObj = await contexts.byName(cli.context);
-        if (isAPIError(contextObj)) {
-            fail(contextObj);
-            return;
+    try {
+        let context;
+        if (cli.context && cli.context !== 'default') {
+            const contextObj = await contexts.byName(cli.context);
+            if (isAPIError(contextObj)) {
+                fail(contextObj);
+                return;
+            }
+
+            context = contextObj.id;
         }
 
-        context = contextObj.id;
-    }
-
-    const response = await tasks.create({ title, priority, context });
-    if (isAPIError(response)) {
-        fail(response);
+        const response = await tasks.create({ title, priority, context });
+        if (isAPIError(response)) {
+            fail(response);
+        }
+    } catch (e) {
+        unexpected(e);
     }
 }
 

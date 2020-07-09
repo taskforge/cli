@@ -1,7 +1,7 @@
 import { isAPIError, tasks } from '@taskforge/sdk';
 import { Command } from 'commander';
 
-import { fail } from './utils';
+import { fail, unexpected } from './utils';
 
 async function main() {
     const cli = new Command();
@@ -10,25 +10,29 @@ async function main() {
         .option('-j --json', 'display the task as JSON')
         .parse(process.argv);
 
-    const task = await tasks.current();
-    if (isAPIError(task)) {
-        if (task.code === 404) {
-            console.log('All done! No more unfinished tasks.');
+    try {
+        const task = await tasks.current();
+        if (isAPIError(task)) {
+            if (task.code === 404) {
+                console.log('All done! No more unfinished tasks.');
+                return;
+            }
+
+            fail(task);
             return;
         }
 
-        fail(task);
-        return;
-    }
-
-    if (cli.titleOnly) {
-        console.log(task.title);
-    } else if (cli.idOnly) {
-        console.log(task.id);
-    } else if (cli.json) {
-        console.log(task);
-    } else {
-        console.log(task.id, task.title);
+        if (cli.titleOnly) {
+            console.log(task.title);
+        } else if (cli.idOnly) {
+            console.log(task.id);
+        } else if (cli.json) {
+            console.log(task);
+        } else {
+            console.log(task.id, task.title);
+        }
+    } catch (e) {
+        unexpected(e);
     }
 }
 
