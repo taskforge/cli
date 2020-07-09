@@ -14,6 +14,7 @@
     "task-workon": "bin/task-workon",
     "task-next": "bin/task-next",
     "task-todo": "bin/task-todo",
+    "task-complete": "bin/task-complete",
     "task-register": "bin/task-register",
     "task-login": "bin/task-login"
   },
