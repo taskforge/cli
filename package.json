@@ -21,7 +21,8 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm test && npm run lint",
     "fmt": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --passWithNoTests"
