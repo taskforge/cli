@@ -12,6 +12,11 @@ async function main() {
 
     const task = await tasks.current();
     if (isAPIError(task)) {
+        if (task.code === 404) {
+            console.log('All done! No more unfinished tasks.');
+            return;
+        }
+
         fail(task);
         return;
     }
