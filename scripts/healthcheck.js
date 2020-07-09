@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 const fetch = require('node-fetch');
 
 async function main() {

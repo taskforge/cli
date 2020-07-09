@@ -1,6 +1,6 @@
 {
   "name": "@taskforge/cli",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "CLI client for the Taskforge API",
   "main": "dist/index.js",
   "files": [
@@ -20,9 +20,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build",
+    "prepare": "npm run clean && npm run build",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm test && npm run lint",
+    "prepublishOnly": "npm test && npm run lint",
     "fmt": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --passWithNoTests"
