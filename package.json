@@ -22,7 +22,7 @@
     "build": "tsc",
     "prepare": "npm run clean && npm run build",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm test && npm run lint",
+    "prepublishOnly": "npm run lint",
     "fmt": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --passWithNoTests"
