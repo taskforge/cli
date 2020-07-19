@@ -4,6 +4,26 @@ import { tasks, contexts, isAPIError } from '@taskforge/sdk';
 
 import { fail, unexpected, highestPriority } from './utils';
 
+async function getOrCreateContext(name: string): Promise<string> {
+    const contextObj = await contexts.byName(name);
+    if (!isAPIError(contextObj)) {
+        return contextObj.id;
+    }
+
+    if (contextObj.code !== 404) {
+        fail(contextObj);
+        return '';
+    }
+
+    const createdContext = await contexts.create({ name });
+    if (isAPIError(createdContext)) {
+        fail(createdContext);
+        return '';
+    }
+
+    return createdContext.id;
+}
+
 async function main() {
     const cli = new Command();
     cli.option('-t --top', 'if provided make this task the top priority')
@@ -29,13 +49,7 @@ async function main() {
     try {
         let context;
         if (cli.context && cli.context !== 'default') {
-            const contextObj = await contexts.byName(cli.context);
-            if (isAPIError(contextObj)) {
-                fail(contextObj);
-                return;
-            }
-
-            context = contextObj.id;
+            context = await getOrCreateContext(cli.context);
         }
 
         const response = await tasks.create({ title, priority, context });
