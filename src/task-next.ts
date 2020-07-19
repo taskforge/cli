@@ -1,6 +1,7 @@
 import { isAPIError, tasks } from '@taskforge/sdk';
 import { Command } from 'commander';
 
+import { printJSON } from './printing';
 import { fail, unexpected } from './utils';
 
 async function main() {
@@ -27,7 +28,7 @@ async function main() {
         } else if (cli.idOnly) {
             console.log(task.id);
         } else if (cli.json) {
-            console.log(task);
+            printJSON(task);
         } else {
             console.log(task.id, task.title);
         }
