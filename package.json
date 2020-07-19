@@ -25,7 +25,7 @@
     "prepublishOnly": "npm run lint",
     "fmt": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "test": "jest --passWithNoTests"
+    "test": "npm run build && TASKFORGE_TOKEN='' TASKFORGE_HOST=http://127.0.0.1:8000/api jest"
   },
   "repository": {
     "type": "git",
