@@ -32,16 +32,30 @@ async function main() {
             'the context in which to create the task',
             'default'
         )
+        .option(
+            '-p --priority <priority>',
+            'Explicitly set the priority of the task, ignored if --top provided',
+            '1'
+        )
         .arguments('[title...]')
         .parse(process.argv);
 
     const title = cli.args.join(' ');
     if (!title || title === '') {
-        console.log('must provide a task title');
-        process.exit(1);
+        console.error('must provide a task title');
+        process.exit(2);
     }
 
-    let priority = 1;
+    let priority: number;
+    try {
+        priority = parseInt(cli.priority, 10);
+    } catch (e) {
+        console.error(
+            `Unable to parse priority: ${cli.priority}, make sure it's a valid integer.`
+        );
+        process.exit(3);
+    }
+
     if (cli.top) {
         priority = (await highestPriority()) + 1;
     }
