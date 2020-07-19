@@ -122,7 +122,7 @@ export async function cli(
             cmd,
             {
                 cwd,
-                maxBuffer: 200*1024,
+                maxBuffer: 200 * 1024,
                 env: {
                     PATH: process.env.PATH,
                     TASKFORGE_HOST: process.env.TASKFORGE_HOST,
