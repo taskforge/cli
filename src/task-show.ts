@@ -8,7 +8,7 @@ async function main() {
     let taskId: string;
     const cli = new Command();
     cli.option(
-        '-o --output',
+        '-o --output <format>',
         'how to display the task, options are: table, json, or title'
     )
         .arguments('<id>')
