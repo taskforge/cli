@@ -20,7 +20,7 @@ cli.command('add', 'add a task to your list')
         'show detailed information about a task, including comments'
     )
     .alias('s')
-    .command('workon', 'make a task the top priority')
+    .command('work-on', 'make a task the top priority')
     .alias('w')
     .command('next', 'show your next or "current" task')
     .alias('n')

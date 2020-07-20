@@ -6,12 +6,12 @@ import {
     getContextName
 } from './utils';
 
-describe('task workon', () => {
+describe('task work-on', () => {
     test('given an id makes that task the highest priority task', async () => {
         const { token } = await generateUser();
         const { id } = await generateTask(token);
         await generateTask(token, { priority: 2 });
-        await cli(`workon ${id}`, token);
+        await cli(`work-on ${id}`, token);
         const tasks = await listTasks(token);
         for (const task of tasks) {
             if (task.id === id) {
