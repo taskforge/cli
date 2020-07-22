@@ -65,15 +65,37 @@ export async function listTasks(token: string): Promise<Task[]> {
     return res;
 }
 
-export async function generateTask(token: string, data?: any): Promise<Task> {
+export async function generateTask(
+    token: string,
+    data?: any,
+    completed?: boolean
+): Promise<Task> {
     const req = {
         title: `task ${makeid()}`,
         ...data
     };
 
-    const res = await withOptions.tasks.create(options(token), req);
+    const opts = options(token);
+
+    const res = await withOptions.tasks.create(opts, req);
     if (isAPIError(res)) {
         throw new Error(`Generating Tasks: ${res.code}: ${res.message}`);
+    }
+
+    if (completed) {
+        const completion = await withOptions.tasks.complete(opts, res.id);
+        if (isAPIError(completion)) {
+            throw new Error(
+                `Completing Task: ${completion.code}: ${completion.message}`
+            );
+        }
+
+        const task = await withOptions.tasks.get(opts, res.id);
+        if (isAPIError(task)) {
+            throw new Error(`Retrieving Task: ${task.code}: ${task.message}`);
+        }
+
+        return task;
     }
 
     return res;
@@ -105,6 +127,26 @@ export async function generateUser(): Promise<{
     };
 }
 
+export function cwd(): string {
+    return path.normalize(path.join(__dirname, '..'));
+}
+
+export function taskBin(): string {
+    return path.join(cwd(), 'bin', 'task');
+}
+
+export function spawnOpts(token: string) {
+    return {
+        cwd: cwd(),
+        maxBuffer: 200 * 1024,
+        env: {
+            PATH: process.env.PATH,
+            TASKFORGE_HOST: process.env.TASKFORGE_HOST,
+            TASKFORGE_TOKEN: token
+        }
+    };
+}
+
 export async function cli(
     args: string,
     token: string
@@ -114,38 +156,25 @@ export async function cli(
     code: number;
     error: ExecException | null;
 }> {
-    const cwd = path.normalize(path.join(__dirname, '..'));
-    const task = path.normalize(path.join(__dirname, '..', 'bin', 'task'));
+    const task = taskBin();
     const cmd = `${task} ${args}`;
     return new Promise((resolve) => {
-        exec(
-            cmd,
-            {
-                cwd,
-                maxBuffer: 200 * 1024,
-                env: {
-                    PATH: process.env.PATH,
-                    TASKFORGE_HOST: process.env.TASKFORGE_HOST,
-                    TASKFORGE_TOKEN: token
-                }
-            },
-            (error, stdout, stderr, ...rest) => {
-                const code = error && error.code ? error.code : 0;
-                if (code !== 0) {
-                    console.log('Command has failed with error:', error);
-                    console.log('============ stdout ==============');
-                    console.log(stdout);
-                    console.log('============ stderr ==============');
-                    console.log(stderr);
-                }
-
-                resolve({
-                    error,
-                    code,
-                    stdout,
-                    stderr
-                });
+        exec(cmd, spawnOpts(token), (error, stdout, stderr) => {
+            const code = error && error.code ? error.code : 0;
+            if (code !== 0) {
+                console.log('Command has failed with error:', error);
+                console.log('============ stdout ==============');
+                console.log(stdout);
+                console.log('============ stderr ==============');
+                console.log(stderr);
             }
-        );
+
+            resolve({
+                error,
+                code,
+                stdout,
+                stderr
+            });
+        });
     });
 }

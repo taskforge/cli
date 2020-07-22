@@ -1,10 +1,4 @@
-import {
-    cli,
-    listTasks,
-    generateTask,
-    generateUser,
-    getContextName
-} from './utils';
+import { cli, listTasks, generateTask, generateUser } from './utils';
 
 describe('task work-on', () => {
     test('given an id makes that task the highest priority task', async () => {
