@@ -104,6 +104,7 @@ export async function generateTask(
 export async function generateUser(): Promise<{
     ownerId: string;
     token: string;
+    email: string;
 }> {
     const identifier = makeid();
     const email = `test-${identifier}@example.com`;
@@ -122,6 +123,7 @@ export async function generateUser(): Promise<{
     }
 
     return {
+        email,
         token: pat.pat,
         ownerId: user.id
     };
@@ -177,4 +179,20 @@ export async function cli(
             });
         });
     });
+}
+
+export function tableRegexp(email: string, tasks: any[]): RegExp {
+    const top = '╔[═╤]*╗ *\n';
+    const header =
+        '║ ID *│ Title *│ Priority *│ Created Date *│ Completed Date *│ Source *│ Context *│ Owner *║\n';
+    const divider = '╟[─┼]*╢\n';
+    const bottom = '╚[═╧]*╝';
+
+    const tasksRegex = tasks
+        .map((t) => {
+            return `║ ${t.id} *│ ${t.title} *│ ${t.priority} *│ ${t.createdDate} *│ ${t.completedDate} *│ Taskforge *│ default *│ ${email} *║\n`;
+        })
+        .join('');
+
+    return new RegExp(top + header + divider + tasksRegex + bottom);
 }

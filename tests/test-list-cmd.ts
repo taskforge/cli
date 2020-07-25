@@ -1,4 +1,4 @@
-import { cli, generateTask, generateUser } from './utils';
+import { cli, tableRegexp, generateTask, generateUser } from './utils';
 
 describe('task list', () => {
     test('--output json returns valid json', async () => {
@@ -17,6 +17,15 @@ describe('task list', () => {
         const { stdout } = await cli('list -o json', token);
         const parsed = JSON.parse(stdout);
         expect(parsed).toStrictEqual([task1, task2, task3]);
+    });
+
+    test('lists all tasks in ascii table', async () => {
+        const { email, token } = await generateUser();
+        const task1 = await generateTask(token);
+        const task2 = await generateTask(token);
+        const task3 = await generateTask(token, {}, true);
+        const { stdout } = await cli('list', token);
+        expect(stdout).toMatch(tableRegexp(email, [task1, task2, task3]));
     });
 
     test('list accepts TQL queries', async () => {
