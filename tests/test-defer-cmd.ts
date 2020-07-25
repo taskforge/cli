@@ -27,4 +27,20 @@ describe('task defer', () => {
             }
         }
     });
+
+    test('defers current task by making it the one less than lowest priority if priorities are equal', async () => {
+        const { token } = await generateUser();
+        const { id } = await generateTask(token);
+        await generateTask(token);
+        await generateTask(token);
+        await cli('defer', token);
+        const tasks = await listTasks(token);
+        for (const task of tasks) {
+            if (task.id === id) {
+                expect(task.priority).toBe(0);
+            } else {
+                expect(task.priority).toBe(1);
+            }
+        }
+    });
 });

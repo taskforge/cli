@@ -19,11 +19,15 @@ async function main() {
             fail(taskList);
             return;
         }
-
         const lowestPriority = Math.min(...taskList.map((t) => t.priority));
-        task.priority = lowestPriority;
 
-        const update = await tasks.update(task);
+        const update = await tasks.update({
+            ...task,
+            priority:
+                task.priority === lowestPriority
+                    ? lowestPriority - 1
+                    : lowestPriority
+        });
         if (isAPIError(update)) {
             fail(update);
         }
