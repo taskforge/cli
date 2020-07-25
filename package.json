@@ -16,7 +16,8 @@
     "task-todo": "bin/task-todo",
     "task-complete": "bin/task-complete",
     "task-register": "bin/task-register",
-    "task-login": "bin/task-login"
+    "task-login": "bin/task-login",
+    "task-defer": "bin/task-defer"
   },
   "scripts": {
     "build": "tsc",

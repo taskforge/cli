@@ -30,5 +30,6 @@ cli.command('add', 'add a task to your list')
     .alias('td')
     .command('register', 'register a new account with the taskforge server')
     .command('login', 'generate a personal access token')
+    .command('defer', "defer the current task by reducing it's priority")
     .version(version)
     .parse(process.argv);
