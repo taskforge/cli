@@ -30,6 +30,17 @@ describe('task list', () => {
         expect(parsed).toStrictEqual(expected);
     });
 
+    test('todo is an alias for list completed = false', async () => {
+        const { token } = await generateUser();
+        const task1 = await generateTask(token);
+        await generateTask(token, null, true);
+        const expected = [task1];
+        await generateTask(token, {}, true);
+        const { stdout } = await cli('todo -o json', token);
+        const parsed = JSON.parse(stdout);
+        expect(parsed).toStrictEqual(expected);
+    });
+
     test.each(['q', 'query', 'l'])('%s is an alias for list', async (alias) => {
         const { token } = await generateUser();
         const task = await generateTask(token);
