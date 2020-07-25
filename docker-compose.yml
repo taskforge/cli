@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: taskforge
 
   api:
-    image: taskforge/backend:latest
+    image: taskforge/backend:0.6.0
     depends_on:
       - "db"
     ports:
