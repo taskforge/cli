@@ -1,3 +1,4 @@
+import { table } from 'table';
 import {
     users,
     sources,
@@ -23,6 +24,19 @@ function idMemo<T>(fn: (id: string) => Promise<T>): (id: string) => Promise<T> {
 const getContext = idMemo(contexts.get);
 const getSource = idMemo(sources.get);
 const getUser = idMemo(users.get);
+
+function humanizeKey(key: string): string {
+    if (key == 'id') {
+        return 'ID';
+    }
+
+    const words = key.match(/[A-Za-z][a-z]*/g) || [];
+    return words
+        .map((word) => {
+            return word.charAt(0).toUpperCase() + word.substring(1);
+        })
+        .join(' ');
+}
 
 async function humanize(task: Task): Promise<any> {
     const context = await getContext(task.context);
@@ -64,21 +78,28 @@ async function humanize(task: Task): Promise<any> {
 }
 
 export async function printTable(list: Task[]): Promise<void> {
-    const formatted: { [id: string]: any } = {};
+    const headers = Object.keys(list[0]);
+    const data: any[][] = [headers.map(humanizeKey)];
 
-    await Promise.all(
-        list.map(async (task) => {
-            // eslint-disable-next-line
-            const { id, ...humanized } = await humanize(task);
-            formatted[id] = humanized;
-        })
-    );
+    for (const task of await Promise.all(list.map(humanize))) {
+        data.push(
+            headers.map((key) => {
+                return task[key] ? task[key] : 'null';
+            })
+        );
+    }
 
-    console.table(formatted);
+    const options = {
+        drawHorizontalLine: (index: number, size: number) => {
+            return index === 0 || index === 1 || index === size;
+        }
+    };
+
+    console.log(table(data, options));
 }
 
-export function printJSON(list: any): void {
-    console.log(list);
+export function printJSON(obj: any): void {
+    console.log(JSON.stringify(obj, null, 2));
 }
 
 export function printList(list: Task[], format: string): void {
@@ -111,5 +132,10 @@ export async function highestPriority(): Promise<number> {
 }
 
 export async function printTask(task: Task): Promise<void> {
-    console.table(await humanize(task));
+    const humanized = await humanize(task);
+    const data: any[][] = Object.keys(humanized).map((key) => {
+        return [humanizeKey(key), humanized[key] ? humanized[key] : 'null'];
+    });
+
+    console.log(table(data));
 }

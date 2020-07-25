@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/task-todo');
+require('../dist/src/task-todo');

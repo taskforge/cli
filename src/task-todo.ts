@@ -1,7 +1,7 @@
 import { isAPIError, tasks } from '@taskforge/sdk';
 import { Command } from 'commander';
 
-import { fail } from './utils';
+import { fail, unexpected } from './utils';
 import { printList } from './printing';
 
 async function main() {
@@ -14,13 +14,17 @@ async function main() {
         .arguments('[query...]')
         .parse(process.argv);
 
-    const list = await tasks.search('completed = false');
-    if (isAPIError(list)) {
-        fail(list);
-        return;
-    }
+    try {
+        const list = await tasks.search('completed = false');
+        if (isAPIError(list)) {
+            fail(list);
+            return;
+        }
 
-    printList(list, cli.output);
+        printList(list, cli.output);
+    } catch (e) {
+        unexpected(e);
+    }
 }
 
 main();

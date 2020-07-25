@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/task-next');
+require('../dist/src/task-next');

@@ -1,0 +1,21 @@
+# Used for testing
+---
+version: '3'
+services:
+    db:
+        image: postgres
+        environment:
+            POSTGRES_DB: taskforge
+            POSTGRES_USER: taskforge
+            POSTGRES_PASSWORD: taskforge
+
+    api:
+        image: taskforge/backend:0.6.0
+        depends_on:
+            - 'db'
+        ports:
+            - 127.0.0.1:8000:8000
+        environment:
+            TASKFORGE_HOST: 0.0.0.0
+            PGHOST: db
+            PGPASSWORD: taskforge
