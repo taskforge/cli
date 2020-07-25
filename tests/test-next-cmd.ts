@@ -39,4 +39,14 @@ describe('task next', () => {
         const { stdout } = await cli('next --json', token);
         expect(JSON.parse(stdout)).toStrictEqual(currentTask);
     });
+
+    test('task current is an alias for task next', async () => {
+        const { token } = await generateUser();
+        await generateTask(token);
+        await generateTask(token);
+        const currentTask = await generateTask(token, { priority: 2 });
+        const { stdout } = await cli('current', token);
+        const rgx = new RegExp(`^${currentTask.id} ${currentTask.title}`);
+        expect(stdout).toMatch(rgx);
+    });
 });
