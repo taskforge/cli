@@ -11,7 +11,7 @@
     "task-add": "bin/task-add",
     "task-list": "bin/task-list",
     "task-query": "bin/task-list",
-    "task-workon": "bin/task-workon",
+    "task-work-on": "bin/task-work-on",
     "task-next": "bin/task-next",
     "task-todo": "bin/task-todo",
     "task-complete": "bin/task-complete",

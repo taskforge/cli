@@ -18,9 +18,6 @@ jobs:
       - name: Start services
         run: docker-compose up -d
 
-      - name: Setup env file
-        run: cp .env.example .env
-
       - name: Wait for API to accept requests
         run: node ./scripts/healthcheck.js
         env:

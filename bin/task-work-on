@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/src/task-workon');
+require('../dist/src/task-work-on');
