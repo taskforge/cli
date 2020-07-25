@@ -14,7 +14,14 @@ async function main() {
             return;
         }
 
-        task.priority--;
+        const taskList = await tasks.search('completed = false');
+        if (isAPIError(taskList)) {
+            fail(taskList);
+            return;
+        }
+
+        const lowestPriority = Math.min(...taskList.map((t) => t.priority));
+        task.priority = lowestPriority;
 
         const update = await tasks.update(task);
         if (isAPIError(update)) {
