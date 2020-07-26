@@ -31,5 +31,6 @@ cli.command('add', 'add a task to your list')
     .command('register', 'register a new account with the taskforge server')
     .command('login', 'generate a personal access token')
     .command('defer', "defer the current task by reducing it's priority")
+    .command('filter', 'save queries for repeated use')
     .version(version)
     .parse(process.argv);
