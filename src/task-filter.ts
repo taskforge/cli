@@ -1,0 +1,146 @@
+import { Command } from 'commander';
+
+import { filters, tasks, isAPIError } from '@taskforge/sdk';
+
+import { fail, unexpected } from './utils';
+import { printList } from './printing';
+
+async function save(name: string, query: string[]): Promise<void> {
+    const joined = query.join(' ');
+    if (!joined || joined == '') {
+        console.log('Must provide a query!');
+        process.exit(1);
+    }
+
+    const saved = await filters.create({
+        name,
+        query: joined
+    });
+    if (isAPIError(saved)) {
+        fail(saved);
+    }
+}
+
+async function update(name: string, query: string[]): Promise<void> {
+    const joined = query.join(' ');
+    if (!joined || joined == '') {
+        console.log('Must provide a query!');
+        process.exit(1);
+    }
+
+    const filter = await filters.byName(name);
+    if (isAPIError(filter)) {
+        fail(filter);
+        return;
+    }
+
+    const updated = await filters.update({
+        ...filter,
+        query: joined
+    });
+    if (isAPIError(updated)) {
+        fail(updated);
+    }
+}
+
+async function del(name: string): Promise<void> {
+    const filter = await filters.byName(name);
+    if (isAPIError(filter)) {
+        fail(filter);
+        return;
+    }
+
+    const deleted = await filters.del(filter.id);
+    if (isAPIError(deleted)) {
+        fail(deleted);
+    }
+}
+
+async function run(name: string, opts: Command): Promise<void> {
+    const filter = await filters.byName(name);
+    if (isAPIError(filter)) {
+        fail(filter);
+        return;
+    }
+
+    const list = await tasks.search(filter.query);
+    if (isAPIError(list)) {
+        fail(list);
+        return;
+    }
+
+    printList(list, opts.output);
+}
+
+async function list(opts: Command): Promise<void> {
+    const list = await filters.list();
+    if (isAPIError(list)) {
+        fail(list);
+        return;
+    }
+
+    for (const f of list) {
+        if (opts.verbose) {
+            console.log(f.name, f.query);
+        } else {
+            console.log(f.name);
+        }
+    }
+}
+
+async function main() {
+    try {
+        const saveCommand = new Command('save');
+        saveCommand
+            .description('save query as name for later use')
+            .arguments('<name> [query...]')
+            .action(save);
+
+        const updateCommand = new Command('update');
+        updateCommand
+            .description('update the filter name with the new query')
+            .arguments('update <name> [query...]')
+            .action(update);
+
+        const deleteCommand = new Command('delete');
+        deleteCommand
+            .description('delete the given query')
+            .arguments('delete <name>')
+            .action(del);
+
+        const listCommand = new Command('list');
+        listCommand
+            .description('list your saved filters')
+            .option(
+                '-v --verbose',
+                'print the associated query as well as the name of the filter',
+                false
+            )
+            .arguments('list')
+            .action(list);
+
+        const runCommmand = new Command('run');
+        runCommmand
+            .description('run the filter with name, print resulting tasks')
+            .option(
+                '-o --output <format>',
+                'output format for the tasks, available formats: table, json, csv',
+                'table'
+            )
+            .arguments('<name>')
+            .action(run);
+
+        const cli = new Command();
+        cli.addCommand(saveCommand);
+        cli.addCommand(updateCommand);
+        cli.addCommand(deleteCommand);
+        cli.addCommand(runCommmand);
+        cli.addCommand(listCommand);
+
+        cli.parse(process.argv);
+    } catch (e) {
+        unexpected(e);
+    }
+}
+
+main();

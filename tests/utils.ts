@@ -7,6 +7,7 @@ import {
     APIError,
     isAPIError,
     users,
+    Filter,
     Task
 } from '@taskforge/sdk';
 
@@ -195,4 +196,13 @@ export function tableRegexp(email: string, tasks: any[]): RegExp {
         .join('');
 
     return new RegExp(top + header + divider + tasksRegex + bottom);
+}
+
+export async function listFilters(token: string): Promise<Filter[]> {
+    const res = await withOptions.filters.list(options(token));
+    if (isAPIError(res)) {
+        throw new Error(`Listing Filters: ${res.code}: ${res.message}`);
+    }
+
+    return res;
 }
