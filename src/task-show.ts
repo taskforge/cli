@@ -4,21 +4,9 @@ import { Command } from 'commander';
 import { fail } from './utils';
 import { printJSON, printTask } from './printing';
 
-async function main() {
-    let taskId: string;
-    const cli = new Command();
-    cli.option(
-        '-o --output <format>',
-        'how to display the task, options are: table, json, or title'
-    )
-        .arguments('<id>')
-        .action(function (id) {
-            taskId = id;
-        })
-        .parse(process.argv);
-
+async function show(id: string, opts: Command) {
     try {
-        const task = await tasks.get(taskId!);
+        const task = await tasks.get(id);
         if (isAPIError(task)) {
             fail(task);
             return;
@@ -34,10 +22,10 @@ async function main() {
             taskComments = [];
         }
 
-        if (cli.output === 'json') {
+        if (opts.output === 'json') {
             printJSON({ ...task, comments: taskComments });
             return;
-        } else if (cli.output === 'title') {
+        } else if (opts.output === 'title') {
             console.log(task.title);
         } else {
             printTask(task);
@@ -59,4 +47,12 @@ async function main() {
     }
 }
 
-main();
+export const ShowCommand = new Command('show')
+    .alias('s')
+    .description('show detailed information about a task')
+    .option(
+        '-o --output <format>',
+        'how to display the task, options are: table, json, or title'
+    )
+    .arguments('<id>')
+    .action(show);

@@ -24,23 +24,8 @@ async function getOrCreateContext(name: string): Promise<string> {
     return createdContext.id;
 }
 
-async function main() {
-    const cli = new Command();
-    cli.option('-t --top', 'if provided make this task the top priority')
-        .option(
-            '-c --context <name>',
-            'the context in which to create the task',
-            'default'
-        )
-        .option(
-            '-p --priority <priority>',
-            'Explicitly set the priority of the task, ignored if --top provided',
-            '1'
-        )
-        .arguments('[title...]')
-        .parse(process.argv);
-
-    const title = cli.args.join(' ');
+async function add(args: string[], opts: Command) {
+    const title = args.join(' ');
     if (!title || title === '') {
         console.error('must provide a task title');
         process.exit(2);
@@ -48,22 +33,22 @@ async function main() {
 
     let priority: number;
     try {
-        priority = parseInt(cli.priority, 10);
+        priority = parseInt(opts.priority, 10);
     } catch (e) {
         console.error(
-            `Unable to parse priority: ${cli.priority}, make sure it's a valid integer.`
+            `Unable to parse priority: ${opts.priority}, make sure it's a valid integer.`
         );
         process.exit(3);
     }
 
-    if (cli.top) {
+    if (opts.top) {
         priority = (await highestPriority()) + 1;
     }
 
     try {
         let context;
-        if (cli.context && cli.context !== 'default') {
-            context = await getOrCreateContext(cli.context);
+        if (opts.context && opts.context !== 'default') {
+            context = await getOrCreateContext(opts.context);
         }
 
         const response = await tasks.create({ title, priority, context });
@@ -75,4 +60,20 @@ async function main() {
     }
 }
 
-main();
+export const AddCommand = new Command('add')
+    .alias('a')
+    .alias('new')
+    .description('add a task to your list')
+    .arguments('[title...]')
+    .option('-t --top', 'if provided make this task the top priority')
+    .option(
+        '-c --context <name>',
+        'the context in which to create the task',
+        'default'
+    )
+    .option(
+        '-p --priority <priority>',
+        'Explicitly set the priority of the task, ignored if --top provided',
+        '1'
+    )
+    .action(add);

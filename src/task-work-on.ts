@@ -3,15 +3,7 @@ import { Command } from 'commander';
 
 import { fail, unexpected, highestPriority } from './utils';
 
-async function main() {
-    let givenId = 'fail';
-    const cli = new Command();
-    cli.arguments('<id>')
-        .action(function (id) {
-            givenId = id;
-        })
-        .parse(process.argv);
-
+async function workOn(givenId: string) {
     try {
         const task = await tasks.get(givenId);
         if (isAPIError(task)) {
@@ -30,4 +22,9 @@ async function main() {
     }
 }
 
-main();
+export const WorkOnCommand = new Command('work-on')
+    .alias('w')
+    .alias('workon')
+    .description('make a task the top priority')
+    .arguments('<id>')
+    .action(workOn);

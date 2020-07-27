@@ -1,10 +1,10 @@
 import { Command } from 'commander';
 import { loginOrRegister } from './registration';
 
-async function main() {
-    const cli = new Command();
-    cli.parse(process.argv);
+async function login() {
     await loginOrRegister(false);
 }
 
-main();
+export const LoginCommand = new Command('login')
+    .description('generate a personal access token')
+    .action(login);
