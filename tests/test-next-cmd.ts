@@ -49,4 +49,14 @@ describe('task next', () => {
         const rgx = new RegExp(`^${currentTask.id} ${currentTask.title}`);
         expect(stdout).toMatch(rgx);
     });
+
+    test('task n is an alias for task next', async () => {
+        const { token } = await generateUser();
+        await generateTask(token);
+        await generateTask(token);
+        const currentTask = await generateTask(token, { priority: 2 });
+        const { stdout } = await cli('n', token);
+        const rgx = new RegExp(`^${currentTask.id} ${currentTask.title}`);
+        expect(stdout).toMatch(rgx);
+    });
 });

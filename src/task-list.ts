@@ -4,18 +4,9 @@ import { Command } from 'commander';
 import { fail, unexpected } from './utils';
 import { printList } from './printing';
 
-async function main() {
-    const cli = new Command();
-    cli.option(
-        '-o --output <format>',
-        'output format for the tasks, available formats: table, json, csv',
-        'table'
-    )
-        .arguments('[query...]')
-        .parse(process.argv);
-
+async function list(args: string[], opts: Command) {
     try {
-        const query = cli.args.join(' ');
+        const query = args.join(' ');
         let list;
         if (query !== '') {
             list = await tasks.search(query);
@@ -28,10 +19,23 @@ async function main() {
             return;
         }
 
-        printList(list, cli.output);
+        printList(list, opts.output);
     } catch (e) {
         unexpected(e);
     }
 }
 
-main();
+export const ListCommand = new Command('list')
+    .alias('search')
+    .alias('query')
+    .alias('s')
+    .alias('l')
+    .alias('q')
+    .description('list and search your tasks')
+    .option(
+        '-o --output <format>',
+        'output format for the tasks, available formats: table, json, csv',
+        'table'
+    )
+    .arguments('[query...]')
+    .action(list);

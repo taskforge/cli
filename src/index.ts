@@ -1,36 +1,31 @@
 import { Command } from 'commander';
 
+import { AddCommand } from './task-add';
+import { CompleteCommand } from './task-complete';
+import { DeferCommand } from './task-defer';
+import { FilterCommand } from './task-filter';
+import { ListCommand } from './task-list';
+import { LoginCommand } from './task-login';
+import { NextCommand } from './task-next';
+import { RegisterCommand } from './task-register';
+import { ShowCommand } from './task-show';
+import { TodoCommand } from './task-todo';
+import { WorkOnCommand } from './task-work-on';
+
 // eslint-disable-next-line
 const { version } = require('../../package.json');
 
 const cli = new Command();
-
-cli.command('add', 'add a task to your list')
-    .command('list', 'list and search your tasks')
-    .alias('search')
-    .alias('query')
-    .alias('l')
-    .alias('ls')
-    .alias('q')
-    .command('complete', 'complete tasks')
-    .alias('done')
-    .alias('c')
-    .command(
-        'show',
-        'show detailed information about a task, including comments'
-    )
-    .alias('s')
-    .command('work-on', 'make a task the top priority')
-    .alias('w')
-    .alias('workon')
-    .command('next', 'show your next or "current" task')
-    .alias('n')
-    .alias('current')
-    .command('todo', 'list your incomplete tasks')
-    .alias('td')
-    .command('register', 'register a new account with the taskforge server')
-    .command('login', 'generate a personal access token')
-    .command('defer', "defer the current task by reducing it's priority")
-    .command('filter', 'save queries for repeated use')
-    .version(version)
+cli.version(version)
+    .addCommand(AddCommand)
+    .addCommand(CompleteCommand)
+    .addCommand(DeferCommand)
+    .addCommand(FilterCommand)
+    .addCommand(ListCommand)
+    .addCommand(LoginCommand)
+    .addCommand(NextCommand)
+    .addCommand(RegisterCommand)
+    .addCommand(ShowCommand)
+    .addCommand(TodoCommand)
+    .addCommand(WorkOnCommand)
     .parse(process.argv);

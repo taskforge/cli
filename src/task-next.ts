@@ -4,13 +4,7 @@ import { Command } from 'commander';
 import { printJSON } from './printing';
 import { fail, unexpected } from './utils';
 
-async function main() {
-    const cli = new Command();
-    cli.option('-t --title-only', 'only display the task title')
-        .option('-i --id-only', 'only display the task id')
-        .option('-j --json', 'display the task as JSON')
-        .parse(process.argv);
-
+async function next(opts: Command) {
     try {
         const task = await tasks.current();
         if (isAPIError(task)) {
@@ -23,11 +17,11 @@ async function main() {
             return;
         }
 
-        if (cli.titleOnly) {
+        if (opts.titleOnly) {
             console.log(task.title);
-        } else if (cli.idOnly) {
+        } else if (opts.idOnly) {
             console.log(task.id);
-        } else if (cli.json) {
+        } else if (opts.json) {
             printJSON(task);
         } else {
             console.log(task.id, task.title);
@@ -37,4 +31,11 @@ async function main() {
     }
 }
 
-main();
+export const NextCommand = new Command('next')
+    .alias('n')
+    .alias('current')
+    .description('show your next or "current" task')
+    .option('-t --title-only', 'only display the task title')
+    .option('-i --id-only', 'only display the task id')
+    .option('-j --json', 'display the task as JSON')
+    .action(next);

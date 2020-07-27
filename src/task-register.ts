@@ -2,10 +2,10 @@ import { Command } from 'commander';
 
 import { loginOrRegister } from './registration';
 
-async function main() {
-    const cli = new Command();
-    cli.parse(process.argv);
+async function register() {
     await loginOrRegister();
 }
 
-main();
+export const RegisterCommand = new Command('register')
+    .description('register a new account with the taskforge server')
+    .action(register);

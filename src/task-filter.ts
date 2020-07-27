@@ -88,59 +88,45 @@ async function list(opts: Command): Promise<void> {
     }
 }
 
-async function main() {
-    try {
-        const saveCommand = new Command('save');
-        saveCommand
-            .description('save query as name for later use')
-            .arguments('<name> [query...]')
-            .action(save);
+const saveCommand = new Command('save')
+    .description('save query as name for later use')
+    .arguments('<name> [query...]')
+    .action(save);
 
-        const updateCommand = new Command('update');
-        updateCommand
-            .description('update the filter name with the new query')
-            .arguments('update <name> [query...]')
-            .action(update);
+const updateCommand = new Command('update')
+    .description('update the filter name with the new query')
+    .arguments('update <name> [query...]')
+    .action(update);
 
-        const deleteCommand = new Command('delete');
-        deleteCommand
-            .description('delete the given query')
-            .arguments('delete <name>')
-            .action(del);
+const deleteCommand = new Command('delete')
+    .description('delete the given query')
+    .arguments('delete <name>')
+    .action(del);
 
-        const listCommand = new Command('list');
-        listCommand
-            .description('list your saved filters')
-            .option(
-                '-v --verbose',
-                'print the associated query as well as the name of the filter',
-                false
-            )
-            .arguments('list')
-            .action(list);
+const listCommand = new Command('list')
+    .description('list your saved filters')
+    .option(
+        '-v --verbose',
+        'print the associated query as well as the name of the filter',
+        false
+    )
+    .arguments('list')
+    .action(list);
 
-        const runCommmand = new Command('run');
-        runCommmand
-            .description('run the filter with name, print resulting tasks')
-            .option(
-                '-o --output <format>',
-                'output format for the tasks, available formats: table, json, csv',
-                'table'
-            )
-            .arguments('<name>')
-            .action(run);
+const runCommmand = new Command('run')
+    .description('run the filter with name, print resulting tasks')
+    .option(
+        '-o --output <format>',
+        'output format for the tasks, available formats: table, json, csv',
+        'table'
+    )
+    .arguments('<name>')
+    .action(run);
 
-        const cli = new Command();
-        cli.addCommand(saveCommand);
-        cli.addCommand(updateCommand);
-        cli.addCommand(deleteCommand);
-        cli.addCommand(runCommmand);
-        cli.addCommand(listCommand);
-
-        cli.parse(process.argv);
-    } catch (e) {
-        unexpected(e);
-    }
-}
-
-main();
+export const FilterCommand = new Command('filter')
+    .alias('f')
+    .addCommand(saveCommand)
+    .addCommand(updateCommand)
+    .addCommand(deleteCommand)
+    .addCommand(runCommmand)
+    .addCommand(listCommand);

@@ -3,10 +3,7 @@ import { Command } from 'commander';
 
 import { fail, unexpected } from './utils';
 
-async function main() {
-    const cli = new Command();
-    cli.parse(process.argv);
-
+async function defer() {
     try {
         const task = await tasks.get('next');
         if (isAPIError(task)) {
@@ -36,4 +33,6 @@ async function main() {
     }
 }
 
-main();
+export const DeferCommand = new Command('defer')
+    .description("defer the current task by reducing it's priority")
+    .action(defer);
