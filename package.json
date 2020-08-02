@@ -64,11 +64,12 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@taskforge/sdk": "^0.3.6",
+    "@taskforge/sdk": "^0.3.7",
     "commander": "^5.1.0",
     "kleur": "^4.0.2",
     "ora": "^4.0.5",
     "prompts": "^2.3.2",
-    "table": "^5.4.6"
+    "table": "^5.4.6",
+    "yaml": "^1.10.0"
   }
 }

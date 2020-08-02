@@ -1,4 +1,5 @@
 import path from 'path';
+import os from 'os';
 import { exec, ExecException } from 'child_process';
 
 import {
@@ -11,7 +12,7 @@ import {
     Task
 } from '@taskforge/sdk';
 
-function makeid(): string {
+export function makeid(): string {
     const length = 50;
     const characters =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -23,6 +24,10 @@ function makeid(): string {
         );
     }
     return result;
+}
+
+export function genDir(): string {
+    return path.join(os.tmpdir(), makeid());
 }
 
 export function fail<T>(obj: APIError | T): T {
@@ -138,11 +143,24 @@ export function taskBin(): string {
     return path.join(cwd(), 'bin', 'task');
 }
 
-export function spawnOpts(token: string) {
+export interface SpawnOpts {
+    dataDir?: string;
+    configDir?: string;
+}
+
+export function spawnOpts(token: string, opts?: SpawnOpts) {
     return {
         cwd: cwd(),
         maxBuffer: 200 * 1024,
         env: {
+            XDG_DATA_HOME:
+                opts && opts.dataDir
+                    ? opts.dataDir
+                    : path.join(os.tmpdir(), makeid()),
+            XDG_CONFIG_HOME:
+                opts && opts.configDir
+                    ? opts.configDir
+                    : path.join(os.tmpdir(), makeid()),
             PATH: process.env.PATH,
             TASKFORGE_HOST: process.env.TASKFORGE_HOST,
             TASKFORGE_TOKEN: token
@@ -152,7 +170,8 @@ export function spawnOpts(token: string) {
 
 export async function cli(
     args: string,
-    token: string
+    token: string,
+    opts?: SpawnOpts
 ): Promise<{
     stdout: string;
     stderr: string;
@@ -162,7 +181,7 @@ export async function cli(
     const task = taskBin();
     const cmd = `${task} ${args}`;
     return new Promise((resolve) => {
-        exec(cmd, spawnOpts(token), (error, stdout, stderr) => {
+        exec(cmd, spawnOpts(token, opts), (error, stdout, stderr) => {
             const code = error && error.code ? error.code : 0;
             if (code !== 0) {
                 console.log('Command has failed with error:', error);
@@ -205,4 +224,16 @@ export async function listFilters(token: string): Promise<Filter[]> {
     }
 
     return res;
+}
+
+export async function createContext(
+    token: string,
+    name: string
+): Promise<string> {
+    const res = await withOptions.contexts.create(options(token), { name });
+    if (isAPIError(res)) {
+        throw new Error(`Getting Context: ${res.code}: ${res.message}`);
+    }
+
+    return res.id;
 }

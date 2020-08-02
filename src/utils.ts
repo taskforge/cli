@@ -1,3 +1,4 @@
+import path from 'path';
 import kleur from 'kleur';
 import { APIError, tasks, isAPIError } from '@taskforge/sdk';
 
@@ -30,4 +31,44 @@ export async function highestPriority(): Promise<number> {
         unexpected(e);
         return 0;
     }
+}
+
+/**
+ * Finds the platform-specific config dir
+ *
+ * @remarks
+ * Follows the XDG specification for all platforms then will use a resonable
+ * default based on platform.
+ *
+ */
+export function configDir(): string {
+    if (process.env.XDG_CONFIG_HOME) {
+        return path.join(process.env.XDG_CONFIG_HOME, 'taskforge');
+    }
+
+    if (process.platform === 'win32') {
+        return path.join(process.env.APPDATA!, 'Taskforge', 'config');
+    }
+
+    return path.join(process.env.HOME!, '.config', 'taskforge');
+}
+
+/**
+ * Returns the platform-specific user data dir
+ *
+ * @remarks
+ * Follows the XDG specification for all platforms then will use a resonable
+ * default based on platform.
+ *
+ */
+export function dataDir(): string {
+    if (process.env.XDG_DATA_HOME) {
+        return path.join(process.env.XDG_DATA_HOME, 'taskforge');
+    }
+
+    if (process.platform === 'win32') {
+        return path.join(process.env.APPDATA!, 'Taskforge', 'data');
+    }
+
+    return path.join(process.env.HOME!, '.local', 'share', 'taskforge');
 }
