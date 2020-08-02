@@ -1,14 +1,17 @@
 import { isAPIError, tasks } from '@taskforge/sdk';
 import { Command } from 'commander';
 
+import { getNext } from './task-next';
 import { fail, unexpected } from './utils';
 
 async function complete(ids: string[]) {
     try {
         if (ids.length === 0) {
-            const task = await tasks.current();
-            if (isAPIError(task)) {
-                fail(task);
+            const task = await getNext();
+            if (!task) {
+                console.log(
+                    'No ids given and no next task found. Nothing to do.'
+                );
                 return;
             }
 
