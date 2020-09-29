@@ -1,11 +1,11 @@
 import path from 'path';
 import kleur from 'kleur';
-import { APIError, tasks, isAPIError } from '@taskforge/sdk';
+import { APIError, tasks, isAPIError } from './client';
 
 export const emailRegex = /\S+@\S+\.\S+/;
 
 export function fail(err: APIError): void {
-    console.log(kleur.red('error:'), err.message);
+    console.log(kleur.red('error:'), err.code, err.message);
     process.exit(err.code);
 }
 

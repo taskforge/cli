@@ -1,13 +1,5 @@
 import { table } from 'table';
-import {
-    users,
-    sources,
-    contexts,
-    tasks,
-    Task,
-    isAPIError
-} from '@taskforge/sdk';
-import { fail } from './utils';
+import { users, sources, contexts, Task, isAPIError } from './client';
 
 function idMemo<T>(fn: (id: string) => Promise<T>): (id: string) => Promise<T> {
     const memo: { [id: string]: T } = {};
@@ -71,14 +63,26 @@ async function humanize(task: Task): Promise<any> {
 
     return {
         ...task,
-        owner: owner.fullName !== '' ? owner.fullName : owner.email,
+        owner:
+            owner.fullName && owner.fullName !== ''
+                ? owner.fullName
+                : owner.email,
         context: context.name,
         source: source.name
     };
 }
 
 export async function printTable(list: Task[]): Promise<void> {
-    const headers = Object.keys(list[0]);
+    const headers = [
+        'id',
+        'title',
+        'priority',
+        'createdDate',
+        'completedDate',
+        'source',
+        'context',
+        'owner'
+    ];
     const data: any[][] = [headers.map(humanizeKey)];
 
     for (const task of await Promise.all(list.map(humanize))) {

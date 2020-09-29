@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 
-import { filters, tasks, isAPIError } from '@taskforge/sdk';
+import { filters, tasks, isAPIError } from './client';
 
-import { fail, unexpected } from './utils';
+import { fail } from './utils';
 import { printList } from './printing';
 
 async function save(name: string, query: string[]): Promise<void> {
@@ -69,7 +69,7 @@ async function run(name: string, opts: Command): Promise<void> {
         return;
     }
 
-    printList(list, opts.output);
+    printList(list.data, opts.output);
 }
 
 async function list(opts: Command): Promise<void> {
@@ -79,7 +79,7 @@ async function list(opts: Command): Promise<void> {
         return;
     }
 
-    for (const f of list) {
+    for (const f of list.data) {
         if (opts.verbose) {
             console.log(f.name, f.query);
         } else {

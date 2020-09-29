@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 
-import { tasks, contexts, isAPIError } from '@taskforge/sdk';
+import { tasks, contexts, isAPIError } from './client';
 
 import { fail, unexpected, highestPriority } from './utils';
 

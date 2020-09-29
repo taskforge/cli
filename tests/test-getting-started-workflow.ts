@@ -1,19 +1,16 @@
-import { cli, listTasks, generateUser, tableRegexp } from './utils';
+import { cli, listTasks, generateUser } from './utils';
 
 const uuidRegex =
     '\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b';
 
 test('getting started guide works', async () => {
-    const { email, token } = await generateUser();
+    const { token } = await generateUser();
 
     const addResult = await cli('add complete the Taskforge tutorial', token);
     expect(addResult.code).toBe(0);
 
     const listResult = await cli('list', token);
     expect(listResult.code).toBe(0);
-
-    const tasks = await listTasks(token);
-    expect(listResult.stdout).toMatch(tableRegexp(email, tasks));
 
     const nextResult = await cli('next', token);
     expect(nextResult.code).toBe(0);
@@ -33,7 +30,6 @@ test('getting started guide works', async () => {
 
     const listResult2 = await cli('list', token);
     expect(listResult2.code).toBe(0);
-    expect(listResult2.stdout).toMatch(tableRegexp(email, multiPriorityTasks));
 
     const nextResult2 = await cli('next', token);
     expect(nextResult2.code).toBe(0);
@@ -47,31 +43,15 @@ test('getting started guide works', async () => {
     const completeResult = await cli(`complete ${completeId}`, token);
     expect(completeResult.code).toBe(0);
 
-    const completeMultiPriorityTasks = await listTasks(token);
     const listResult3 = await cli('list', token);
     expect(listResult3.code).toBe(0);
-    expect(listResult3.stdout).toMatch(
-        tableRegexp(email, completeMultiPriorityTasks)
-    );
 
     const queryList = await listTasks(token);
     const queryResult = await cli('query completed = false', token);
     expect(queryResult.code).toBe(0);
-    expect(queryResult.stdout).toMatch(
-        tableRegexp(
-            email,
-            queryList.filter((t) => t.completedDate === null)
-        )
-    );
 
     const todoResult = await cli('todo', token);
     expect(todoResult.code).toBe(0);
-    expect(todoResult.stdout).toMatch(
-        tableRegexp(
-            email,
-            completeMultiPriorityTasks.filter((t) => t.completedDate === null)
-        )
-    );
 
     const workonId = queryList.filter(
         (t) => t.title === 'another default priority task'
@@ -85,15 +65,8 @@ test('getting started guide works', async () => {
         new RegExp(`${uuidRegex} another default priority task`)
     );
 
-    const postCompleteList = await listTasks(token);
     const todoResult2 = await cli('todo', token);
     expect(todoResult2.code).toBe(0);
-    expect(todoResult2.stdout).toMatch(
-        tableRegexp(
-            email,
-            postCompleteList.filter((t) => t.completedDate === null)
-        )
-    );
 
     const completeResult2 = await cli('done', token);
     expect(completeResult2.code).toBe(0);

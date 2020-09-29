@@ -1,4 +1,4 @@
-import { isAPIError, users } from '@taskforge/sdk';
+import { isAPIError, users } from './client';
 import kleur from 'kleur';
 import ora from 'ora';
 import prompts from 'prompts';
