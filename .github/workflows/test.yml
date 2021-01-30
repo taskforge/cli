@@ -7,7 +7,6 @@ jobs:
   run-tests:
     name: Run tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
@@ -15,15 +14,13 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Start services
-        run: docker-compose up -d
-
-      - name: Wait for API to accept requests
-        run: node ./scripts/healthcheck.js
-        env:
-          TASKFORGE_HOST: http://api/api
-
       - name: Run tests
-        run: npm test
+        run: |
+          npm test
+          code=$?
+          if [[ $code -ne 0 ]]; then
+              docker logs api
+          fi
+          exit $code
         env:
-          TASKFORGE_HOST: http://api/api
+          TASKFORGE_HOST: https://test.taskforge.io/api

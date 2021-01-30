@@ -1,4 +1,4 @@
-import { isAPIError, tasks } from '@taskforge/sdk';
+import { isAPIError, tasks } from './client';
 import { Command } from 'commander';
 
 import { fail, unexpected, highestPriority } from './utils';

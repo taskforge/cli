@@ -1,4 +1,4 @@
-import { isAPIError, tasks } from '@taskforge/sdk';
+import { isAPIError, tasks } from './client';
 import { Command } from 'commander';
 
 import { fail, unexpected } from './utils';
@@ -13,7 +13,7 @@ async function todo(opts: Command) {
             return;
         }
 
-        printList(list, opts.output);
+        printList(list.data, opts.output);
     } catch (e) {
         unexpected(e);
     }

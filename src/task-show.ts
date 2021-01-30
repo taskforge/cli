@@ -1,4 +1,4 @@
-import { isAPIError, tasks, comments } from '@taskforge/sdk';
+import { Comment, isAPIError, tasks, comments } from './client';
 import { Command } from 'commander';
 
 import { fail } from './utils';
@@ -12,14 +12,15 @@ async function show(id: string, opts: Command) {
             return;
         }
 
-        let taskComments = await comments.list(task.id);
-        if (isAPIError(taskComments)) {
-            if (taskComments.code !== 404) {
-                fail(taskComments);
+        let taskComments: Comment[] = [];
+        const commentRes = await comments.list(task.id);
+        if (isAPIError(commentRes)) {
+            if (commentRes.code !== 404) {
+                fail(commentRes);
                 return;
             }
-
-            taskComments = [];
+        } else {
+            taskComments = commentRes.data;
         }
 
         if (opts.output === 'json') {

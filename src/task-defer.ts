@@ -1,4 +1,4 @@
-import { isAPIError, tasks } from '@taskforge/sdk';
+import { isAPIError, tasks } from './client';
 import { Command } from 'commander';
 
 import { fail, unexpected } from './utils';
@@ -16,7 +16,9 @@ async function defer() {
             fail(taskList);
             return;
         }
-        const lowestPriority = Math.min(...taskList.map((t) => t.priority));
+        const lowestPriority = Math.min(
+            ...taskList.data.map((t) => t.priority)
+        );
 
         const update = await tasks.update({
             ...task,
