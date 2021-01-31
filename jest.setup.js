@@ -1,6 +1,6 @@
 jest.setTimeout(30000);
 if (!process.env.TASKFORGE_HOST) {
-    process.env.TASKFORGE_HOST = 'https://test.taskforge.io';
+    process.env.TASKFORGE_HOST = 'https://test.taskforge.io/api';
 }
 
 if (
