@@ -7,18 +7,7 @@
         "dist"
     ],
     "bin": {
-        "task": "bin/task",
-        "task-add": "bin/task-add",
-        "task-list": "bin/task-list",
-        "task-query": "bin/task-list",
-        "task-work-on": "bin/task-work-on",
-        "task-next": "bin/task-next",
-        "task-todo": "bin/task-todo",
-        "task-complete": "bin/task-complete",
-        "task-register": "bin/task-register",
-        "task-login": "bin/task-login",
-        "task-defer": "bin/task-defer",
-        "task-filter": "bin/task-filter"
+        "task": "bin/task"
     },
     "scripts": {
         "build": "tsc",
