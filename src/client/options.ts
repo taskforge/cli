@@ -13,7 +13,7 @@ export const DEFAULT_OPTIONS = {
         ? process.env.TASKFORGE_HOST
         : process.env.REACT_APP_TASKFORGE_HOST
         ? process.env.REACT_APP_TASKFORGE_HOST
-        : 'https://taskforge.io/api',
+        : 'https://api.taskforge.io/api',
     token: process.env.TASKFORGE_TOKEN ? process.env.TASKFORGE_TOKEN : '',
     headers: DEFAULT_HEADERS,
     refreshToken: ''
