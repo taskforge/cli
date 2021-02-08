@@ -23,4 +23,4 @@ jobs:
           fi
           exit $code
         env:
-          TASKFORGE_HOST: https://test.taskforge.io/api
+          TASKFORGE_HOST: https://api.test.taskforge.io/api
