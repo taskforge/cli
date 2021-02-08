@@ -1,6 +1,6 @@
 {
     "name": "@taskforge/cli",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "description": "CLI client for the Taskforge API",
     "main": "dist/index.js",
     "files": [
