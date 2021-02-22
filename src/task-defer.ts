@@ -11,21 +11,9 @@ async function defer() {
             return;
         }
 
-        const taskList = await tasks.search('completed = false');
-        if (isAPIError(taskList)) {
-            fail(taskList);
-            return;
-        }
-        const lowestPriority = Math.min(
-            ...taskList.data.map((t) => t.priority)
-        );
-
         const update = await tasks.update({
             ...task,
-            priority:
-                task.priority === lowestPriority
-                    ? lowestPriority - 1
-                    : lowestPriority
+            priority: task.priority - 1
         });
         if (isAPIError(update)) {
             fail(update);
