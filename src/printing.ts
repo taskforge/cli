@@ -88,7 +88,11 @@ export async function printTable(list: Task[]): Promise<void> {
     for (const task of await Promise.all(list.map(humanize))) {
         data.push(
             headers.map((key) => {
-                return task[key] ? task[key] : 'null';
+                const value = task[key];
+                if (value === undefined || value === null) {
+                    return 'null';
+                }
+                return value;
             })
         );
     }
