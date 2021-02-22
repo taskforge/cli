@@ -45,7 +45,6 @@ function options(token: string): ClientOptions {
             'Content-Type': 'application/json',
             Accepts: 'application/json'
         },
-        refreshToken: '',
         token
     };
 }

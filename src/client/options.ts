@@ -5,7 +5,6 @@ export interface ClientOptions {
     baseUrl: string;
     headers: Headers;
     token: string;
-    refreshToken: string;
 }
 
 export const DEFAULT_OPTIONS = {
@@ -15,13 +14,11 @@ export const DEFAULT_OPTIONS = {
         ? process.env.REACT_APP_TASKFORGE_HOST
         : 'https://api.taskforge.io/api',
     token: process.env.TASKFORGE_TOKEN ? process.env.TASKFORGE_TOKEN : '',
-    headers: DEFAULT_HEADERS,
-    refreshToken: ''
+    headers: DEFAULT_HEADERS
 };
 
 export function setDefaultCreds(creds: Credentials): void {
     DEFAULT_OPTIONS.token = creds.access;
-    DEFAULT_OPTIONS.refreshToken = creds.refresh || '';
 }
 
 export function url(options: ClientOptions): string {
