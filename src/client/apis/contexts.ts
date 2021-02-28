@@ -1,5 +1,11 @@
 import { request } from '../request';
-import { APIError, isContext, Context } from '../types';
+import {
+    APIError,
+    isContext,
+    Context,
+    isAPIError,
+    isPaginated
+} from '../types';
 import { exec, crud } from '../generate';
 import { ClientOptions, DEFAULT_OPTIONS } from '../options';
 
@@ -22,7 +28,12 @@ const byNameWithOptions = async (
         method: 'GET'
     });
 
-    return await exec(req, isContext);
+    const res = await exec(req, isPaginated(isContext));
+    if (isAPIError(res)) {
+        return res;
+    }
+
+    return res.results[0];
 };
 
 const byName = async (name: string): Promise<Context | APIError> => {
