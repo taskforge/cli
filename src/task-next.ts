@@ -13,7 +13,8 @@ export async function getNext(): Promise<Task | null> {
 
     const task = await tasks.current(requestOptions);
     if (isAPIError(task)) {
-        if (task.code !== 404) fail(task);
+        const message = task.message ?? task.detail;
+        if (message && message.indexOf('no current') === -1) fail(task);
         return null;
     }
 

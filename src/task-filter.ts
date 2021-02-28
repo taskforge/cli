@@ -69,7 +69,7 @@ async function run(name: string, opts: Command): Promise<void> {
         return;
     }
 
-    printList(list.data, opts.output);
+    printList(list.results, opts.output);
 }
 
 async function list(opts: Command): Promise<void> {
@@ -79,7 +79,7 @@ async function list(opts: Command): Promise<void> {
         return;
     }
 
-    for (const f of list.data) {
+    for (const f of list.results) {
         if (opts.verbose) {
             console.log(f.name, f.query);
         } else {

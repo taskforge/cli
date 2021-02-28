@@ -15,12 +15,10 @@ async function show(id: string, opts: Command) {
         let taskComments: Comment[] = [];
         const commentRes = await comments.list(task.id);
         if (isAPIError(commentRes)) {
-            if (commentRes.code !== 404) {
-                fail(commentRes);
-                return;
-            }
+            fail(commentRes);
+            return;
         } else {
-            taskComments = commentRes.data;
+            taskComments = commentRes.results;
         }
 
         if (opts.output === 'json') {
@@ -39,7 +37,7 @@ async function show(id: string, opts: Command) {
         }
 
         for (const comment of taskComments) {
-            console.log('---', comment.createdDate, '---');
+            console.log('---', comment.created_date, '---');
             console.log(comment.body);
         }
     } catch (e) {

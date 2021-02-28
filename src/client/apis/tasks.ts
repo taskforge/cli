@@ -49,12 +49,12 @@ const completeWithOptions = async (
 ): Promise<null | APIError> => {
     const req = request({
         options,
-        endpoint: `/v1/tasks/${id}`,
+        endpoint: `/v1/tasks/${id}/complete`,
         method: 'PUT'
     });
 
     const res = await exec(req, (data: any): data is null => data || true);
-    if (isAPIError(res) && res.code == 200) {
+    if (isAPIError(res)) {
         return null;
     }
 

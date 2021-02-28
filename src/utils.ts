@@ -5,8 +5,8 @@ import { APIError, tasks, isAPIError } from './client';
 export const emailRegex = /\S+@\S+\.\S+/;
 
 export function fail(err: APIError): void {
-    console.log(kleur.red('error:'), err.code, err.message);
-    process.exit(err.code);
+    console.log(kleur.red('error:'), err.message ?? err.detail);
+    process.exit(1);
 }
 
 export function unexpected(err: Error): void {
@@ -18,12 +18,7 @@ export async function highestPriority(): Promise<number> {
     try {
         const current = await tasks.current();
         if (isAPIError(current)) {
-            if (current.code === 404) {
-                return 2;
-            }
-
-            fail(current);
-            return 0;
+            return 2;
         }
 
         return current.priority;

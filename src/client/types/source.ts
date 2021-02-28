@@ -1,8 +1,8 @@
 export interface Source {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }
 
 export function isSource(data: any): data is Source {
-    return data && data.id && data.name;
+  return data !== undefined && data.id !== undefined && data.name !== undefined;
 }

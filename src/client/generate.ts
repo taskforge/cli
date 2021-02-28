@@ -2,16 +2,15 @@ import { Paginated } from './types/paginated';
 import { ClientOptions, DEFAULT_OPTIONS } from './options';
 import { Request, request, execute } from './request';
 import { APIError, isAPIError } from './types';
+import { isPaginated } from './types';
 
 export async function exec<K>(
     req: Request,
     validate: (data: any) => data is K
 ): Promise<K | APIError> {
-    const { code, data } = await execute(req);
+    const { data } = await execute(req);
     if (isAPIError(data)) {
-        const err = data as APIError;
-        err.code = code;
-        return err;
+        return data as APIError;
     }
 
     if (validate(data)) {
@@ -37,9 +36,11 @@ interface Model {
 export function pusher<T, K>(
     endpoint: string,
     method: string,
-    validate: (data: any) => data is K
+    validate: (data: any) => data is K,
+    useId: boolean = false
 ): PusherFunction<T, K> {
     return async (options: ClientOptions, args: T): Promise<K | APIError> => {
+        const e = useId ? `${endpoint}/{args.id}` : endpoint;
         const req = request({
             options,
             method,
@@ -144,7 +145,7 @@ export function deleter(endpoint: string): DeleterFunction {
             method: 'DELETE'
         });
         const data = await execute(req);
-        if (isAPIError(data) && data.code >= 300) {
+        if (isAPIError(data)) {
             return data as APIError;
         }
 
@@ -182,15 +183,7 @@ export function crud<CreateArgs, K>(
     endpoint: string,
     validate: (data: any) => data is K
 ): CRUD<CreateArgs, K> {
-    const listValidator = (data: any): data is Paginated<K> => {
-        return (
-            data &&
-            data.limit !== undefined &&
-            data.offset !== undefined &&
-            Array.isArray(data.data) &&
-            data.data.every(validate)
-        );
-    };
+    const listValidator = isPaginated(validate);
 
     // Create
     const create = pusher<CreateArgs, K>(endpoint, 'POST', validate);
@@ -198,7 +191,7 @@ export function crud<CreateArgs, K>(
     const get = byId<K>(endpoint, validate);
     const list = lister<Paginated<K>>({ endpoint, validate: listValidator });
     // Update
-    const update = pusher<K, K>(endpoint, 'PUT', validate);
+    const update = pusher<K, K>(endpoint, 'PUT', validate, true);
     // Delete
     const del = deleter(endpoint);
 

@@ -1,30 +1,21 @@
 import { isComment, APIError, Comment } from '../types';
 import { ClientOptions, DEFAULT_OPTIONS } from '../options';
 import { lister, pusher } from '../generate';
-import { Paginated } from '../types/paginated';
+import { isPaginated, Paginated } from '../types/paginated';
 
 export interface CommentCreateArgs {
     body: string;
 }
-
-const listValidator = (data: any): data is Paginated<Comment> => {
-    return (
-        data &&
-        data.limit !== undefined &&
-        data.offset !== undefined &&
-        Array.isArray(data.data) &&
-        data.data.every(isComment)
-    );
-};
 
 const listWithOptions = async (
     options: ClientOptions,
     task: string
 ): Promise<Paginated<Comment> | APIError> => {
     const endpoint = `/v1/comments?object=${task}`;
-    return lister<Paginated<Comment>>({ endpoint, validate: listValidator })(
-        options
-    );
+    return lister<Paginated<Comment>>({
+        endpoint,
+        validate: isPaginated(isComment)
+    })(options);
 };
 
 const list = async (task: string): Promise<Paginated<Comment> | APIError> => {

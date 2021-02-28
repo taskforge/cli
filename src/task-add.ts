@@ -10,11 +10,6 @@ async function getOrCreateContext(name: string): Promise<string> {
         return contextObj.id;
     }
 
-    if (contextObj.code !== 404) {
-        fail(contextObj);
-        return '';
-    }
-
     const createdContext = await contexts.create({ name });
     if (isAPIError(createdContext)) {
         fail(createdContext);

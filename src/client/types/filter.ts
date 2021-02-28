@@ -1,32 +1,30 @@
 export interface Column {
-    name: string;
-    enabled: boolean;
+  name: string;
+  enabled: boolean;
 }
 
 export function isColumn(data: any): data is Column {
-    return data.name && data.enabled !== undefined;
+  return data.name && data.enabled !== undefined;
 }
 
 export interface Filter {
-    id: string;
+  id: string;
 
-    name: string;
-    query: string;
+  name: string;
+  query: string;
 
-    showCompleted: boolean;
-    columns: Column[];
+  columns: Column[];
 
-    owner: string;
+  owner: string;
 }
 
 export function isFilter(data: any): data is Filter {
-    return (
-        data &&
-        data.id &&
-        data.name &&
-        data.query &&
-        data.showCompleted !== undefined &&
-        data.columns.every(isColumn) &&
-        data.owner
-    );
+  return (
+    data &&
+    data.id !== undefined &&
+    data.name !== undefined &&
+    data.query !== undefined &&
+    data.columns.every(isColumn) &&
+    data.owner !== undefined
+  );
 }

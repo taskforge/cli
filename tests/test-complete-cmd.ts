@@ -9,9 +9,9 @@ describe('task complete', () => {
         const tasks = await listTasks(token);
         for (const task of tasks) {
             if (task.id === id) {
-                expect(task.completedDate).not.toBe(null);
+                expect(task.completed_date).not.toBe(null);
             } else {
-                expect(task.completedDate).toBe(null);
+                expect(task.completed_date).toBe(null);
             }
         }
     });
@@ -24,9 +24,9 @@ describe('task complete', () => {
         const tasks = await listTasks(token);
         for (const task of tasks) {
             if (task.id === id) {
-                expect(task.completedDate).not.toBe(null);
+                expect(task.completed_date).not.toBe(null);
             } else {
-                expect(task.completedDate).toBe(null);
+                expect(task.completed_date).toBe(null);
             }
         }
     });
@@ -38,7 +38,7 @@ describe('task complete', () => {
         await cli(`complete ${id} ${task2.id}`, token);
         const tasks = await listTasks(token);
         for (const task of tasks) {
-            expect(task.completedDate).not.toBe(null);
+            expect(task.completed_date).not.toBe(null);
         }
     });
 
@@ -50,9 +50,9 @@ describe('task complete', () => {
         const tasks = await listTasks(token);
         for (const task of tasks) {
             if (task.id === id) {
-                expect(task.completedDate).not.toBe(null);
+                expect(task.completed_date).not.toBe(null);
             } else {
-                expect(task.completedDate).toBe(null);
+                expect(task.completed_date).toBe(null);
             }
         }
     });

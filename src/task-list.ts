@@ -19,7 +19,7 @@ async function list(args: string[], opts: Command) {
             return;
         }
 
-        printList(list.data, opts.output);
+        printList(list.results, opts.output);
     } catch (e) {
         unexpected(e);
     }

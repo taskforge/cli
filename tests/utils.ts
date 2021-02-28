@@ -32,7 +32,7 @@ export function genDir(): string {
 
 export function fail<T>(obj: APIError | T): T {
     if (isAPIError(obj)) {
-        throw new Error(`${obj.code}: ${obj.message}`);
+        throw new Error(obj.message ?? obj.detail);
     }
 
     return obj as T;
@@ -55,7 +55,7 @@ export async function getContextName(
 ): Promise<string> {
     const res = await withOptions.contexts.get(options(token), id);
     if (isAPIError(res)) {
-        throw new Error(`Getting Context: ${res.code}: ${res.message}`);
+        throw new Error(`Getting Context:: ${res.message ?? res.detail}`);
     }
 
     return res.name;
@@ -64,10 +64,10 @@ export async function getContextName(
 export async function listTasks(token: string): Promise<Task[]> {
     const res = await withOptions.tasks.list(options(token));
     if (isAPIError(res)) {
-        throw new Error(`Listing Tasks: ${res.code}: ${res.message}`);
+        throw new Error(`Listing Tasks:: ${res.message ?? res.detail}`);
     }
 
-    return res.data;
+    return res.results;
 }
 
 export async function generateTask(
@@ -84,20 +84,20 @@ export async function generateTask(
 
     const res = await withOptions.tasks.create(opts, req);
     if (isAPIError(res)) {
-        throw new Error(`Generating Tasks: ${res.code}: ${res.message}`);
+        throw new Error(`Generating Tasks: ${res.message ?? res.detail}`);
     }
 
     if (completed) {
         const completion = await withOptions.tasks.complete(opts, res.id);
         if (isAPIError(completion)) {
             throw new Error(
-                `Completing Task: ${completion.code}: ${completion.message}`
+                `Completing Task: ${completion.message ?? completion.detail}`
             );
         }
 
         const task = await withOptions.tasks.get(opts, res.id);
         if (isAPIError(task)) {
-            throw new Error(`Retrieving Task: ${task.code}: ${task.message}`);
+            throw new Error(`Retrieving Task: ${task.message ?? task.detail}`);
         }
 
         return task;
@@ -119,17 +119,17 @@ export async function generateUser(): Promise<{
         password
     });
     if (isAPIError(user)) {
-        throw new Error(`${user.code}: ${user.message}`);
+        throw new Error(user.message ?? user.detail);
     }
 
     const pat = await users.generatePat({ email, password });
     if (isAPIError(pat)) {
-        throw new Error(`${pat.code}: ${pat.message}`);
+        throw new Error(pat.message ?? pat.detail);
     }
 
     const retrievedUser = await withOptions.users.get(options(pat.pat), 'me');
     if (isAPIError(retrievedUser)) {
-        throw new Error(`${retrievedUser.code}: ${retrievedUser.message}`);
+        throw new Error(retrievedUser.message ?? retrievedUser.detail);
     }
 
     return {
@@ -208,10 +208,10 @@ export async function cli(
 export async function listFilters(token: string): Promise<Filter[]> {
     const res = await withOptions.filters.list(options(token));
     if (isAPIError(res)) {
-        throw new Error(`Listing Filters: ${res.code}: ${res.message}`);
+        throw new Error(`Listing Filters: ${res.message ?? res.detail}`);
     }
 
-    return res.data;
+    return res.results;
 }
 
 export async function createContext(
@@ -220,7 +220,7 @@ export async function createContext(
 ): Promise<string> {
     const res = await withOptions.contexts.create(options(token), { name });
     if (isAPIError(res)) {
-        throw new Error(`Getting Context: ${res.code}: ${res.message}`);
+        throw new Error(`Getting Context: ${res.message ?? res.detail}`);
     }
 
     return res.id;

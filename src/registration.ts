@@ -18,15 +18,15 @@ export async function loginOrRegister(register = true) {
 
     try {
         if (register) {
-            const { fullName } = await prompts([
+            const { full_name } = await prompts([
                 {
-                    name: 'fullName',
+                    name: 'full_name',
                     message: 'Full Name (optional):',
                     type: 'text'
                 }
             ]);
             const registerSpinner = ora('Creating your account').start();
-            const user = await users.create({ email, password, fullName });
+            const user = await users.create({ email, password, full_name });
             if (isAPIError(user)) {
                 fail(user);
                 return;

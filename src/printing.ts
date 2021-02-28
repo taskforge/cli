@@ -35,8 +35,7 @@ async function humanize(task: Task): Promise<any> {
     if (isAPIError(context)) {
         console.log(
             'Unexpected error retrieving context:',
-            context.code,
-            context.message
+            context.message ?? context.detail
         );
         process.exit(1);
     }
@@ -45,8 +44,7 @@ async function humanize(task: Task): Promise<any> {
     if (isAPIError(source)) {
         console.log(
             'Unexpected error retrieving source:',
-            source.code,
-            source.message
+            source.message ?? source.detail
         );
         process.exit(1);
     }
@@ -55,8 +53,7 @@ async function humanize(task: Task): Promise<any> {
     if (isAPIError(owner)) {
         console.log(
             'Unexpected error retrieving owner:',
-            owner.code,
-            owner.message
+            owner.message ?? owner.detail
         );
         process.exit(1);
     }
@@ -64,8 +61,8 @@ async function humanize(task: Task): Promise<any> {
     return {
         ...task,
         owner:
-            owner.fullName && owner.fullName !== ''
-                ? owner.fullName
+            owner.full_name && owner.full_name !== ''
+                ? owner.full_name
                 : owner.email,
         context: context.name,
         source: source.name
@@ -77,8 +74,8 @@ export async function printTable(list: Task[]): Promise<void> {
         'id',
         'title',
         'priority',
-        'createdDate',
-        'completedDate',
+        'created_date',
+        'completed_date',
         'source',
         'context',
         'owner'
