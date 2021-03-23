@@ -49,7 +49,7 @@ export async function execute(req: Request): Promise<any> {
         body: req.data ? JSON.stringify(req.data) : undefined
     });
 
-    if (response.status === 500) {
+    if (response.status > 404) {
         throw new Error(`Unexpected error: ${await response.text()}`);
     }
 
