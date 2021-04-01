@@ -1,4 +1,5 @@
 import asyncio
+import json
 import shutil
 import textwrap
 
@@ -102,3 +103,8 @@ async def print_table(client, tasks, tablefmt="plain"):
             tablefmt=tablefmt,
         ),
     )
+
+
+def print_json(task_or_tasks):
+    data = json.dumps(task_or_tasks, indent=4)
+    print(data)
