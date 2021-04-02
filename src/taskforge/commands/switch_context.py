@@ -14,7 +14,7 @@ def switch_context(context):
     the given context. Useful when you're leaving work and coming home, for instance.
     """
     if context:
-        State.current_context = context[0]
+        State.current_context = context
     else:
         State.current_context = None
     State.save()
