@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 
 import click
@@ -20,5 +21,7 @@ class CustomCommand(click.Group):
 
 
 @click.group(cls=CustomCommand)
-def cli():
-    pass
+@click.option("-v", "--verbose", is_flag=True)
+def cli(verbose):
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
