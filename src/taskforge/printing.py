@@ -5,7 +5,13 @@ import sys
 import textwrap
 from csv import DictWriter
 
+import click
 from tabulate import tabulate
+
+FORMATS = click.Choice(
+    ["table", "json", "csv", "csv-pretty"],
+    case_sensitive=False,
+)
 
 
 def populate(client):
@@ -128,3 +134,15 @@ async def print_csv(task_or_tasks, client=None, pretty=False):
     writer = DictWriter(sys.stdout, fieldnames=fieldnames)
     for row in data:
         writer.writerow(row)
+
+
+async def print_tasks(tasks, client, format):
+    format = format.lower()
+    if format == "json":
+        print_json(tasks)
+    elif format == "csv":
+        await print_csv(tasks)
+    elif format == "csv-pretty":
+        await print_csv(tasks, client=client, pretty=True)
+    else:
+        await print_table(client, tasks)

@@ -2,7 +2,7 @@ import click
 
 from taskforge.commands.cli import cli
 from taskforge.commands.utils import coro, inject_client
-from taskforge.printing import print_csv, print_json, print_table
+from taskforge.printing import FORMATS, print_tasks
 
 
 @cli.command(aliases=["l", "query", "q", "list"])
@@ -10,10 +10,7 @@ from taskforge.printing import print_csv, print_json, print_table
     "-f",
     "--format",
     default="table",
-    type=click.Choice(
-        ["table", "json", "csv", "csv-pretty"],
-        case_sensitive=False,
-    ),
+    type=FORMATS,
 )
 @click.argument("query", nargs=-1)
 @coro
@@ -38,18 +35,12 @@ async def search(query, format, client):
 
     --format=csv-pretty
 
-    Produces a CSV table containing user emails, context names, and source names instead of IDs
+    Produces a CSV table containing user emails, context names, and source names instead
+    of IDs
     """
     if query:
         tasks = await client.tasks.search(" ".join(query))
     else:
         tasks = await client.tasks.list()
 
-    if format == "json":
-        print_json(tasks)
-    elif format == "csv":
-        await print_csv(tasks)
-    elif format == "csv-pretty":
-        await print_csv(tasks, client=client, pretty=True)
-    else:
-        await print_table(client, tasks)
+    await print_tasks(tasks, client, format)

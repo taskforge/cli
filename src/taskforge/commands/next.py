@@ -18,6 +18,12 @@ async def next(
     as_json,
     client,
 ):
+    """
+    Show the task you should be working on.
+
+    This is calculated by Taskforge according to your strategy. The default strategy is
+    highest priority first, oldest task first.
+    """
     task = await client.tasks.next(context=State.current_context)
     if title_only:
         print(task["title"])
