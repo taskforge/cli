@@ -11,21 +11,10 @@ class NoToken(Exception):
 
 class Client:
     def __init__(self, base_url="", token=""):
-        if token:
-            self.token = token
-        else:
-            self.token = os.getenv("TASKFORGE_TOKEN")
-
+        self.base_url = base_url
+        self.token = token
         if not self.token:
             raise NoToken()
-
-        if base_url:
-            self.base_url = base_url
-        else:
-            self.base_url = os.getenv(
-                "TASKFORGE_HOST2",
-                "https://taskforge.io",
-            )
 
         self.session = aiohttp.ClientSession()
         self.session.headers["Authorization"] = f"Bearer {self.token}"
@@ -50,11 +39,6 @@ class Client:
         return await response.json()
 
     async def post(self, endpoint, **kwargs):
-        response = await self.session.put(self.url(endpoint), **kwargs)
-        response.raise_for_status()
-        return await response.json()
-
-    async def put(self, endpoint, **kwargs):
         response = await self.session.put(self.url(endpoint), **kwargs)
         response.raise_for_status()
         return await response.json()

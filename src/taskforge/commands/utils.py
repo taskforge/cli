@@ -2,6 +2,7 @@ import asyncio
 from functools import wraps
 
 from taskforge.client import Client
+from taskforge.config import Config
 
 
 def coro(f):
@@ -15,7 +16,10 @@ def coro(f):
 def inject_client(fn):
     @wraps(fn)
     async def wrapper(*args, **kwargs):
-        client = Client()
+        client = Client(
+            base_url=Config.host,
+            token=Config.token,
+        )
         kwargs["client"] = client
         try:
             await fn(*args, **kwargs)
