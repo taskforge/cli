@@ -26,7 +26,7 @@ async def register(
     client,
 ):
     """
-    Login to taskforge to generate a Personal Access Token.
+    Register as a new user with Taskforge.
 
     Once the token is generated you should set the environment variable TASKFORGE_TOKEN
     to the given token.
