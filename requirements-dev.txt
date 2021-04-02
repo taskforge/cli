@@ -3,3 +3,4 @@ pydocstyle
 black
 isort
 twine
+wheel
