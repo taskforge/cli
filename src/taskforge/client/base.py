@@ -1,4 +1,6 @@
+import asyncio
 import logging
+from collections import defaultdict
 
 
 class ModelClient:
@@ -7,6 +9,8 @@ class ModelClient:
     def __init__(self, client):
         self.client = client
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.cache = {}
+        self.cache_locks = defaultdict(asyncio.Lock)
 
     async def create(self, model, **kwargs):
         self.logger.debug("creating %s with %s", self.plural_name, model)
@@ -17,8 +21,16 @@ class ModelClient:
         )
 
     async def get(self, id, **kwargs):
-        self.logger.debug("retrieving a %s with ID: %s", self.plural_name, id)
-        return await self.client.get(f"/api/v1/{self.plural_name}/{id}", **kwargs)
+        async with self.cache_locks[id]:
+            if id in self.cache:
+                self.logger.debug("%s with ID %s was cached", self.plural_name, id)
+                return self.cache[id]
+
+            self.logger.debug("retrieving a %s with ID: %s", self.plural_name, id)
+            self.cache[id] = await self.client.get(
+                f"/api/v1/{self.plural_name}/{id}", **kwargs
+            )
+            return self.cache[id]
 
     async def list(self, limit=-1, **kwargs):
         self.logger.debug("getting all %s", self.plural_name)

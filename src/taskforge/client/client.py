@@ -8,22 +8,10 @@ from taskforge.client.user import UserClient
 class Client:
     def __init__(self, base_url="", token=""):
         self.http = HttpClient(base_url=base_url, token=token)
+        self.tasks = TaskClient(self.http)
+        self.sources = SourceClient(self.http)
+        self.contexts = ContextClient(self.http)
+        self.users = UserClient(self.http)
 
     async def close(self):
         await self.http.session.close()
-
-    @property
-    def tasks(self) -> TaskClient:
-        return TaskClient(self.http)
-
-    @property
-    def sources(self) -> SourceClient:
-        return SourceClient(self.http)
-
-    @property
-    def contexts(self) -> ContextClient:
-        return ContextClient(self.http)
-
-    @property
-    def users(self) -> UserClient:
-        return UserClient(self.http)
