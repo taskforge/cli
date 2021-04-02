@@ -7,4 +7,10 @@ class ContextClient(ModelClient):
     async def get_by_name(self, name):
         params = {"name": name}
         results = await self.list(params=params)
-        return results[0]
+        # TODO: this is a work around because the contexts API doesn't support name
+        # filtering yet.
+        for result in results:
+            if result["name"] == name:
+                return result
+
+        return None
