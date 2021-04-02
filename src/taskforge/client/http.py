@@ -1,6 +1,9 @@
-import os
+import logging
+import sys
 
 import aiohttp
+
+logger = logging.getLogger(__name__)
 
 
 class NoToken(Exception):
@@ -17,28 +20,45 @@ class Client:
             raise NoToken()
 
         self.session = aiohttp.ClientSession()
+        self.session.get
         self.session.headers["Authorization"] = f"Bearer {self.token}"
         self.session.headers["Accept"] = "application/json"
 
     def url(self, endpoint: str) -> str:
         return f"{self.base_url}{endpoint}"
 
+    async def handle_error(self, response):
+        if response.headers["content-type"] == "application/json":
+            data = await response.json()
+        else:
+            data = await response.text()
+
+        logger.error(
+            "bad response from server ([%s] %s): %s",
+            response.method,
+            response.url,
+            data,
+        )
+        sys.exit(1)
+
+    async def request(self, method, url, **kwargs):
+        try:
+            response = await self.session.request(method, url, **kwargs)
+            if not response.ok:
+                await self.handle_error(response)
+            return await response.json()
+        except aiohttp.client_exceptions.ClientError as exc:
+            logger.error("unexpected client error ([%s] %s): %s", method, url, exc)
+            sys.exit(1)
+
     async def get(self, endpoint, **kwargs):
-        response = await self.session.get(self.url(endpoint), **kwargs)
-        response.raise_for_status()
-        return await response.json()
+        return await self.request("GET", self.url(endpoint), **kwargs)
 
     async def delete(self, endpoint, **kwargs):
-        response = await self.session.put(self.url(endpoint), **kwargs)
-        response.raise_for_status()
-        return await response.json()
+        return await self.request("DELETE", self.url(endpoint), **kwargs)
 
     async def put(self, endpoint, **kwargs):
-        response = await self.session.put(self.url(endpoint), **kwargs)
-        response.raise_for_status()
-        return await response.json()
+        return await self.request("PUT", self.url(endpoint), **kwargs)
 
     async def post(self, endpoint, **kwargs):
-        response = await self.session.put(self.url(endpoint), **kwargs)
-        response.raise_for_status()
-        return await response.json()
+        return await self.request("POST", self.url(endpoint), **kwargs)
