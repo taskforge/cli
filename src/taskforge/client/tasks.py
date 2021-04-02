@@ -13,3 +13,7 @@ class TaskClient(ModelClient):
         params = {"q": query}
         self.logger.debug("searching for %s with query: %s", self.plural_name, query)
         return await self.list(params=params)
+
+    async def complete(self, id: str):
+        self.logger.debug("completing task: %s", id)
+        return await self.client.put(f"/api/v1/tasks/{id}/complete")
