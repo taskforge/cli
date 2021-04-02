@@ -1,5 +1,4 @@
 import logging
-import sys
 
 import aiohttp
 
@@ -9,6 +8,12 @@ logger = logging.getLogger(__name__)
 class NoToken(Exception):
     """
     No token was set for this client
+    """
+
+
+class ClientException(Exception):
+    """
+    Generic client exception, usually the result of an HTTP failure.
     """
 
 
@@ -27,19 +32,20 @@ class Client:
     def url(self, endpoint: str) -> str:
         return f"{self.base_url}{endpoint}"
 
-    async def handle_error(self, response):
+    async def handle_error(self, response, exc):
         if response.headers["content-type"] == "application/json":
             data = await response.json()
         else:
             data = await response.text()
 
-        logger.error(
-            "bad response from server ([%s] %s): %s",
-            response.method,
-            response.url,
-            data,
+        msg = "bad response from server ([{method}] {url}): {data}".format(
+            method=response.method,
+            url=response.url,
+            data=data,
         )
-        sys.exit(1)
+
+        logger.error(msg)
+        raise ClientException(msg) from exc
 
     async def request(self, method, url, **kwargs):
         try:
@@ -48,8 +54,12 @@ class Client:
                 await self.handle_error(response)
             return await response.json()
         except aiohttp.client_exceptions.ClientError as exc:
-            logger.error("unexpected client error ([%s] %s): %s", method, url, exc)
-            sys.exit(1)
+            msg = "unexpected response from server ([{method}] {url})".format(
+                method=method,
+                url=url,
+            )
+            logger.error(msg)
+            raise ClientException(msg) from exc
 
     async def get(self, endpoint, **kwargs):
         return await self.request("GET", self.url(endpoint), **kwargs)

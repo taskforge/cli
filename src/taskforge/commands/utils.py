@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from functools import wraps
 
 from taskforge.client import Client
@@ -8,7 +9,10 @@ from taskforge.config import Config
 def coro(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        return asyncio.run(f(*args, **kwargs))
+        try:
+            return asyncio.run(f(*args, **kwargs))
+        except Exception:
+            sys.exit(1)
 
     return wrapper
 
