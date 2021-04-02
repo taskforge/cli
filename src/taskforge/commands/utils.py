@@ -1,6 +1,10 @@
 import asyncio
 import sys
+from contextlib import contextmanager
 from functools import wraps
+
+from yaspin import yaspin
+from yaspin.spinners import Spinners
 
 from taskforge.client import Client
 from taskforge.config import Config
@@ -31,3 +35,13 @@ def inject_client(fn):
             await client.close()
 
     return wrapper
+
+
+@contextmanager
+def spinner(text=""):
+    if Config.no_spinners:
+        yield None
+        return
+
+    with yaspin(Spinners.aesthetic, text=text) as sp:
+        yield sp

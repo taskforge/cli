@@ -7,6 +7,7 @@ from csv import DictWriter
 
 import click
 from tabulate import tabulate
+from taskforge.commands.utils import spinner
 
 FORMATS = click.Choice(
     ["table", "json", "csv", "csv-pretty"],
@@ -71,7 +72,9 @@ def to_row(task, small_term):
 
 async def print_table(client, tasks, tablefmt="plain"):
     """Print an ASCII table of the tasks."""
-    data = await asyncio.gather(*map(populate(client), tasks))
+    with spinner(text="Gathering task metadata..."):
+        data = await asyncio.gather(*map(populate(client), tasks))
+
     terminal = shutil.get_terminal_size((80, 20))
     small_term = terminal.columns < 250
     if small_term:

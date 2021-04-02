@@ -1,7 +1,7 @@
 import click
 
 from taskforge.commands.cli import cli
-from taskforge.commands.utils import coro, inject_client
+from taskforge.commands.utils import coro, inject_client, spinner
 from taskforge.printing import FORMATS, print_tasks
 
 
@@ -37,5 +37,7 @@ async def todo(format, client):
     Produces a CSV table containing user emails, context names, and source names instead
     of IDs.
     """
-    tasks = await client.tasks.search("completed = false")
+    with spinner("Retrieving tasks"):
+        tasks = await client.tasks.search("completed = false")
+
     await print_tasks(tasks, client, format)

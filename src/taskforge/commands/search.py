@@ -1,8 +1,9 @@
 import click
 
 from taskforge.commands.cli import cli
-from taskforge.commands.utils import coro, inject_client
+from taskforge.commands.utils import coro, inject_client, spinner
 from taskforge.printing import FORMATS, print_tasks
+
 
 
 @cli.command(aliases=["l", "query", "q", "list"])
@@ -38,9 +39,10 @@ async def search(query, format, client):
     Produces a CSV table containing user emails, context names, and source names instead
     of IDs
     """
-    if query:
-        tasks = await client.tasks.search(" ".join(query))
-    else:
-        tasks = await client.tasks.list()
+    with spinner("Retrieving tasks"):
+        if query:
+            tasks = await client.tasks.search(" ".join(query))
+        else:
+            tasks = await client.tasks.list()
 
     await print_tasks(tasks, client, format)
