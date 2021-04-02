@@ -5,12 +5,17 @@ from collections import defaultdict
 
 class ModelClient:
     plural_name = ""
+    reverse_mapping_key = ""
 
     def __init__(self, client):
         self.client = client
         self.logger = logging.getLogger(self.__class__.__name__)
         self.cache = {}
         self.cache_locks = defaultdict(asyncio.Lock)
+        self.reverse_map = dict()
+
+    async def reverse_lookup(self, value):
+        return self.reverse_map.get(value, None)
 
     async def create(self, model, **kwargs):
         self.logger.debug("creating %s with %s", self.plural_name, model)
@@ -30,6 +35,10 @@ class ModelClient:
             self.cache[id] = await self.client.get(
                 f"/api/v1/{self.plural_name}/{id}", **kwargs
             )
+            if self.reverse_mapping_key:
+                reverse_key = self.cache[id][self.reverse_mapping_key]
+                self.reverse_map[reverse_key] = self.cache[id]
+
             return self.cache[id]
 
     async def list(self, limit=-1, **kwargs):
@@ -50,6 +59,7 @@ class ModelClient:
         self.logger.debug("updated %s with ID: %s", self.plural_name, model["id"])
         return await self.client.put(
             f"/api/v1/{self.plural_name}/{model['id']}",
+            json=model,
             **kwargs,
         )
 
