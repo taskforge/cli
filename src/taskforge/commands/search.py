@@ -5,8 +5,7 @@ from taskforge.commands.utils import coro, inject_client, spinner
 from taskforge.printing import FORMATS, print_tasks
 
 
-
-@cli.command(aliases=["l", "query", "q", "list"])
+@cli.command(aliases=["s", "list", "query", "q"])
 @click.option(
     "-f",
     "--format",

@@ -25,11 +25,11 @@ class CustomCommand(click.Group):
             if cmd.hidden:
                 continue
 
-            aliases = sorted(
+            aliases = [
                 alias
                 for alias, cmd_name in self.aliases.items()
                 if cmd_name == subcommand
-            )
+            ]
             if aliases:
                 subcommand = f"{subcommand}|{'|'.join(aliases)}"
 
