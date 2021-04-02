@@ -1,16 +1,17 @@
-import click
 import sys
 
+import click
+
+from taskforge.client.http import ClientException
 from taskforge.commands.cli import cli
 from taskforge.commands.utils import coro, inject_client, spinner
-from taskforge.client.http import ClientException
 
 
 async def do_login(client, email, password):
     try:
         with spinner("Generating a personal access token"):
             pat = await client.users.login(email, password)
-            msg = """\
+            msg = f"""\
 Your personal access token is:
 
 {pat}
@@ -18,8 +19,9 @@ Your personal access token is:
 This token must be set as the environment variable TASKFORGE_TOKEN for us with this CLI.
 Add this to your shell configuration file to use it:
 
-    export TASKFORGE_TOKEN="{pat}"
-""".format(pat=pat)
+    export TASKFORGE_TOKEN="{pat}"\
+            """
+
     except ClientException as exc:
         if exc.status_code == 401:
             click.echo(exc.msg)
@@ -28,10 +30,10 @@ Add this to your shell configuration file to use it:
         raise exc
 
     click.echo(msg)
-    click.echo('WARNING!', color='yellow')
+    click.echo("WARNING!")
     click.echo(
-        'This personal access token can be revoked but it gives full permissions to'
-        'operate on taskforge as your user. Protect it like a password.'
+        "This personal access token can be revoked but it gives full permissions to"
+        "operate on taskforge as your user. Protect it like a password."
     )
 
 

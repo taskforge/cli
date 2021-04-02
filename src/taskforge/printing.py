@@ -7,6 +7,7 @@ from csv import DictWriter
 
 import click
 from tabulate import tabulate
+
 from taskforge.commands.utils import spinner
 
 FORMATS = click.Choice(
