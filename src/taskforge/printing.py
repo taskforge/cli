@@ -1,7 +1,9 @@
 import asyncio
 import json
 import shutil
+import sys
 import textwrap
+from csv import DictWriter
 
 from tabulate import tabulate
 
@@ -108,3 +110,21 @@ async def print_table(client, tasks, tablefmt="plain"):
 def print_json(task_or_tasks):
     data = json.dumps(task_or_tasks, indent=4)
     print(data)
+
+
+async def print_csv(task_or_tasks, client=None, pretty=False):
+    if isinstance(task_or_tasks, list):
+        data = task_or_tasks
+    else:
+        data = [task_or_tasks]
+
+    if not data:
+        return
+
+    fieldnames = list(data[0].keys())
+    if pretty:
+        data = await asyncio.gather(*map(populate(client), data))
+
+    writer = DictWriter(sys.stdout, fieldnames=fieldnames)
+    for row in data:
+        writer.writerow(row)
