@@ -35,7 +35,7 @@ format: $(VENV)
 .PHONY: release
 release: $(VENV)
 	$(BIN)/python setup.py sdist bdist_wheel
-	twine
+	twine upload dist/*
 
 clean:
 	rm -rf $(VENV)
