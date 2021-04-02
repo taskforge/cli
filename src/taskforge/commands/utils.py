@@ -25,4 +25,5 @@ def inject_client(fn):
             await fn(*args, **kwargs)
         finally:
             await client.close()
+
     return wrapper

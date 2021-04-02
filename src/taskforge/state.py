@@ -1,5 +1,8 @@
 import json
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 
 def xdg_dir():
@@ -27,21 +30,23 @@ class _State:
 
     @classmethod
     def load(cls):
-        location = os.path.join(data_dir(), "state.json")
+        dirname = data_dir()
+        location = os.path.join(dirname, "state.json")
         if os.path.isfile(location):
             return cls.load_file(location)
 
-        return cls.default()
+        if not os.path.isdir(dirname):
+            os.makedirs(data_dir(), exist_ok=True)
 
-    @classmethod
-    def default(cls):
-        return cls()
+        return cls(loaded_from=location)
 
     def save(self):
-        if not self.loaded_from:
+        if not self._loaded_from:
+            logger.error("unexpected state, should have been loaed from a file!")
             return
 
-        with open(self.loaded_from, "w") as cfg_file:
+        with open(self._loaded_from, "w") as cfg_file:
+            logger.debug("saving state to: %s", self._loaded_from)
             json.dump(self._data, cfg_file)
 
     def __getattr__(self, key):

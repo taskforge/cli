@@ -3,6 +3,7 @@ import click
 from taskforge.commands.cli import cli
 from taskforge.commands.utils import coro, inject_client
 from taskforge.printing import print_json
+from taskforge.state import State
 
 
 @cli.command(aliases=["n"])
@@ -17,7 +18,7 @@ async def next(
     as_json,
     client,
 ):
-    task = await client.tasks.next()
+    task = await client.tasks.next(context=State.current_context)
     if title_only:
         print(task["title"])
     elif id_only:
