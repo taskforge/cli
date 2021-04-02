@@ -30,7 +30,9 @@ class _Config:
     def load_file(cls, fn):
         with open(fn) as cfg:
             data = yaml.safe_load(cfg)
-            return cls(**data)
+            config = _Config.default()
+            config.update(data)
+            return config
 
     @classmethod
     def load(cls):
@@ -43,9 +45,13 @@ class _Config:
     @classmethod
     def default(cls):
         return cls(
+            no_spinners=bool(os.getenv("NO_SPINNERS", False)),
             token=os.getenv("TASKFORGE_TOKEN"),
             host=os.getenv("TASKFORGE_HOST2", "https://taskforge.io"),
         )
+
+    def update(self, other):
+        return self._data.update(other)
 
     def save(self):
         if not self.loaded_from:
