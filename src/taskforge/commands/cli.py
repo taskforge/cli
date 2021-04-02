@@ -1,5 +1,4 @@
 import logging
-from copy import deepcopy
 
 import click
 
@@ -69,3 +68,5 @@ class CustomCommand(click.Group):
 def cli(verbose):
     if verbose:
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.ERROR)
