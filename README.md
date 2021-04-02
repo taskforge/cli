@@ -14,7 +14,7 @@ Documentation is available at https://taskforge.io
 Taskforge has many competitors and all of them are great choices for task
 management. So why build yet another "todo app"?
 
-The answer is simple, most task management applications require that you
+The answer is: most task management applications require that you
 duplicate data into them from other sources. Whether by work, or personal
 preference, our actual tasks are managed in different sources today. Whether
 that be JIRA, GitHub, Trello etc. the teams and people we interact with rarely
