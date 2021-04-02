@@ -11,7 +11,7 @@ class ModelClient:
     async def create(self, model, **kwargs):
         self.logger.debug("creating %s with %s", self.plural_name, model)
         return await self.client.post(
-            f"/api/v1/{self.plural_name}/{id}",
+            f"/api/v1/{self.plural_name}",
             json=model,
             **kwargs,
         )
