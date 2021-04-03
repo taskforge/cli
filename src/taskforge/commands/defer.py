@@ -41,4 +41,4 @@ async def defer(
             )
         )
 
-    click.echo("DONE!")
+    click.echo("Tasks deferred.")

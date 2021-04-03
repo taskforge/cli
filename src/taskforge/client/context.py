@@ -26,11 +26,7 @@ class ContextClient(ModelClient):
 
             params = {"name": name}
             results = await self.list(params=params)
-            # TODO: this is a work around because the contexts API doesn't support name
-            # filtering yet.
-            for result in results:
-                if result["name"] == name:
-                    self.cache[name] = result
-                    return result
+            if results:
+                return results[0]
 
             return None

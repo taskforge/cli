@@ -1,4 +1,5 @@
 from taskforge.client.context import ContextClient
+from taskforge.client.filter import FilterClient
 from taskforge.client.http import Client as HttpClient
 from taskforge.client.source import SourceClient
 from taskforge.client.tasks import TaskClient
@@ -12,6 +13,7 @@ class Client:
         self.sources = SourceClient(self.http)
         self.contexts = ContextClient(self.http)
         self.users = UserClient(self.http)
+        self.filters = FilterClient(self.http)
 
     async def close(self):
         await self.http.session.close()

@@ -62,10 +62,17 @@ class Client:
     async def request(self, method, url, **kwargs):
         try:
             response = await self.session.request(method, url, **kwargs)
-            data = await response.json()
+            data = None
+            if method != "DELETE":
+                data = await response.json()
+
             if not response.ok:
+                if not data:
+                    data = await response.json()
+
                 await self.handle_error(response, data)
                 return
+
             return data
         except aiohttp.client_exceptions.ClientError as exc:
             msg = "unexpected response from server ([{method}] {url}): {msg}".format(

@@ -48,6 +48,17 @@ class CustomCommand(click.Group):
                 with formatter.section("Commands"):
                     formatter.write_dl(rows)
 
+    def group(self, *args, **kwargs):
+        def decorator(f):
+            aliases = kwargs.pop("aliases", [])
+            cmd = super(CustomCommand, self).group(*args, **kwargs)(f)
+            for alias in aliases:
+                self.aliases[alias] = cmd.name
+
+            return cmd
+
+        return decorator
+
     def command(self, *args, **kwargs):
         def decorator(f):
             aliases = kwargs.pop("aliases", [])

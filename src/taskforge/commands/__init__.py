@@ -9,6 +9,7 @@ import taskforge.commands.add
 import taskforge.commands.complete
 import taskforge.commands.defer
 import taskforge.commands.edit
+import taskforge.commands.filters
 import taskforge.commands.login
 import taskforge.commands.next
 import taskforge.commands.register
