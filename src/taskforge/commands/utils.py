@@ -29,8 +29,7 @@ def inject_client(fn):
             else:
                 logger.error(exc.msg)
             sys.exit(exc.status_code)
-        except Exception as exc:
-            logger.error("%s", exc)
+        except Exception:
             sys.exit(1)
         finally:
             client.close()

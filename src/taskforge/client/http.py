@@ -1,4 +1,5 @@
 import logging
+from json.decoder import JSONDecodeError
 
 import requests
 
@@ -36,7 +37,12 @@ class Client:
     def url(self, endpoint: str) -> str:
         return f"{self.base_url}{endpoint}"
 
-    def handle_error(self, response, data):
+    def handle_error(self, response):
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            data = response.text()
+
         if "detail" in data:
             msg = data["detail"]
         elif response.status_code == 400:
@@ -62,7 +68,7 @@ class Client:
     def request(self, method, url, **kwargs):
         response = self.session.request(method, url, **kwargs)
         if not response.ok:
-            self.handle_error(response, response.json())
+            self.handle_error(response)
 
         if method != "DELETE":
             return response.json()
