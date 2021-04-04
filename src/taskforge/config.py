@@ -47,7 +47,7 @@ class _Config:
         return cls(
             no_spinners=bool(os.getenv("NO_SPINNERS", False)),
             token=os.getenv("TASKFORGE_TOKEN"),
-            host=os.getenv("TASKFORGE_HOST2", "https://taskforge.io"),
+            host=os.getenv("TASKFORGE_HOST", "https://taskforge.io"),
         )
 
     def update(self, other):
