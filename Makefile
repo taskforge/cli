@@ -33,11 +33,12 @@ format: $(VENV)
 	$(BIN)/isort src tests
 
 .PHONY: release
-release: $(VENV)
+release: clean $(VENV)
 	$(BIN)/python setup.py sdist bdist_wheel
 	twine upload dist/*
 
+.PHONY: clean
 clean:
-	rm -rf $(VENV)
+	rm -rf dist build
 	find . -type f -name *.pyc -delete
 	find . -type d -name __pycache__ -delete
