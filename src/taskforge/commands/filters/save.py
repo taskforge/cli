@@ -1,7 +1,7 @@
 import click
 
 from taskforge.commands.filters.filters import filters
-from taskforge.commands.utils import coro, inject_client, spinner
+from taskforge.commands.utils import inject_client, spinner
 
 
 @filters.command()
@@ -13,9 +13,8 @@ from taskforge.commands.utils import coro, inject_client, spinner
     required=True,
 )
 @click.argument("query", nargs=-1)
-@coro
 @inject_client
-async def save(name, query, client):
+def save(name, query, client):
     """
     Create a new filter.
 
@@ -29,6 +28,6 @@ async def save(name, query, client):
             "query": q,
             "columns": [],
         }
-        await client.filters.create(new_filter)
+        client.filters.create(new_filter)
 
     click.echo("Filter saved.")

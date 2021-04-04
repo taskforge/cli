@@ -15,5 +15,5 @@ class Client:
         self.users = UserClient(self.http)
         self.filters = FilterClient(self.http)
 
-    async def close(self):
-        await self.http.session.close()
+    def close(self):
+        self.http.session.close()

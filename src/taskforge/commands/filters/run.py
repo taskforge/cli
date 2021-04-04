@@ -1,7 +1,7 @@
 import click
 
 from taskforge.commands.filters.filters import filters
-from taskforge.commands.utils import coro, inject_client, spinner
+from taskforge.commands.utils import inject_client, spinner
 from taskforge.printing import FORMATS, print_tasks
 
 
@@ -13,9 +13,8 @@ from taskforge.printing import FORMATS, print_tasks
     type=FORMATS,
 )
 @click.argument("name", nargs=1)
-@coro
 @inject_client
-async def run(name, format, client):
+def run(name, format, client):
     """
     Run the given filter.
 
@@ -39,7 +38,7 @@ async def run(name, format, client):
     of IDs
     """
     with spinner("Retrieving tasks"):
-        filter = await client.filters.get_by_name(name)
-        tasks = await client.tasks.search(filter["query"])
+        filter = client.filters.get_by_name(name)
+        tasks = client.tasks.search(filter["query"])
 
-    await print_tasks(tasks, client, format)
+    print_tasks(tasks, client, format)

@@ -1,7 +1,7 @@
 import click
 
 from taskforge.commands.cli import cli
-from taskforge.commands.utils import coro, inject_client, spinner
+from taskforge.commands.utils import inject_client, spinner
 from taskforge.printing import FORMATS, print_tasks
 
 
@@ -12,9 +12,8 @@ from taskforge.printing import FORMATS, print_tasks
     default="table",
     type=FORMATS,
 )
-@coro
 @inject_client
-async def todo(format, client):
+def todo(format, client):
     """
     Show incomplete tasks.
 
@@ -38,6 +37,6 @@ async def todo(format, client):
     of IDs.
     """
     with spinner("Retrieving tasks"):
-        tasks = await client.tasks.search("completed = false")
+        tasks = client.tasks.search("completed = false")
 
-    await print_tasks(tasks, client, format)
+    print_tasks(tasks, client, format)

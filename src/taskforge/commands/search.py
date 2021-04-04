@@ -1,7 +1,7 @@
 import click
 
 from taskforge.commands.cli import cli
-from taskforge.commands.utils import coro, inject_client, spinner
+from taskforge.commands.utils import inject_client, spinner
 from taskforge.printing import FORMATS, print_tasks
 
 
@@ -13,9 +13,8 @@ from taskforge.printing import FORMATS, print_tasks
     type=FORMATS,
 )
 @click.argument("query", nargs=-1)
-@coro
 @inject_client
-async def search(query, format, client):
+def search(query, format, client):
     """
     Search for tasks using TQL. If no query given lists all tasks.
 
@@ -40,8 +39,8 @@ async def search(query, format, client):
     """
     with spinner("Retrieving tasks"):
         if query:
-            tasks = await client.tasks.search(" ".join(query))
+            tasks = client.tasks.search(" ".join(query))
         else:
-            tasks = await client.tasks.list()
+            tasks = client.tasks.list()
 
-    await print_tasks(tasks, client, format)
+    print_tasks(tasks, client, format)

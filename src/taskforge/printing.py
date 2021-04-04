@@ -1,4 +1,3 @@
-import asyncio
 import json
 import shutil
 import sys
@@ -17,8 +16,8 @@ FORMATS = click.Choice(
 
 
 def populate(client):
-    async def transform(task):
-        user, source, context = await asyncio.gather(
+    def transform(task):
+        user, source, context = (
             client.users.get(task["owner"]),
             client.sources.get(task["source"]),
             client.contexts.get(task["context"]),
@@ -71,10 +70,10 @@ def to_row(task, small_term):
         ]
 
 
-async def print_table(client, tasks, tablefmt="plain"):
+def print_table(client, tasks, tablefmt="plain"):
     """Print an ASCII table of the tasks."""
     with spinner(text="Gathering task metadata..."):
-        data = await asyncio.gather(*map(populate(client), tasks))
+        data = list(map(populate(client), tasks))
 
     terminal = shutil.get_terminal_size((80, 20))
     small_term = terminal.columns < 250
@@ -122,7 +121,7 @@ def print_json(task_or_tasks):
     print(data)
 
 
-async def print_csv(task_or_tasks, client=None, pretty=False):
+def print_csv(task_or_tasks, client=None, pretty=False):
     if isinstance(task_or_tasks, list):
         data = task_or_tasks
     else:
@@ -133,20 +132,20 @@ async def print_csv(task_or_tasks, client=None, pretty=False):
 
     fieldnames = list(data[0].keys())
     if pretty:
-        data = await asyncio.gather(*map(populate(client), data))
+        data = map(populate(client), data)
 
     writer = DictWriter(sys.stdout, fieldnames=fieldnames)
     for row in data:
         writer.writerow(row)
 
 
-async def print_tasks(tasks, client, format):
+def print_tasks(tasks, client, format):
     format = format.lower()
     if format == "json":
         print_json(tasks)
     elif format == "csv":
-        await print_csv(tasks)
+        print_csv(tasks)
     elif format == "csv-pretty":
-        await print_csv(tasks, client=client, pretty=True)
+        print_csv(tasks, client=client, pretty=True)
     else:
-        await print_table(client, tasks)
+        print_table(client, tasks)

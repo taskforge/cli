@@ -1,6 +1,6 @@
 import logging
 
-import aiohttp
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class Client:
         if not self.token:
             raise NoToken()
 
-        self.session = aiohttp.ClientSession()
+        self.session = requests.Session()
         self.session.get
         self.session.headers["Authorization"] = f"Bearer {self.token}"
         self.session.headers["Accept"] = "application/json"
@@ -36,10 +36,10 @@ class Client:
     def url(self, endpoint: str) -> str:
         return f"{self.base_url}{endpoint}"
 
-    async def handle_error(self, response, data):
+    def handle_error(self, response, data):
         if "detail" in data:
             msg = data["detail"]
-        elif response.status == 400:
+        elif response.status_code == 400:
             msg = "\n".join(
                 [
                     "Invalid data for field {field}: {problem}".format(
@@ -51,46 +51,32 @@ class Client:
             )
         else:
             msg = "[{status}] ({method}) {url}: {data}".format(
-                status=response.status,
+                status=response.status_code,
                 method=response.method,
                 url=response.url,
                 data=data,
             )
 
-        raise ClientException(msg, status_code=response.status)
+        raise ClientException(msg, status_code=response.status_code)
 
-    async def request(self, method, url, **kwargs):
-        try:
-            response = await self.session.request(method, url, **kwargs)
-            data = None
-            if method != "DELETE":
-                data = await response.json()
+    def request(self, method, url, **kwargs):
+        response = self.session.request(method, url, **kwargs)
+        if not response.ok:
+            self.handle_error(response, response.json())
 
-            if not response.ok:
-                if not data:
-                    data = await response.json()
+        if method != "DELETE":
+            return response.json()
 
-                await self.handle_error(response, data)
-                return
+        return None
 
-            return data
-        except aiohttp.client_exceptions.ClientError as exc:
-            msg = "unexpected response from server ([{method}] {url}): {msg}".format(
-                method=method,
-                url=url,
-                msg=str(exc),
-            )
-            logger.error(msg)
-            raise ClientException(msg, status_code=500) from exc
+    def get(self, endpoint, **kwargs):
+        return self.request("GET", self.url(endpoint), **kwargs)
 
-    async def get(self, endpoint, **kwargs):
-        return await self.request("GET", self.url(endpoint), **kwargs)
+    def delete(self, endpoint, **kwargs):
+        return self.request("DELETE", self.url(endpoint), **kwargs)
 
-    async def delete(self, endpoint, **kwargs):
-        return await self.request("DELETE", self.url(endpoint), **kwargs)
+    def put(self, endpoint, **kwargs):
+        return self.request("PUT", self.url(endpoint), **kwargs)
 
-    async def put(self, endpoint, **kwargs):
-        return await self.request("PUT", self.url(endpoint), **kwargs)
-
-    async def post(self, endpoint, **kwargs):
-        return await self.request("POST", self.url(endpoint), **kwargs)
+    def post(self, endpoint, **kwargs):
+        return self.request("POST", self.url(endpoint), **kwargs)

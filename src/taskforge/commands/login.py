@@ -4,13 +4,13 @@ import click
 
 from taskforge.client.http import ClientException
 from taskforge.commands.cli import cli
-from taskforge.commands.utils import coro, inject_client, spinner
+from taskforge.commands.utils import inject_client, spinner
 
 
-async def do_login(client, email, password):
+def do_login(client, email, password):
     try:
         with spinner("Generating a personal access token"):
-            pat = await client.users.login(email, password)
+            pat = client.users.login(email, password)
             msg = f"""\
 Your personal access token is:
 
@@ -44,9 +44,8 @@ Add this to your shell configuration file to use it:
     prompt=True,
     hide_input=True,
 )
-@coro
 @inject_client
-async def login(
+def login(
     email,
     password,
     client,
@@ -57,4 +56,4 @@ async def login(
     Once the token is generated you should set the environment variable TASKFORGE_TOKEN
     to the given token.
     """
-    await do_login(client, email, password)
+    do_login(client, email, password)

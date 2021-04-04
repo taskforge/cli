@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import sys
 from contextlib import contextmanager
@@ -14,38 +13,27 @@ from taskforge.config import Config
 logger = logging.getLogger(__name__)
 
 
-def coro(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        try:
-            return asyncio.run(f(*args, **kwargs))
-        except ClientException as exc:
-            if exc.status_code == 400:
-                print("ERROR!", exc.msg)
-            else:
-                logger.error(exc.msg)
-            sys.exit(exc.status_code)
-        except SystemExit as exc:
-            sys.exit(exc.code)
-        except Exception as exc:
-            logger.error("%s", exc)
-            sys.exit(1)
-
-    return wrapper
-
-
 def inject_client(fn):
     @wraps(fn)
-    async def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         client = Client(
             base_url=Config.host,
             token=Config.token,
         )
         kwargs["client"] = client
         try:
-            await fn(*args, **kwargs)
+            fn(*args, **kwargs)
+        except ClientException as exc:
+            if exc.status_code == 400:
+                print("ERROR!", exc.msg)
+            else:
+                logger.error(exc.msg)
+            sys.exit(exc.status_code)
+        except Exception as exc:
+            logger.error("%s", exc)
+            sys.exit(1)
         finally:
-            await client.close()
+            client.close()
 
     return wrapper
 

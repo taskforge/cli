@@ -1,17 +1,14 @@
-import asyncio
-
 import click
 
 from taskforge.commands.cli import cli
-from taskforge.commands.utils import coro, inject_client, spinner
+from taskforge.commands.utils import inject_client, spinner
 from taskforge.state import State
 
 
 @cli.command()
 @click.argument("task-ids", nargs=-1)
-@coro
 @inject_client
-async def defer(
+def defer(
     task_ids,
     client,
 ):
@@ -20,25 +17,12 @@ async def defer(
     """
     with spinner("Updating tasks..."):
         if not task_ids:
-            top = await client.tasks.next(State.current_context)
+            top = client.tasks.next(State.current_context)
             task_ids = [top["id"]]
 
-        tasks = await asyncio.gather(
-            *map(
-                client.tasks.get,
-                task_ids,
-            )
-        )
-
-        async def __defer(task):
+        for task_id in task_ids:
+            task = client.tasks.get(task_id)
             task["priority"] -= 1
-            return await client.tasks.update(task)
-
-        await asyncio.gather(
-            *map(
-                __defer,
-                tasks,
-            )
-        )
+            client.tasks.update(task)
 
     click.echo("Tasks deferred.")

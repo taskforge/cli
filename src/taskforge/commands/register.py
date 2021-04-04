@@ -2,7 +2,7 @@ import click
 
 from taskforge.commands.cli import cli
 from taskforge.commands.login import do_login
-from taskforge.commands.utils import coro, inject_client, spinner
+from taskforge.commands.utils import inject_client, spinner
 
 
 @cli.command()
@@ -17,9 +17,8 @@ from taskforge.commands.utils import coro, inject_client, spinner
     prompt=True,
     required=False,
 )
-@coro
 @inject_client
-async def register(
+def register(
     email,
     password,
     full_name,
@@ -37,6 +36,6 @@ async def register(
             "password": password,
             "full_name": full_name,
         }
-        await client.users.create(user)
+        client.users.create(user)
 
-    await do_login(client, email, password)
+    do_login(client, email, password)
