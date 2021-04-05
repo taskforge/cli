@@ -5,11 +5,11 @@ class UserClient(ModelClient):
     plural_name = "users"
     reverse_mapping_key = "email"
 
-    async def login(self, email: str, password: str):
+    def login(self, email: str, password: str):
         """
         Generates a PAT.
         """
-        tokens = await self.client.post(
+        tokens = self.client.post(
             "/api/v1/tokens/pat",
             json={
                 "email": email,

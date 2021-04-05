@@ -7,7 +7,7 @@ from taskforge.commands.utils import inject_client, spinner
 @cli.command(aliases=["w", "workon"])
 @click.argument("task-id")
 @inject_client
-async def work_on(
+def work_on(
     task_id,
     client,
 ):
