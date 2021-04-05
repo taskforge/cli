@@ -10,7 +10,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="taskforge-cli",
-    version="0.3.2",
+    version="0.3.3",
     url="https://github.com/taskforge/cli",
     license="Apache-2.0",
     author="Mathew Robinson",
