@@ -57,14 +57,21 @@ class ModelClient:
 
     def list(self, limit=-1, **kwargs):
         self.logger.debug("getting all %s", self.plural_name)
-        page = self.client.get(f"/api/v1/{self.plural_name}", **kwargs)
+        endpoint = f"/api/v1/{self.plural_name}"
+        page = self.client.get(endpoint, **kwargs)
         results = page["results"]
+        page_number = 1
         while page.get("next"):
             self.logger.debug("next page found, retrieving more %s", self.plural_name)
             if limit > 0 and len(results) >= limit:
                 break
 
-            page = self.client.get(page["next"], **kwargs)
+            page_number += 1
+            if "params" in kwargs:
+                kwargs["params"]["page"] = page_number
+            else:
+                kwargs["params"] = {"page": page_number}
+            page = self.client.get(endpoint, **kwargs)
             results.extend(page["results"])
 
         return results
