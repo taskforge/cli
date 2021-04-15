@@ -114,7 +114,7 @@ export function spawnOpts(token: string, opts?: SpawnOpts) {
                     ? opts.configDir
                     : path.join(os.tmpdir(), makeid()),
             PATH: process.env.PATH,
-            TASKFORGE_HOST: process.env.TASKFORGE_HOST,
+            TASKFORGE_HOST: process.env.TASKFORGE_HOST!,
             TASKFORGE_TOKEN: token
         }
     };

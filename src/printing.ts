@@ -1,5 +1,6 @@
 import client from './client';
 import { Task } from './client/tasks';
+import { unexpected } from './utils';
 import { table } from 'table';
 
 function idMemo<T>(fn: (id: string) => Promise<T>): (id: string) => Promise<T> {
@@ -14,9 +15,9 @@ function idMemo<T>(fn: (id: string) => Promise<T>): (id: string) => Promise<T> {
     };
 }
 
-const getContext = idMemo(client.contexts.get);
-const getSource = idMemo(client.sources.get);
-const getUser = idMemo(client.users.get);
+const getContext = idMemo(client.contexts.get.bind(client.contexts));
+const getSource = idMemo(client.sources.get.bind(client.sources));
+const getUser = idMemo(client.users.get.bind(client.users));
 
 function humanizeKey(key: string): string {
     if (key == 'id') {
@@ -32,20 +33,24 @@ function humanizeKey(key: string): string {
 }
 
 async function humanize(task: Task): Promise<any> {
-    const [context, source, owner] = await Promise.all([
-        getContext(task.context),
-        getSource(task.source),
-        getUser(task.owner)
-    ]);
-    return {
-        ...task,
-        owner:
-            owner.fullName && owner.fullName !== ''
-                ? owner.fullName
-                : owner.email,
-        context: context.name,
-        source: source.name
-    };
+    try {
+        const [context, source, owner] = await Promise.all([
+            getContext(task.context),
+            getSource(task.source),
+            getUser(task.owner)
+        ]);
+        return {
+            ...task,
+            owner:
+                owner.fullName && owner.fullName !== ''
+                    ? owner.fullName
+                    : owner.email,
+            context: context.name,
+            source: source.name
+        };
+    } catch (e) {
+        unexpected(e);
+    }
 }
 
 export async function printTable(list: Task[]): Promise<void> {
