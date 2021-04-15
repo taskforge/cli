@@ -37,7 +37,7 @@ async function show(id: string, opts: Command) {
         }
 
         for (const comment of taskComments) {
-            console.log('---', comment.created_date, '---');
+            console.log('---', comment.createdDate, '---');
             console.log(comment.body);
         }
     } catch (e) {

@@ -1,9 +1,8 @@
 import { isAPIError, users } from './client';
+import { fail, emailRegex } from './utils';
 import kleur from 'kleur';
 import ora from 'ora';
 import prompts from 'prompts';
-
-import { fail, emailRegex } from './utils';
 
 export async function loginOrRegister(register = true) {
     const { email, password } = await prompts([
@@ -18,16 +17,17 @@ export async function loginOrRegister(register = true) {
 
     try {
         if (register) {
-            const { full_name } = await prompts([
+            const { fullName } = await prompts([
                 {
-                    name: 'full_name',
+                    name: 'fullName',
                     message: 'Full Name (optional):',
                     type: 'text'
                 }
             ]);
             const registerSpinner = ora('Creating your account').start();
-            const user = await users.create({ email, password, full_name });
+            const user = await users.create({ email, password, fullName });
             if (isAPIError(user)) {
+                registerSpinner.stopAndPersist();
                 fail(user);
                 return;
             }
@@ -41,6 +41,7 @@ export async function loginOrRegister(register = true) {
         const spinner = ora('Generating a personal access token').start();
         const pat = await users.generatePat({ email, password });
         if (isAPIError(pat)) {
+            spinner.stopAndPersist();
             fail(pat);
             return;
         }

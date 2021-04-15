@@ -43,7 +43,7 @@ const generatePat = defaultPush(generatePatWithOptions);
 export interface UserCreateArgs {
     email: string;
     password: string;
-    full_name?: string;
+    fullName?: string;
 }
 
 const createUser = pusher<UserCreateArgs, User>('/v1/users', 'POST', isUser);

@@ -1,7 +1,6 @@
 export interface Paginated<T> {
-    count: number;
-    previous: string | null;
-    next: string | null;
+    limit: number;
+    offset: number;
     results: T[];
 }
 
@@ -11,9 +10,8 @@ export function isPaginated<T>(
     return (data: any): data is Paginated<T> => {
         return (
             data &&
-            data.next !== undefined &&
-            data.previous !== undefined &&
-            data.count !== undefined &&
+            data.limit !== undefined &&
+            data.offset !== undefined &&
             Array.isArray(data.results) &&
             data.results.every(isModel)
         );

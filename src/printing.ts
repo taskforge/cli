@@ -31,7 +31,12 @@ function humanizeKey(key: string): string {
 }
 
 async function humanize(task: Task): Promise<any> {
-    const context = await getContext(task.context);
+    const [context, source, owner] = await Promise.all([
+        getContext(task.context),
+        getSource(task.source),
+        getUser(task.owner)
+    ]);
+
     if (isAPIError(context)) {
         console.log(
             'Unexpected error retrieving context:',
@@ -40,7 +45,6 @@ async function humanize(task: Task): Promise<any> {
         process.exit(1);
     }
 
-    const source = await getSource(task.source);
     if (isAPIError(source)) {
         console.log(
             'Unexpected error retrieving source:',
@@ -49,7 +53,6 @@ async function humanize(task: Task): Promise<any> {
         process.exit(1);
     }
 
-    const owner = await getUser(task.owner);
     if (isAPIError(owner)) {
         console.log(
             'Unexpected error retrieving owner:',
@@ -61,8 +64,8 @@ async function humanize(task: Task): Promise<any> {
     return {
         ...task,
         owner:
-            owner.full_name && owner.full_name !== ''
-                ? owner.full_name
+            owner.fullName && owner.fullName !== ''
+                ? owner.fullName
                 : owner.email,
         context: context.name,
         source: source.name
@@ -74,8 +77,8 @@ export async function printTable(list: Task[]): Promise<void> {
         'id',
         'title',
         'priority',
-        'created_date',
-        'completed_date',
+        'createdDate',
+        'completedDate',
         'source',
         'context',
         'owner'
