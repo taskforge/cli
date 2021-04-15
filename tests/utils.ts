@@ -72,7 +72,7 @@ export async function generateUser(): Promise<{
 }> {
     const identifier = makeid();
     const email = `test-${identifier}@example.com`;
-    const password = 'test';
+    const password = 'Testasdf;kljavER12341';
     await defaultClient.users.create({
         email,
         password
