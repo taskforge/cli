@@ -5,8 +5,10 @@ import { SettingClient } from './settings';
 import { SourceClient } from './sources';
 import { TaskClient } from './tasks';
 import { UserClient } from './users';
+import axios, { AxiosInstance } from 'axios';
 
 export class Client {
+    client: AxiosInstance;
     filters: FilterClient;
     sources: SourceClient;
     comments: CommentClient;
@@ -16,13 +18,18 @@ export class Client {
     tasks: TaskClient;
 
     constructor(token: string, baseUrl: string) {
-        this.comments = new CommentClient(token, baseUrl);
-        this.contexts = new ContextClient(token, baseUrl);
-        this.filters = new FilterClient(token, baseUrl);
-        this.settings = new SettingClient(token, baseUrl);
-        this.sources = new SourceClient(token, baseUrl);
-        this.tasks = new TaskClient(token, baseUrl);
-        this.users = new UserClient(token, baseUrl);
+        this.client = axios.create({
+            baseURL: baseUrl,
+            headers: { authorization: `Bearer ${token}` }
+        });
+
+        this.comments = new CommentClient(this.client);
+        this.contexts = new ContextClient(this.client);
+        this.filters = new FilterClient(this.client);
+        this.settings = new SettingClient(this.client);
+        this.sources = new SourceClient(this.client);
+        this.tasks = new TaskClient(this.client);
+        this.users = new UserClient(this.client);
     }
 }
 

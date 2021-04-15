@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
 
 export interface APIError {
     code: number;
@@ -20,16 +20,14 @@ export interface Paginated<T> {
 }
 
 export abstract class ModelClient<Model, NewModel> {
-    version = 'v1';
+    version: string;
     client: AxiosInstance;
     abstract validator: (data: any) => Model;
     abstract pluralName: string;
 
-    constructor(token: string, baseUrl: string) {
-        this.client = axios.create({
-            baseURL: baseUrl,
-            headers: { authorization: `Bearer ${token}` }
-        });
+    constructor(client: AxiosInstance, version = 'v1') {
+        this.version = version;
+        this.client = client;
     }
 
     isPaginated(data: any): Paginated<Model> {
@@ -40,69 +38,80 @@ export abstract class ModelClient<Model, NewModel> {
         );
     }
 
+    handleError(e: any) {
+        if (isAPIError(e.response.data)) {
+            throw new Error(e.response.data.message);
+        }
+    }
+
     async get(id: string): Promise<Model> {
         const url = `/${this.version}/${this.pluralName}/${id}`;
-        const response = await this.client.get(url);
-        if (isAPIError(response.data)) {
-            throw new Error(response.data.message);
+        try {
+            const response = await this.client.get(url);
+            return this.validator(response.data);
+        } catch (e) {
+            this.handleError(e);
+            throw e;
         }
-
-        return this.validator(response.data);
     }
 
     async list(offset = 0, queryParams?: any): Promise<Model[]> {
-        const url = `/${this.version}/${this.pluralName}`;
-        const options = queryParams
-            ? { params: { offset } }
-            : { params: { offset, ...queryParams } };
-        const response = await this.client.get(url, options);
-        if (isAPIError(response.data)) {
-            throw new Error(response.data.message);
-        }
+        try {
+            const url = `/${this.version}/${this.pluralName}`;
+            const options = queryParams
+                ? { params: { offset, ...queryParams } }
+                : { params: { offset } };
+            const response = await this.client.get(url, options);
+            if (!this.isPaginated(response.data)) {
+                throw new Error(`Unexpected response from ${url}`);
+            }
 
-        if (!this.isPaginated(response.data)) {
-            throw new Error(`Unexpected response from ${url}`);
-        }
+            const results = response.data.results.map(this.validator);
+            if (response.data.limit == results.length) {
+                const nextPage = await this.list(
+                    response.data.offset + response.data.limit,
+                    options
+                );
+                return [...results, ...nextPage];
+            }
 
-        const results = response.data.results.map(this.validator);
-        if (response.data.limit == results.length) {
-            const nextPage = await this.list(
-                response.data.offset + response.data.limit,
-                options
-            );
-            return [...results, ...nextPage];
+            return results;
+        } catch (e) {
+            this.handleError(e);
+            throw e;
         }
-
-        return results;
     }
 
     async create(model: NewModel): Promise<Model> {
-        const url = `/${this.version}/${this.pluralName}`;
-        const response = await this.client.post(url, model);
-        if (isAPIError(response.data)) {
-            throw new Error(response.data.message);
+        try {
+            const url = `/${this.version}/${this.pluralName}`;
+            const response = await this.client.post(url, model);
+            return this.validator(response.data);
+        } catch (e) {
+            this.handleError(e);
+            throw e;
         }
-
-        return response.data;
     }
 
     async update(model: Model): Promise<Model> {
-        const url = `/${this.version}/${this.pluralName}`;
-        const response = await this.client.put(url, model);
-        if (isAPIError(response.data)) {
-            throw new Error(response.data.message);
+        try {
+            const url = `/${this.version}/${this.pluralName}`;
+            const response = await this.client.put(url, model);
+            return response.data;
+        } catch (e) {
+            this.handleError(e);
+            throw e;
         }
-
-        return response.data;
     }
 
     async del(id: string): Promise<Model> {
-        const url = `/${this.version}/${this.pluralName}/${id}`;
-        const response = await this.client.delete(url);
-        if (isAPIError(response.data)) {
-            throw new Error(response.data.message);
+        try {
+            const url = `/${this.version}/${this.pluralName}/${id}`;
+            const response = await this.client.delete(url);
+            return response.data;
+        } catch (e) {
+            this.handleError(e);
+            throw e;
         }
-
-        return response.data;
     }
 }

@@ -25,7 +25,7 @@ export function isComment(data: any): data is Comment {
 }
 
 export class CommentClient extends ModelClient<Comment, NewComment> {
-    pluralName = 'tasks';
+    pluralName = 'comments';
     validator = (data: any): Comment => {
         if (!isComment(data)) {
             throw new Error('Got unexpcted Comment data!');

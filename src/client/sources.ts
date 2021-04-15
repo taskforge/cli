@@ -12,7 +12,7 @@ export function isSource(data: any): data is Source {
 }
 
 export class SourceClient extends ModelClient<Source, Source> {
-    pluralName = 'users';
+    pluralName = 'sources';
     validator = (data: any): Source => {
         if (!isSource(data)) {
             throw new Error('Got unexpcted Setting data!');

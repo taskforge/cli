@@ -38,7 +38,7 @@ export function isFilter(data: any): data is Filter {
 }
 
 export class FilterClient extends ModelClient<Filter, NewFilter> {
-    pluralName = 'tasks';
+    pluralName = 'filters';
     validator = (data: any): Filter => {
         if (!isFilter(data)) {
             throw new Error('Got unexpcted Filter data!');

@@ -1,4 +1,4 @@
-import { ModelClient, isAPIError } from './model-client';
+import { ModelClient } from './model-client';
 
 export interface Task {
     id: string; // UUID
@@ -38,7 +38,7 @@ export class TaskClient extends ModelClient<Task, NewTask> {
     pluralName = 'tasks';
     validator = (data: any): Task => {
         if (!isTask(data)) {
-            throw new Error('Got unexpcted Task data!');
+            throw new Error(`Got unexpected Task data!`);
         }
 
         return data;
@@ -48,25 +48,27 @@ export class TaskClient extends ModelClient<Task, NewTask> {
         return await this.list(0, { query });
     }
 
-    async complete(id: string): Promise<Task> {
-        const url = `/${this.version}/${this.pluralName}/${id}`;
-        const response = await this.client.put(url);
-        if (isAPIError(response.data)) {
-            throw new Error(response.data.message);
+    async complete(id: string): Promise<null> {
+        try {
+            const url = `/${this.version}/${this.pluralName}/${id}`;
+            await this.client.put(url);
+            return null;
+        } catch (e) {
+            this.handleError(e);
+            throw e;
         }
-
-        return this.validator(response.data);
     }
 
     async next(context?: string): Promise<Task> {
-        const url = context
-            ? `/${this.version}/${this.pluralName}/next?context=${context}`
-            : `/${this.version}/${this.pluralName}/next`;
-        const response = await this.client.get(url);
-        if (isAPIError(response.data)) {
-            throw new Error(response.data.message);
+        try {
+            const url = context
+                ? `/${this.version}/${this.pluralName}/next?context=${context}`
+                : `/${this.version}/${this.pluralName}/next`;
+            const response = await this.client.get(url);
+            return this.validator(response.data);
+        } catch (e) {
+            this.handleError(e);
+            throw e;
         }
-
-        return this.validator(response.data);
     }
 }

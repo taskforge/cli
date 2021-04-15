@@ -15,10 +15,10 @@ export function isContext(data: any): data is Context {
 }
 
 export class ContextClient extends ModelClient<Context, NewContext> {
-    pluralName = 'tasks';
+    pluralName = 'contexts';
     validator = (data: any): Context => {
         if (!isContext(data)) {
-            throw new Error('Got unexpcted Context data!');
+            throw new Error('Got unexpected Context data!');
         }
 
         return data;
