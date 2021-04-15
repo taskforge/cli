@@ -1,22 +1,15 @@
+import client from './client';
+import { unexpected, highestPriority } from './utils';
 import { Command } from 'commander';
 
-import { tasks, contexts, isAPIError } from './client';
-
-import { fail, unexpected, highestPriority } from './utils';
-
 async function getOrCreateContext(name: string): Promise<string> {
-    const contextObj = await contexts.byName(name);
-    if (!isAPIError(contextObj)) {
+    try {
+        const contextObj = await client.contexts.byName(name);
         return contextObj.id;
+    } catch (e) {
+        const createdContext = await client.contexts.create({ name });
+        return createdContext.id;
     }
-
-    const createdContext = await contexts.create({ name });
-    if (isAPIError(createdContext)) {
-        fail(createdContext);
-        return '';
-    }
-
-    return createdContext.id;
 }
 
 async function add(args: string[], opts: Command) {
@@ -46,10 +39,7 @@ async function add(args: string[], opts: Command) {
             context = await getOrCreateContext(opts.context);
         }
 
-        const response = await tasks.create({ title, priority, context });
-        if (isAPIError(response)) {
-            fail(response);
-        }
+        await client.tasks.create({ title, priority, context });
     } catch (e) {
         unexpected(e);
     }

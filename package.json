@@ -54,6 +54,7 @@
         "typescript": "^3.9.7"
     },
     "dependencies": {
+        "axios": "^0.21.1",
         "commander": "^5.1.0",
         "kleur": "^4.1.4",
         "node-fetch": "^2.6.1",

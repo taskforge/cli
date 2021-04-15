@@ -1,30 +1,20 @@
-import path from 'path';
+import client from './client';
 import kleur from 'kleur';
-import { APIError, tasks, isAPIError } from './client';
+import path from 'path';
 
 export const emailRegex = /\S+@\S+\.\S+/;
 
-export function fail(err: APIError): void {
-    console.log(kleur.red('error:'), err.message ?? err.detail);
-    process.exit(1);
-}
-
 export function unexpected(err: Error): void {
-    console.log(kleur.red('Unexpected error:'), err.toString());
+    console.log(kleur.red('error:'), err.toString());
     process.exit(1);
 }
 
 export async function highestPriority(): Promise<number> {
     try {
-        const current = await tasks.current();
-        if (isAPIError(current)) {
-            return 2;
-        }
-
+        const current = await client.tasks.next();
         return current.priority;
     } catch (e) {
-        unexpected(e);
-        return 0;
+        return 2;
     }
 }
 

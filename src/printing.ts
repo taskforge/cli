@@ -1,5 +1,6 @@
+import client from './client';
+import { Task } from './client/tasks';
 import { table } from 'table';
-import { users, sources, contexts, Task, isAPIError } from './client';
 
 function idMemo<T>(fn: (id: string) => Promise<T>): (id: string) => Promise<T> {
     const memo: { [id: string]: T } = {};
@@ -13,9 +14,9 @@ function idMemo<T>(fn: (id: string) => Promise<T>): (id: string) => Promise<T> {
     };
 }
 
-const getContext = idMemo(contexts.get);
-const getSource = idMemo(sources.get);
-const getUser = idMemo(users.get);
+const getContext = idMemo(client.contexts.get);
+const getSource = idMemo(client.sources.get);
+const getUser = idMemo(client.users.get);
 
 function humanizeKey(key: string): string {
     if (key == 'id') {
@@ -36,31 +37,6 @@ async function humanize(task: Task): Promise<any> {
         getSource(task.source),
         getUser(task.owner)
     ]);
-
-    if (isAPIError(context)) {
-        console.log(
-            'Unexpected error retrieving context:',
-            context.message ?? context.detail
-        );
-        process.exit(1);
-    }
-
-    if (isAPIError(source)) {
-        console.log(
-            'Unexpected error retrieving source:',
-            source.message ?? source.detail
-        );
-        process.exit(1);
-    }
-
-    if (isAPIError(owner)) {
-        console.log(
-            'Unexpected error retrieving owner:',
-            owner.message ?? owner.detail
-        );
-        process.exit(1);
-    }
-
     return {
         ...task,
         owner:

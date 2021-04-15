@@ -1,28 +1,13 @@
-import { Comment, isAPIError, tasks, comments } from './client';
-import { Command } from 'commander';
-
-import { fail } from './utils';
+import client from './client';
 import { printJSON, printTask } from './printing';
+import { Command } from 'commander';
 
 async function show(id: string, opts: Command) {
     try {
-        const task = await tasks.get(id);
-        if (isAPIError(task)) {
-            fail(task);
-            return;
-        }
-
-        let taskComments: Comment[] = [];
-        const commentRes = await comments.list(task.id);
-        if (isAPIError(commentRes)) {
-            fail(commentRes);
-            return;
-        } else {
-            taskComments = commentRes.results;
-        }
-
+        const task = await client.tasks.get(id);
+        const comments = await client.comments.list(0, task.id);
         if (opts.output === 'json') {
-            printJSON({ ...task, comments: taskComments });
+            printJSON({ ...task, comments });
             return;
         } else if (opts.output === 'title') {
             console.log(task.title);
@@ -30,13 +15,13 @@ async function show(id: string, opts: Command) {
             printTask(task);
         }
 
-        if (taskComments.length > 0) {
+        if (comments.length > 0) {
             console.log(
                 '------------------------------------COMMENTS------------------------------------'
             );
         }
 
-        for (const comment of taskComments) {
+        for (const comment of comments) {
             console.log('---', comment.createdDate, '---');
             console.log(comment.body);
         }

@@ -1,25 +1,16 @@
-import { isAPIError, tasks } from './client';
-import { Command } from 'commander';
-
-import { fail, unexpected } from './utils';
+import client from './client';
 import { printList } from './printing';
+import { unexpected } from './utils';
+import { Command } from 'commander';
 
 async function list(args: string[], opts: Command) {
     try {
         const query = args.join(' ');
-        let list;
-        if (query !== '') {
-            list = await tasks.search(query);
-        } else {
-            list = await tasks.list();
-        }
-
-        if (isAPIError(list)) {
-            fail(list);
-            return;
-        }
-
-        await printList(list.results, opts.output);
+        const list =
+            query !== ''
+                ? await client.tasks.search(query)
+                : await client.tasks.list();
+        await printList(list, opts.output);
     } catch (e) {
         unexpected(e);
     }

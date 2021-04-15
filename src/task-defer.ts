@@ -1,23 +1,14 @@
-import { isAPIError, tasks } from './client';
+import client from './client';
+import { unexpected } from './utils';
 import { Command } from 'commander';
-
-import { fail, unexpected } from './utils';
 
 async function defer() {
     try {
-        const task = await tasks.get('next');
-        if (isAPIError(task)) {
-            fail(task);
-            return;
-        }
-
-        const update = await tasks.update({
+        const task = await client.tasks.get('next');
+        await client.tasks.update({
             ...task,
             priority: task.priority - 1
         });
-        if (isAPIError(update)) {
-            fail(update);
-        }
     } catch (e) {
         unexpected(e);
     }

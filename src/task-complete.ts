@@ -1,8 +1,7 @@
-import { isAPIError, tasks } from './client';
-import { Command } from 'commander';
-
+import client from './client';
 import { getNext } from './task-next';
-import { fail, unexpected } from './utils';
+import { unexpected } from './utils';
+import { Command } from 'commander';
 
 async function complete(ids: string[]) {
     try {
@@ -19,10 +18,7 @@ async function complete(ids: string[]) {
         }
 
         for (const id of ids) {
-            const complete = await tasks.complete(id);
-            if (isAPIError(complete)) {
-                fail(complete);
-            }
+            await client.tasks.complete(id);
         }
     } catch (e) {
         unexpected(e);

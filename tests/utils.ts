@@ -1,16 +1,10 @@
-import path from 'path';
-import os from 'os';
+import defaultClient, { Client } from '../src/client';
+import { Filter } from '../src/client/filters';
+import { isAPIError, APIError } from '../src/client/model-client';
+import { Task } from '../src/client/tasks';
 import { exec, ExecException } from 'child_process';
-
-import {
-    ClientOptions,
-    withOptions,
-    APIError,
-    isAPIError,
-    users,
-    Filter,
-    Task
-} from '../src/client';
+import os from 'os';
+import path from 'path';
 
 export function makeid(): string {
     const length = 50;
@@ -32,42 +26,23 @@ export function genDir(): string {
 
 export function fail<T>(obj: APIError | T): T {
     if (isAPIError(obj)) {
-        throw new Error(obj.message ?? obj.detail);
+        throw new Error(obj.message);
     }
 
     return obj as T;
-}
-
-function options(token: string): ClientOptions {
-    return {
-        baseUrl: process.env.TASKFORGE_HOST as string,
-        headers: {
-            'Content-Type': 'application/json',
-            Accepts: 'application/json'
-        },
-        token
-    };
 }
 
 export async function getContextName(
     token: string,
     id: string
 ): Promise<string> {
-    const res = await withOptions.contexts.get(options(token), id);
-    if (isAPIError(res)) {
-        throw new Error(`Getting Context:: ${res.message ?? res.detail}`);
-    }
-
-    return res.name;
+    const client = new Client(token, process.env.TASKFORGE_HOST!);
+    return (await client.contexts.get(id)).name;
 }
 
 export async function listTasks(token: string): Promise<Task[]> {
-    const res = await withOptions.tasks.list(options(token));
-    if (isAPIError(res)) {
-        throw new Error(`Listing Tasks:: ${res.message ?? res.detail}`);
-    }
-
-    return res.results;
+    const client = new Client(token, process.env.TASKFORGE_HOST!);
+    return await client.tasks.list();
 }
 
 export async function generateTask(
@@ -79,31 +54,15 @@ export async function generateTask(
         title: `task ${makeid()}`,
         ...data
     };
-
-    const opts = options(token);
-
-    const res = await withOptions.tasks.create(opts, req);
-    if (isAPIError(res)) {
-        throw new Error(`Generating Tasks: ${res.message ?? res.detail}`);
-    }
+    const client = new Client(token, process.env.TASKFORGE_HOST!);
+    const task = await client.tasks.create(req);
 
     if (completed) {
-        const completion = await withOptions.tasks.complete(opts, res.id);
-        if (isAPIError(completion)) {
-            throw new Error(
-                `Completing Task: ${completion.message ?? completion.detail}`
-            );
-        }
-
-        const task = await withOptions.tasks.get(opts, res.id);
-        if (isAPIError(task)) {
-            throw new Error(`Retrieving Task: ${task.message ?? task.detail}`);
-        }
-
-        return task;
+        await client.tasks.complete(task.id);
+        return await client.tasks.get(task.id);
     }
 
-    return res;
+    return task;
 }
 
 export async function generateUser(): Promise<{
@@ -114,24 +73,13 @@ export async function generateUser(): Promise<{
     const identifier = makeid();
     const email = `test-${identifier}@example.com`;
     const password = 'test';
-    const user = await users.create({
+    await defaultClient.users.create({
         email,
         password
     });
-    if (isAPIError(user)) {
-        throw new Error(user.message ?? user.detail);
-    }
-
-    const pat = await users.generatePat({ email, password });
-    if (isAPIError(pat)) {
-        throw new Error(pat.message ?? pat.detail);
-    }
-
-    const retrievedUser = await withOptions.users.get(options(pat.pat), 'me');
-    if (isAPIError(retrievedUser)) {
-        throw new Error(retrievedUser.message ?? retrievedUser.detail);
-    }
-
+    const pat = await defaultClient.users.generatePAT(email, password);
+    const client = new Client(pat.pat, process.env.TASKFORGE_HOST!);
+    const retrievedUser = await client.users.get('me');
     return {
         email,
         token: pat.pat,
@@ -206,22 +154,15 @@ export async function cli(
 }
 
 export async function listFilters(token: string): Promise<Filter[]> {
-    const res = await withOptions.filters.list(options(token));
-    if (isAPIError(res)) {
-        throw new Error(`Listing Filters: ${res.message ?? res.detail}`);
-    }
-
-    return res.results;
+    const client = new Client(token, process.env.TASKFORGE_HOST!);
+    return await client.filters.list();
 }
 
 export async function createContext(
     token: string,
     name: string
 ): Promise<string> {
-    const res = await withOptions.contexts.create(options(token), { name });
-    if (isAPIError(res)) {
-        throw new Error(`Getting Context: ${res.message ?? res.detail}`);
-    }
-
+    const client = new Client(token, process.env.TASKFORGE_HOST!);
+    const res = await client.contexts.create({ name });
     return res.id;
 }

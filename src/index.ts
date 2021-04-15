@@ -1,9 +1,7 @@
-import { Command } from 'commander';
-
 import { AddCommand } from './task-add';
 import { CompleteCommand } from './task-complete';
 import { DeferCommand } from './task-defer';
-import { FilterCommand } from './task-filter';
+// import { FilterCommand } from './task-filter';
 import { ListCommand } from './task-list';
 import { LoginCommand } from './task-login';
 import { NextCommand } from './task-next';
@@ -12,6 +10,7 @@ import { ShowCommand } from './task-show';
 import { SwitchContextCommand } from './task-switch-context';
 import { TodoCommand } from './task-todo';
 import { WorkOnCommand } from './task-work-on';
+import { Command } from 'commander';
 
 // eslint-disable-next-line
 const { version } = require('../../package.json');
@@ -21,7 +20,7 @@ cli.version(version)
     .addCommand(AddCommand)
     .addCommand(CompleteCommand)
     .addCommand(DeferCommand)
-    .addCommand(FilterCommand)
+    // .addCommand(FilterCommand)
     .addCommand(ListCommand)
     .addCommand(LoginCommand)
     .addCommand(NextCommand)

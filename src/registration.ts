@@ -1,5 +1,5 @@
-import { isAPIError, users } from './client';
-import { fail, emailRegex } from './utils';
+import client from './client';
+import { emailRegex, unexpected } from './utils';
 import kleur from 'kleur';
 import ora from 'ora';
 import prompts from 'prompts';
@@ -25,13 +25,11 @@ export async function loginOrRegister(register = true) {
                 }
             ]);
             const registerSpinner = ora('Creating your account').start();
-            const user = await users.create({ email, password, fullName });
-            if (isAPIError(user)) {
-                registerSpinner.stopAndPersist();
-                fail(user);
-                return;
-            }
-
+            await client.users.create({
+                email,
+                password,
+                fullName
+            });
             registerSpinner.stopAndPersist({
                 text: kleur.bold('Registered successfully!'),
                 prefixText: kleur.green('✔')
@@ -39,13 +37,7 @@ export async function loginOrRegister(register = true) {
         }
 
         const spinner = ora('Generating a personal access token').start();
-        const pat = await users.generatePat({ email, password });
-        if (isAPIError(pat)) {
-            spinner.stopAndPersist();
-            fail(pat);
-            return;
-        }
-
+        const pat = await client.users.generatePAT(email, password);
         spinner.stopAndPersist({
             text: kleur.bold('Generated token'),
             prefixText: kleur.green('✔')
@@ -65,7 +57,7 @@ export async function loginOrRegister(register = true) {
                 ' to operate on taskforge as your user. Protect it like a password.'
         );
     } catch (e) {
-        console.log('Unexpected error:', e);
+        unexpected(e);
         process.exit(5);
     }
 }

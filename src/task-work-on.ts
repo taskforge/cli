@@ -1,22 +1,12 @@
-import { isAPIError, tasks } from './client';
+import client from './client';
+import { unexpected, highestPriority } from './utils';
 import { Command } from 'commander';
-
-import { fail, unexpected, highestPriority } from './utils';
 
 async function workOn(givenId: string) {
     try {
-        const task = await tasks.get(givenId);
-        if (isAPIError(task)) {
-            fail(task);
-            return;
-        }
-
+        const task = await client.tasks.get(givenId);
         task.priority = (await highestPriority()) + 1;
-
-        const update = await tasks.update(task);
-        if (isAPIError(update)) {
-            fail(update);
-        }
+        await client.tasks.update(task);
     } catch (e) {
         unexpected(e);
     }

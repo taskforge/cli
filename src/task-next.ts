@@ -1,24 +1,23 @@
-import { isAPIError, Task, tasks } from './client';
-import { Command } from 'commander';
-
+import client from './client';
+import { Task } from './client/tasks';
 import { printJSON } from './printing';
-import { fail, unexpected } from './utils';
 import { loadState } from './state';
+import { unexpected } from './utils';
+import { Command } from 'commander';
 
 export async function getNext(): Promise<Task | null> {
     const state = await loadState();
-    const requestOptions = state.currentContext
-        ? { context: state.currentContext }
-        : {};
+    const context = state.currentContext ?? undefined;
+    try {
+        const task = await client.tasks.next(context);
+        return task;
+    } catch (e) {
+        if (e.toString().toLowerCase() === 'not found') {
+            return null;
+        }
 
-    const task = await tasks.current(requestOptions);
-    if (isAPIError(task)) {
-        const message = task.message ?? task.detail;
-        if (message && message.indexOf('no current') === -1) fail(task);
-        return null;
+        throw e;
     }
-
-    return task;
 }
 
 async function next(opts: Command) {
