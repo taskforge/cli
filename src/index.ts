@@ -1,7 +1,7 @@
 import { AddCommand } from './task-add';
 import { CompleteCommand } from './task-complete';
 import { DeferCommand } from './task-defer';
-// import { FilterCommand } from './task-filter';
+import { FilterCommand } from './task-filter';
 import { ListCommand } from './task-list';
 import { LoginCommand } from './task-login';
 import { NextCommand } from './task-next';
@@ -20,7 +20,7 @@ cli.version(version)
     .addCommand(AddCommand)
     .addCommand(CompleteCommand)
     .addCommand(DeferCommand)
-    // .addCommand(FilterCommand)
+    .addCommand(FilterCommand)
     .addCommand(ListCommand)
     .addCommand(LoginCommand)
     .addCommand(NextCommand)
