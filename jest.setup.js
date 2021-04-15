@@ -9,3 +9,8 @@ if (
 ) {
     throw new Error("Don't run the tests against production.");
 }
+
+// Have to undefine this so Axios doesn't think jest tests are running in a browser. (It
+// mocks this out somehow then we get CORs errors in the tests).
+/* eslint-disable */
+XMLHttpRequest = undefined;
