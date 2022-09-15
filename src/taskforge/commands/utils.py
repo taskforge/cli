@@ -25,11 +25,12 @@ def inject_client(fn):
             fn(*args, **kwargs)
         except ClientException as exc:
             if exc.status_code == 400:
-                print("ERROR!", exc.msg)
-            else:
                 logger.error(exc.msg)
+            else:
+                logger.exception(exc)
             sys.exit(exc.status_code)
-        except Exception:
+        except Exception as exc:
+            logger.exception(exc)
             sys.exit(1)
         finally:
             client.close()
@@ -38,10 +39,9 @@ def inject_client(fn):
 
 
 @contextmanager
-def spinner(text=""):
-    if Config.no_spinners:
+def spinner(text="", disabled=False):
+    if Config.no_spinners or disabled:
         yield None
-        return
-
-    with yaspin(Spinners.aesthetic, text=text) as sp:
-        yield sp
+    else:
+        with yaspin(Spinners.aesthetic, text=text) as sp:
+            yield sp

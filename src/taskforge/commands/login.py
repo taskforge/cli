@@ -38,7 +38,7 @@ Add this to your shell configuration file to use it:
 
 
 @cli.command()
-@click.option("--email", prompt=True)
+@click.option("-e", "--email", prompt=True)
 @click.option(
     "--password",
     prompt=True,

@@ -37,7 +37,7 @@ def search(query, format, client):
     Produces a CSV table containing user emails, context names, and source names instead
     of IDs
     """
-    with spinner("Retrieving tasks"):
+    with spinner("Retrieving tasks", disabled=format in ("csv", "json", "csv-pretty")):
         if query:
             tasks = client.tasks.search(" ".join(query))
         else:

@@ -10,7 +10,7 @@ class UserClient(ModelClient):
         Generates a PAT.
         """
         tokens = self.client.post(
-            "/api/v1/tokens/pat",
+            "/v1/tokens/pat",
             json={
                 "email": email,
                 "password": password,

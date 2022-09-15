@@ -7,7 +7,7 @@ class TaskClient(ModelClient):
     def next(self, context: str = ""):
         params = {"context": context} if context else None
         self.logger.debug("getting next Task in context: %s", context)
-        return self.client.get("/api/v1/tasks/next", params=params)
+        return self.client.get("/v1/tasks/next", params=params)
 
     def search(self, query: str):
         params = {"q": query}
@@ -16,4 +16,4 @@ class TaskClient(ModelClient):
 
     def complete(self, id: str):
         self.logger.debug("completing task: %s", id)
-        return self.client.put(f"/api/v1/tasks/{id}/complete")
+        return self.client.put(f"/v1/tasks/{id}/complete")

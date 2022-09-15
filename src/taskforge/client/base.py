@@ -40,7 +40,7 @@ class ModelClient:
     def create(self, model, **kwargs):
         self.logger.debug("creating %s with %s", self.plural_name, model)
         return self.client.post(
-            f"/api/v1/{self.plural_name}",
+            f"/v1/{self.plural_name}",
             json=model,
             **kwargs,
         )
@@ -48,7 +48,7 @@ class ModelClient:
     @cache
     def get(self, id, **kwargs):
         self.logger.debug("retrieving a %s with ID: %s", self.plural_name, id)
-        response = self.client.get(f"/api/v1/{self.plural_name}/{id}", **kwargs)
+        response = self.client.get(f"/v1/{self.plural_name}/{id}", **kwargs)
         if self.reverse_mapping_key:
             reverse_key = response[self.reverse_mapping_key]
             self.reverse_map[reverse_key] = response
@@ -57,7 +57,7 @@ class ModelClient:
 
     def list(self, limit=-1, **kwargs):
         self.logger.debug("getting all %s", self.plural_name)
-        endpoint = f"/api/v1/{self.plural_name}"
+        endpoint = f"/v1/{self.plural_name}"
         page = self.client.get(endpoint, **kwargs)
         results = page["results"]
         page_number = 1
@@ -79,11 +79,11 @@ class ModelClient:
     def update(self, model, **kwargs):
         self.logger.debug("updated %s with ID: %s", self.plural_name, model["id"])
         return self.client.put(
-            f"/api/v1/{self.plural_name}/{model['id']}",
+            f"/v1/{self.plural_name}/{model['id']}",
             json=model,
             **kwargs,
         )
 
     def delete(self, id, **kwargs):
         self.logger.debug("deleted %s with ID: %s", self.plural_name, id)
-        return self.client.delete(f"/api/v1/{self.plural_name}/{id}", **kwargs)
+        return self.client.delete(f"/v1/{self.plural_name}/{id}", **kwargs)

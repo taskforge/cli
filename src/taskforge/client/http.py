@@ -41,7 +41,7 @@ class Client:
         try:
             data = response.json()
         except JSONDecodeError:
-            data = response.text()
+            data = response.text
 
         if "detail" in data:
             msg = data["detail"]
@@ -56,9 +56,8 @@ class Client:
                 ]
             )
         else:
-            msg = "[{status}] ({method}) {url}: {data}".format(
+            msg = "[{status}] {url}: {data}".format(
                 status=response.status_code,
-                method=response.method,
                 url=response.url,
                 data=data,
             )
